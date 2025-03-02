@@ -1,0 +1,127 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f3f4f6;
+    }
+
+    .welcome-card {
+        background: linear-gradient(120deg, #111827, #1f2937, #374151);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.4);
+        margin-bottom: 30px;
+        text-align: center;
+        animation: fadeIn 2s ease-in-out;
+    }
+
+        .welcome-card h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .welcome-card p {
+            font-size: 1.5rem;
+            font-style: italic;
+            margin-top: 20px;
+        }
+
+        .welcome-card span {
+            font-weight: bold;
+            color: #3b82f6;
+        }
+
+    .card {
+        background-color: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 12px;
+        padding: 20px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        max-width: 400px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .btn-primary {
+        background-color: #3b82f6;
+        color: white;
+        font-size: 1rem;
+    }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+    .icon-container {
+        font-size: 2rem;
+        margin-right: 10px;
+    }
+
+    .flex-actions {
+        display: flex;
+        justify-content: center; /* Center horizontally */
+        align-items: center; /* Center vertically */
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-top: 15px;
+    }
+</style>
+
+<div class="container mx-auto py-10">
+    <!-- Welcome Card -->
+    <div class="welcome-card">
+        <h1>Welcome Back, @User.FindFirst("FullName")?.Value</h1>
+        <p>
+            The world of <span>Tenders</span> and <span>Auctions</span> awaits your command.
+            <br>
+            <strong>Your decisions shape futures.</strong>
+            <br>
+            Are you ready to <span>lead</span>, <span>manage</span>, and <span>excel</span> once again?
+        </p>
+    </div>
+
+    <!-- Main Section using Flexbox -->
+    <div class="flex-actions">
+        <!-- Tender Section -->
+        <div class="card flex-1 min-w-[300px]">
+            <h2 class="section-title text-blue-600 flex items-center">
+                <i class="fas fa-gavel icon-container"></i> Tender Management
+            </h2>
+            <p class="text-lg mb-6">
+                Ready to lead the way? Publish and manage tenders like a pro. Your decisions can make a difference—take charge now!
+            </p>
+            <a asp-action="TenderPage" asp-controller="PublisherTender" asp-route-activeTab="TenderList" class="btn-primary rounded-md px-4 py-3 inline-flex items-center justify-center text-center">
+                Take Control of Tenders
+            </a>
+
+        </div>
+
+        <!-- Auction Section -->
+        <div class="card flex-1 min-w-[300px]">
+            <h2 class="section-title text-green-600 flex items-center">
+                <i class="fas fa-bullhorn icon-container"></i> Auction Management
+            </h2>
+            <p class="text-lg mb-6">
+                Take control of the auction world! Publish, manage, and track your auctions with ease. Your next big win is just a click away!
+            </p>
+            <a asp-action="AuctionPage" asp-controller="PublisherAuction" asp-route-activeTab="AuctionList" class="btn-primary rounded-md px-4 py-3 inline-flex items-center justify-center text-center">
+                Master the Auctions Now
+            </a>
+        </div>
+    </div>
+</div>

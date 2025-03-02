@@ -1,0 +1,87 @@
+﻿@model AuctionDetailsViewModel
+<!-- Flowbite CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.css" rel="stylesheet">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- SignalR -->
+
+<button onclick="history.back()"
+        class="text-gray-600 hover:text-gray-800 transition-all duration-300 hover:scale-110">
+    <i class="fas fa-arrow-left text-xl"></i>
+</button>
+<h2>Auction: @Model.AuctionDetails.Title</h2>
+
+<div id="bidHistory" class="max-h-80 overflow-y-auto border rounded-lg p-4 bg-gray-100">
+    @foreach (var bid in Model.BidHistoryy)
+    {
+        @if (bid.BidderId == Convert.ToInt16(User.Identity.Name))
+        {
+            <!-- Display current user's bids on the right side (Chat style) -->
+            <div class="mb-2 p-2 bg-blue-100 rounded-lg shadow text-right">
+                <strong>You</strong>
+                placed a bid of Rs. <strong>@bid.BidAmount.ToString("F2")</strong>
+            </div>
+
+            <!-- Show Multiple Bids by the Same User -->
+            @if (bid.Bids != null && bid.Bids.Any())
+            {
+                @foreach (var previousBid in bid.Bids.Take(5))
+                {
+                    <div class="ml-4 text-sm text-gray-600 text-right">
+                        (Earlier, <strong>You</strong> had placed a bid of Rs. <strong>@previousBid.BidAmount.ToString("F2")</strong>)
+                    </div>
+                }
+            }
+        }
+        else
+        {
+            <!-- Display other users' bids on the left side (Chat style) -->
+            <div class="mb-2 p-2 bg-white rounded-lg shadow">
+                <strong>@(!string.IsNullOrEmpty(bid.Biddername) ? bid.Biddername : "Unknown Bidder")</strong>
+                placed a bid of Rs. <strong>@bid.BidAmount.ToString("F2")</strong>
+            </div>
+
+            <!-- Show Multiple Bids by Other Bidder -->
+            @if (bid.Bids != null && bid.Bids.Any())
+            {
+                @foreach (var previousBid in bid.Bids.Take(5))
+                {
+                    <div class="ml-4 text-sm text-gray-600">
+                        Earlier, <strong>@previousBid.Biddername</strong> had placed a bid of Rs. <strong>@previousBid.BidAmount.ToString("F2")</strong>)
+                    </div>
+                }
+            }
+        }
+    }
+</div>
+
+
+<form id="bidForm" asp-action="PlaceBid" method="post" class="flex mt-4">
+    <input type="hidden" name="auctionId" value="@Model.AuctionDetails.AuctionId" />
+    <input type="number" name="bidAmount" class="w-full p-2 rounded-l-lg border bg-gray-50" min="@Model.MinBidAmount"
+           placeholder="Enter your bid" required />
+    <button type="submit" class="bg-blue-700 px-5 py-2 rounded-r-lg text-white hover:bg-blue-800">
+        <i class="fas fa-gavel mr-2"></i> Bid Now
+    </button>
+</form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.9/signalr.min.js"></script>
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/auctionHub")
+        .build();
+
+    connection.on("ReceiveBidUpdate", function (auctionId, bidderName, bidAmount, bidTime) {
+        const bidHistoryDiv = document.getElementById("bidHistory");
+
+        const bidMessage = document.createElement("div");
+        bidMessage.classList.add("mb-2", "p-2", "bg-white", "rounded-lg", "shadow");
+
+        const currentUserId = '@User.Identity.Name';
+        bidMessage.innerHTML = `<strong>${bidderName === currentUserId ? "You" : bidderName}</strong> placed a bid of Rs. <strong>${bidAmount.toFixed(2)}</strong>`;
+
+        bidHistoryDiv.prepend(bidMessage);
+    });
+
+    connection.start().catch(err => console.error("SignalR Connection Error: ", err));
+</script>

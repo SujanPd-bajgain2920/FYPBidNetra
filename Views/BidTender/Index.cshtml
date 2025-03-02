@@ -1,0 +1,278 @@
+﻿@{
+    ViewData["Title"] = "Bidder Dashboard";
+    var tenders = ViewBag.Tenders as List<TenderEdit>;
+    var auctions = ViewBag.Auctions as List<AuctionEdit>;
+}
+
+<style>
+    body {
+        overflow-x: hidden;
+
+    }
+
+    .header {
+        padding-top: 120px;
+        padding-bottom: 10px;
+        min-height: 600px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        color: white;
+    }
+
+    .homebg {
+        width: 100%;
+        height: 700px;
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        left: 0;
+    }
+
+    .header .title h1 {
+        text-wrap: nowrap;
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, #ffffff, #e0e7ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .header .title p {
+        font-size: 1.25rem;
+        margin-bottom: 1.5rem;
+        color: #e0e7ff;
+    }
+
+    .image-container {
+        position: relative;
+        left: 160px;
+        width: 384px;
+        height: auto;
+        margin-bottom: 250px;
+        animation: float 6s ease-in-out infinite;
+    }
+
+
+
+    .bldrop {
+        position: relative;
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+    }
+
+    .hand-img {
+        position: absolute;
+        top: 50px;
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        opacity: 0.8;
+    }
+
+    .explore-btn {
+        background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .explore-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.2);
+    }
+
+    .upcoming-section {
+        padding: 2rem 0;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        margin: 2rem 0;
+    }
+
+    .tender-card, .auction-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        transition: all 0.3s ease;
+        border: 1px solid #e5e7eb;
+    }
+
+    .tender-card:hover, .auction-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .countdown {
+        background: linear-gradient(45deg, #ef4444, #dc2626);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: 600;
+    }
+
+    .swiper {
+        width: 100%;
+        padding: 20px 0;
+    }
+
+    .swiper-slide {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+        .swiper-slide:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+    .view-more-btn {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+</style>
+
+<body>
+    <div class="mx-auto w-full max-w-7xl">
+        <!-- Header Background -->
+        <svg id="header_bg" class="homebg w-full h-72 absolute top-0 left-0 z-[-1]" viewBox="0 10 500 50" preserveAspectRatio="none">
+            <defs>
+                <radialGradient id="Gradient" cx="0.5" cy="0.5" r="0.5" fx="0.75" fy="0.25">
+                    <stop offset="0%" stop-color="#07365d" />
+                    <stop offset="100%" stop-color="#000717" />
+                </radialGradient>
+            </defs>
+            <path d="M0,0 L500,0 L500,55 L0,55 Z" fill="url(#Gradient)" />
+
+        </svg>
+
+        <!-- Header Section -->
+        <div class="header flex justify-between items-center relative py-40 px-6">
+            <div class="title">
+                <h1>BidNetra: Smart Bidding Platform</h1>
+                <p>Discover Premium Tenders & Auctions in Real-Time</p>
+                <button class="explore-btn mt-6">
+                    <i class="fas fa-search mr-2"></i>
+                    Explore Opportunities
+                </button>
+            </div>
+
+            <div class="flex flex-col items-center">
+                <div class="image-container">
+                    <img class="bldrop" src="~/Images/HomeLogo.png" alt="Platform Logo" />
+                    <img class="hand-img" src="~/Images/hand.png" alt="Bidding Illustration" />
+                </div>
+            </div>
+        </div>
+
+        <div class="upcoming-section p-8">
+            <h2 class="text-3xl font-bold mb-6 text-gray-800">
+                <i class="fas fa-file-contract mr-2 text-blue-600"></i>
+                Upcoming Tenders
+            </h2>
+
+            <div class="swiper mySwiper">
+                <div class="swiper-wrapper">
+                    @if (tenders != null && tenders.Any())
+                    {
+                        @foreach (var tender in tenders)
+                        {
+                            <div class="swiper-slide">
+                                <h3 class="text-xl font-semibold text-gray-800">@tender.Title</h3>
+                                <p class="text-gray-600 mb-4">Issued by: @tender.IssuedBy</p>
+                                <span class="countdown">
+                                    <i class="far fa-clock mr-1"></i>
+                                    @tender.ClosingDate.ToString("dd MMM yyyy")
+                                </span>
+                                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                                    View Details
+                                </button>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-gray-600">No upcoming tenders available.</p>
+                    }
+                </div>
+            </div>
+
+            <div class="view-more-btn">
+                <a asp-action="TenderBidTab" asp-controller="BidTender" asp-route-activeTab="UpcomingTender" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+                    View More
+                </a>
+            </div>
+        </div>
+
+        <!-- Upcoming Auctions Section -->
+        <div class="upcoming-section p-8">
+            <h2 class="text-3xl font-bold mb-6 text-gray-800">
+                <i class="fas fa-gavel mr-2 text-blue-600"></i>
+                Upcoming Auctions
+            </h2>
+
+            <div class="swiper mySwiper">
+                <div class="swiper-wrapper">
+                    @if (auctions != null && auctions.Any())
+                    {
+                        @foreach (var auction in auctions)
+                        {
+                            <div class="swiper-slide">
+                                <img src="~/AuctionImage/@auction.ItemImage" alt="@auction.Title" class="w-full h-40 object-cover mb-4 rounded">
+                                <h3 class="text-xl font-semibold text-gray-800">@auction.Title</h3>
+                                <p class="text-gray-600 mb-4">Starting Price: $@auction.StartingPrice</p>
+                                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                                    View Details
+                                </button>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-gray-600">No upcoming auctions available.</p>
+                    }
+                </div>
+            </div>
+
+            <div class="view-more-btn">
+                <a asp-action="AuctionBidTab" asp-controller="BidAuction" asp-route-activeTab="UpcomingAuction" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+                    View More
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var swiper = new Swiper(".mySwiper", {
+            slidesPerView: 3,
+            spaceBetween: 30,
+            loop: true,
+            autoplay: {
+                delay: 2500,
+                disableOnInteraction: false,
+            },
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+            breakpoints: {
+                1024: { slidesPerView: 3 },
+                768: { slidesPerView: 2 },
+                640: { slidesPerView: 1 }
+            }
+        });
+    </script>
+</body>

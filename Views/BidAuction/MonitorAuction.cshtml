@@ -1,0 +1,430 @@
+﻿@model AuctionDetailsViewModel
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor Auction - @Model.Auction.Title</title>
+    <!-- Flowbite CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SignalR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
+    <style>
+        .bid-card {
+            transition: all 0.3s ease;
+        }
+        .bid-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .auction-timer {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+        .new-bid-highlight {
+            animation: highlight 3s ease;
+        }
+        
+        .bid-amount {
+            font-weight: bold;
+            color: #1e40af;
+        }
+        .auction-image {
+            max-height: 300px;
+            object-fit: contain;
+        }
+        .status-badge-pending {
+            background-color: #f59e0b;
+        }
+        .status-badge-accepted {
+            background-color: #10b981;
+        }
+        .status-badge-rejected {
+            background-color: #ef4444;
+        }
+
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+  
+
+        <!-- Auction Header -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">@Model.Auction.Title</h1>
+                    <p class="text-gray-600 mt-2">@Model.Auction.AuctionDescription</p>
+                </div>
+                
+                <div class="mt-4 md:mt-0 flex flex-col items-end">
+                    <div class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mb-2">
+                        <i class="fas fa-gavel mr-1"></i> @Model.Auction.AuctionType
+                    </div>
+                    <div class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
+                        <i class="fas fa-tag mr-1"></i> Status: @Model.Auction.AuctionStatus
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row">
+                <!-- Auction Image -->
+                <div class="w-full md:w-1/3 mb-4 md:mb-0 md:pr-6">
+                    @if (!string.IsNullOrEmpty(Model.Auction.ItemImage))
+                    {
+                        <img src="~/AuctionImage/@Model.Auction.ItemImage" alt="@Model.Auction.Title" class="auction-image rounded-lg shadow-sm w-full">
+                    }
+                    else
+                    {
+                        <div class="bg-gray-200 rounded-lg flex items-center justify-center h-64 w-full">
+                            <i class="fas fa-image text-gray-400 text-6xl"></i>
+                        </div>
+                    }
+                </div>
+                
+                <!-- Auction Details -->
+                <div class="w-full md:w-2/3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">
+                                <i class="fas fa-calendar-alt mr-2 text-blue-600"></i> Auction Schedule
+                            </h3>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-600">Start:</span>
+                                <span class="font-medium">@Model.Auction.StartDate.ToString("MMM d, yyyy") at @Model.Auction.StartTime</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">End:</span>
+                                <span class="font-medium">@Model.Auction.EndDate.ToString("MMM d, yyyy") at @Model.Auction.EndTime</span>
+                            </div>
+                            
+                            <div class="mt-4 text-center">
+                                <div class="text-sm text-gray-500 mb-1">Time Remaining</div>
+                                <div id="auctionTimer" class="auction-timer text-xl bg-gray-800 text-white py-1 px-3 rounded flex space-x-2">
+                                    <div class="countdown-item text-center">
+                                        <div class="countdown-value text-2xl font-bold" id="days">--</div>
+                                        <div class="countdown-label text-sm">Days</div>
+                                    </div>
+                                    <div class="countdown-item text-center">
+                                        <div class="countdown-value text-2xl font-bold" id="hours">--</div>
+                                        <div class="countdown-label text-sm">Hours</div>
+                                    </div>
+                                    <div class="countdown-item text-center">
+                                        <div class="countdown-value text-2xl font-bold" id="minutes">--</div>
+                                        <div class="countdown-label text-sm">Mins</div>
+                                    </div>
+                                    <div class="countdown-item text-center">
+                                        <div class="countdown-value text-2xl font-bold" id="seconds">--</div>
+                                        <div class="countdown-label text-sm">Secs</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">
+                                <i class="fas fa-dollar-sign mr-2 text-green-600"></i> Bid Information
+                            </h3>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-600">Starting Price:</span>
+                                <span class="font-medium">$@Model.Auction.StartingPrice.ToString("N2")</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-600">Current Highest:</span>
+                                <span id="highestBid" class="font-bold text-blue-600">
+                                    @if (Model.AuctionBid != null && Model.AuctionBid.Any())
+                                    {
+
+                                        <text>Rs.@Model.HighestBidAmount.ToString("N2")</text>
+                                    }
+                                    else
+                                    {
+                                        <text>Starting Price: Rs.@Model.Auction.StartingPrice.ToString("N2")</text>
+                                    }
+                                </span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Total Bids:</span>
+                                <span id="totalBids" class="font-medium">@(Model.AuctionBid != null ? Model.AuctionBid.Count : 0)</span>
+                            </div>
+
+                            <div class="mt-4">
+                                <form asp-action="PlaceBid" method="post" class="flex">
+                                    <input type="hidden" name="auctionId" value="@Model.Auction.AuctionId" />
+                                    <input type="number" name="bidAmount" class="block w-full rounded-l-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                                           min="@Model.MinBidAmount"  
+                                    placeholder="Enter your bid" required />
+                                    <button type="submit" class="inline-flex items-center rounded-r-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                                        <i class="fas fa-gavel mr-2"></i> Bid Now
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bid History -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-900">
+                    <i class="fas fa-history mr-2 text-blue-600"></i> Bid History
+                </h2>
+                <div>
+                    <button id="refreshBids" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 inline-flex items-center">
+                        <i class="fas fa-sync-alt mr-2"></i> Refresh
+                    </button>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto relative">
+                <table class="w-full text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                        <tr>
+                            <th scope="col" class="py-3 px-6">Bidder</th>
+                            <th scope="col" class="py-3 px-6">Bid Amount</th>
+                            <th scope="col" class="py-3 px-6">Date & Time</th>
+                            <th scope="col" class="py-3 px-6">Status</th>
+                            <th scope="col" class="py-3 px-6">Bidding Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bidHistory">
+                        @foreach (var bid in Model.AuctionBid)
+                        {
+                            <tr class="bg-white border-b hover:bg-gray-50">
+                                <td class="py-4 px-6 font-medium text-gray-900">
+                                    @if (bid.BidderName != null && bid.BidderName.Any())
+                                    {
+                                        var user = bid.BidderName.First();
+                                        string fullName = $"{user.FirstName} {(string.IsNullOrEmpty(user.MiddleName) ? "" : user.MiddleName + " ")}{user.LastName}";
+                                        <div class="flex items-center">
+                                            <div class="h-10 w-10 flex-shrink-0 mr-3 bg-blue-100 rounded-full flex items-center justify-center">
+                                                <span class="text-blue-800 font-bold">@(string.IsNullOrEmpty(fullName) ? "?" : fullName[0].ToString().ToUpper())</span>
+                                            </div>
+                                            <div>
+                                                <div class="font-medium text-gray-900">@fullName</div>
+                                                <div class="text-xs text-gray-500">ID: @bid.BidderId</div>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="flex items-center">
+                                            <div class="h-10 w-10 flex-shrink-0 mr-3 bg-gray-100 rounded-full flex items-center justify-center">
+                                                <span class="text-gray-500 font-bold">?</span>
+                                            </div>
+                                            <div>
+                                                <div class="font-medium text-gray-900">Unknown</div>
+                                                <div class="text-xs text-gray-500">ID: @bid.BidderId</div>
+                                            </div>
+                                        </div>
+                                    }
+                                </td>
+                                <td class="py-4 px-6 bid-amount">Rs.@bid.BidAmount.ToString("N2")</td>
+                                <td class="py-4 px-6">
+                                    <div class="text-gray-900">@bid.BidDate.ToString("MMM d, yyyy")</div>
+                                    <div class="text-xs text-gray-500">@bid.BidTime</div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    @{
+                                        string statusClass = bid.BidStatus.ToLower() == "pending" ? "status-badge-pending" : 
+                                                             bid.BidStatus.ToLower() == "accepted" ? "status-badge-accepted" : 
+                                                             "status-badge-rejected";
+                                        string statusIcon = bid.BidStatus.ToLower() == "pending" ? "fa-clock" : 
+                                                           bid.BidStatus.ToLower() == "accepted" ? "fa-check-circle" : 
+                                                           "fa-times-circle";
+                                    }
+                                    <span class="@statusClass text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full inline-flex items-center">
+                                        <i class="fas @statusIcon mr-1"></i> @bid.BidStatus
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    @if (bid.Bids != null && bid.Bids.Any())
+                                    {
+                                        <button type="button" data-dropdown-toggle="dropdown-@bid.BidId" class="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center">
+                                            <i class="fas fa-list-ul mr-1"></i> View @bid.Bids.Count Bids
+                                        </button>
+                                        <div id="dropdown-@bid.BidId" class="hidden z-10 w-auto bg-white rounded divide-y divide-gray-100 shadow">
+                                            <ul class="py-1 text-sm text-gray-700" aria-labelledby="dropdownDefault">
+                                                @foreach (var bidding in bid.Bids)
+                                                {
+                                                    <li class="py-2 px-4 hover:bg-gray-100">
+                                                        <div class="flex justify-between">
+                                                            <span>Bid ID: @bidding.BiddingId</span>
+                                                            <span class="font-medium text-blue-600">Rs.@bidding.BiddingAmount.ToString("N2")</span>
+                                                        </div>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-400 italic text-sm">No additional bids</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            
+            @if (Model.AuctionBid == null || !Model.AuctionBid.Any())
+            {
+                <div class="text-center py-10">
+                    <div class="text-gray-400 mb-3">
+                        <i class="fas fa-gavel text-5xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-1">No Bids Yet</h3>
+                    <p class="text-gray-500">Be the first to place a bid on this auction!</p>
+                </div>
+            }
+        </div>
+    </div>
+    
+   
+    
+    <script>
+        var connection = new signalR.HubConnectionBuilder().withUrl("/auctionHub").build();
+
+        connection.start()
+            .then(() => console.log("SignalR Connected"))
+            .catch(err => console.error("SignalR Connection Error:", err));
+
+        connection.on("ReceiveBid", function (auctionId, userId, bidAmount, bidTime) {
+            console.log("New bid received:", { auctionId, userId, bidAmount, bidTime });
+            // Format the bid time
+            var formattedTime = new Date(bidTime).toLocaleString();
+
+            // Find the row for the current user
+            var existingRow = document.querySelector(`#bidHistory tr[data-user-id="${userId}"]`);
+
+            // If the row exists, just update the bid amount
+            if (existingRow) {
+                existingRow.querySelector(".bid-amount").textContent = `Rs.${parseFloat(bidAmount).toFixed(2)}`;
+            } else {
+                // If the row doesn't exist, create a new row
+                var newRow = `
+                    <tr class="bg-white border-b hover:bg-gray-50" data-user-id="${userId}">
+                        <td class="py-4 px-6 font-medium text-gray-900">
+                            <div class="flex items-center">
+                                <div class="h-10 w-10 flex-shrink-0 mr-3 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <span class="text-blue-800 font-bold">?</span>
+                                </div>
+                                <div>
+                                    <div class="font-medium text-gray-900">Unknown</div>
+                                    <div class="text-xs text-gray-500">ID: ${userId}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-4 px-6 bid-amount">Rs.${parseFloat(bidAmount).toFixed(2)}</td>
+                        <td class="py-4 px-6">
+                            <div class="text-gray-900">${new Date(bidTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                            <div class="text-xs text-gray-500">${new Date(bidTime).toLocaleTimeString()}</div>
+                        </td>
+                        <td class="py-4 px-6">
+                            <span class="status-badge-pending text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full inline-flex items-center">
+                                <i class="fas fa-clock mr-1"></i> Pending
+                            </span>
+                        </td>
+                        <td class="py-4 px-6">
+                            <span class="text-gray-400 italic text-sm">No additional bids</span>
+                        </td>
+                    </tr>`;
+
+                // Insert the new row at the top of the table
+                document.getElementById("bidHistory").insertAdjacentHTML("afterbegin", newRow);
+            }
+
+            // Update the highest bid amount in the UI for the current auction
+            var highestBidElement = document.getElementById("highestBid");
+            if (highestBidElement) {
+                highestBidElement.textContent = `Rs.${parseFloat(bidAmount).toFixed(2)}`;
+            }
+       
+
+            
+            // Update total bids count
+            var totalBidsElement = document.getElementById("totalBids");
+            var currentTotal = parseInt(totalBidsElement.textContent);
+            totalBidsElement.textContent = (currentTotal + 1).toString();
+        });
+        
+        // Start the connection
+        connection.start().catch(err => console.error(err.toString()));
+
+        function updateCountdown() {
+            const endDateStr = '@Model.Auction.EndDate.ToString("yyyy-MM-dd")' + 'T' + '@Model.Auction.EndTime.ToString("HH:mm:ss")';
+            const endDate = new Date(endDateStr + 'Z'); // Ensure UTC format
+            const now = new Date();
+
+            const timeRemaining = endDate.getTime() - now.getTime();
+
+            if (timeRemaining <= 0) {
+                ['days', 'hours', 'minutes', 'seconds'].forEach(id => {
+                    document.getElementById(id).textContent = '00';
+                });
+
+                // Reload after auction ends
+                setTimeout(() => location.reload(), 3000);
+                return;
+            }
+
+            const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = String(days).padStart(2, '0');
+            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+        }
+
+        // Run the function every second
+        setInterval(updateCountdown, 1000);
+
+        // Run once immediately to avoid delay
+        updateCountdown();
+        
+        
+        // Handle refresh button
+        document.getElementById('refreshBids').addEventListener('click', function() {
+            // Add rotation animation to refresh icon
+            this.querySelector('i').classList.add('fa-spin');
+            
+            // Simulate refresh delay (in real app, this would be an actual data refresh)
+            setTimeout(() => {
+                this.querySelector('i').classList.remove('fa-spin');
+                
+                // Show toast notification
+                const toast = document.createElement('div');
+                toast.innerHTML = `
+                    <div id="toast-success" class="flex items-center p-4 mb-4 w-full max-w-xs text-gray-500 bg-white rounded-lg shadow fixed top-5 right-5 animate-fade-in-down" role="alert">
+                        <div class="inline-flex flex-shrink-0 justify-center items-center w-8 h-8 text-green-500 bg-green-100 rounded-lg">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="ml-3 text-sm font-normal">Bid list refreshed successfully.</div>
+                        <button type="button" class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8" data-dismiss-target="#toast-success" aria-label="Close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+
+                
+                // Remove toast after 3 seconds
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            }, 700);
+        });
+    </script>
+</body>
+</html>

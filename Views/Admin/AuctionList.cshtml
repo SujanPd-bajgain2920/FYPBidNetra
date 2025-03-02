@@ -1,0 +1,234 @@
+﻿@model IEnumerable<AuctionEdit>
+@{
+    ViewData["Title"] = "Auction List";
+    Layout = "_Layout";
+}
+
+
+
+<div class="bg-gray-50 min-h-screen p-8">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">
+            <i class="fas fa-file-contract mr-2"></i>Auction Management
+        </h1>
+        <p class="text-gray-600">Monitor and manage auction listings</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Tenders Card -->
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-blue-100 mr-4">
+                    <i class="fas fa-file-signature text-blue-500 text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-gray-500">Total Auctions</p>
+                    <h3 class="text-2xl font-bold">@ViewBag.TotalAuctions</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Verified Tenders Card -->
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-100 mr-4">
+                    <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-gray-500">Verified Auctions</p>
+                    <h3 class="text-2xl font-bold">@ViewBag.VerifiedAuctions</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Tenders Card -->
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-yellow-100 mr-4">
+                    <i class="fas fa-clock text-yellow-500 text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-gray-500">Pending Auctions</p>
+                    <h3 class="text-2xl font-bold">@ViewBag.PendingAuctions</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Not Verified Tenders Card -->
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-red-100 mr-4">
+                    <i class="fas fa-times-circle text-red-500 text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-gray-500">Not Verified</p>
+                    <h3 class="text-2xl font-bold">@ViewBag.NotVerifiedAuctions</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tender List Section -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+            <h2 class="text-xl font-semibold text-gray-800">Auction List</h2>
+
+            <!-- Filter Controls -->
+            <div class="flex flex-wrap gap-4">
+                <select id="statusFilter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5">
+                    <option value="">All Status</option>
+                    <option value="Verified">Verified</option>
+                    <option value="Not Verified">Not Verified</option>
+                    <option value="Pending">Pending</option>
+                </select>
+                <input type="text" id="searchInput" placeholder="Search auctions..." class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 min-w-[200px]">
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3">Title</th>
+                       
+                        <th class="px-6 py-3">Starting Price</th>
+                        <th class="px-6 py-3">Start Date</th>
+                        <th class="px-6 py-3">End Date</th>
+                        <th class="px-6 py-3">Status</th>
+                        <th class="px-6 py-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var auction in Model)
+                    {
+                        <tr class="tender-row bg-white border-b hover:bg-gray-50"
+                            data-status="@auction.IsVerified.ToLower()">
+                            <td class="px-6 py-4">
+                                <div class="font-medium text-gray-900">@auction.Title</div>
+                                <div class="text-xs text-gray-500">@auction.AuctionType</div>
+                            </td>
+                            <td class="px-6 py-4">@auction.StartingPrice.ToString("C")</td>
+                            
+                            <td class="px-6 py-4">@auction.StartDate.ToString("MMM dd, yyyy")</td>
+                            <td class="px-6 py-4">@auction.EndDate.ToString("MMM dd, yyyy")</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold
+                                    @(auction.IsVerified == "Verified" ? "bg-green-100 text-green-800" :
+                                        auction.IsVerified == "Pending" ? "bg-yellow-100 text-yellow-800" :
+                                        "bg-red-100 text-red-800")">
+                                    @auction.IsVerified
+                                </span>
+
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex gap-2">
+
+
+                                    <a asp-action="AdminAuctionDetails" asp-controller="Admin" asp-route-id="@auction.EncId" class="btn text-gray-600 hover:text-gray-900" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+
+                                    <a href="javascript:void(0);" class="btn text-green-600 hover:text-green-900 verify-btn"
+                                       data-id="@auction.AuctionId" data-status="Verified" title="Verify">
+                                        <i class="fas fa-check-circle"></i>
+                                    </a>
+
+                                    <a href="javascript:void(0);" class="btn text-green-600 hover:text-green-900 verify-btn"
+                                       data-id="@auction.AuctionId" data-status="Not Verified" title="NotVerify">
+                                        <i class="fas fa-times-circle"></i>
+                                    </a>
+
+
+                                    <!-- Hidden Form for AJAX Submit -->
+                                    <form id="verifyForm_@auction.AuctionId" class="hidden" method="POST" asp-action="UpdateAVerifiedStatus" asp-controller="Admin">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="AuctionId" value="@auction.AuctionId" />
+                                        <input type="hidden" name="IsVerified" value="Verified" />
+                                        <input type="hidden" name="IsVerified" value="Not Verified" />
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.verify-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    let auctionId = this.getAttribute('data-id');
+                    let status = this.getAttribute('data-status'); // Get the current status (Verified or Not Verified)
+                    let form = document.getElementById(`verifyForm_${auctionId}`);
+                    form.querySelector('input[name="IsVerified"]').value = status; // Set the correct status in the form
+
+                    if (confirm(`Are you sure you want to mark this auction as ${status}?`)) {
+                        // Submit the hidden form via AJAX
+                        fetch(form.action, {
+                            method: form.method,
+                            body: new FormData(form),
+                            headers: {
+                                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert(`Auction ${status} successfully!`);
+                                    location.reload(); // Reload page to update status
+                                } else {
+                                    alert("Failed to update auction status.");
+                                }
+                            })
+                            .catch(error => console.error("Error:", error));
+                    }
+                });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get references to the filter controls and rows
+            const statusFilter = document.getElementById('statusFilter');
+            const searchInput = document.getElementById('searchInput');
+            const auctionRows = document.querySelectorAll('.tender-row');
+
+            // Function to filter the rows based on the status and search input
+            function filterRows() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedStatus = statusFilter.value.toLowerCase();
+
+                auctionRows.forEach(row => {
+                    // Get auction status and title text
+                    const rowStatus = row.getAttribute('data-status').toLowerCase();
+                    const title = row.querySelector('td:first-child').textContent.toLowerCase();
+
+                    // Check if row matches the selected status and the search term
+                    const matchesStatus = selectedStatus ? rowStatus.includes(selectedStatus) : true;
+                    const matchesSearch = title.includes(searchTerm);
+
+                    // Toggle the row visibility based on filter criteria
+                    if (matchesStatus && matchesSearch) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+
+            // Event listeners for search input and status filter
+            searchInput.addEventListener('input', filterRows);
+            statusFilter.addEventListener('change', filterRows);
+
+            // Initial filter call to ensure the page is loaded with the correct data
+            filterRows();
+        });
+
+
+    </script>
+
+</div>

@@ -1,0 +1,91 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace FYPBidNetra.Models
+{
+    public class UserListEdit
+    {
+
+        // UserList 
+        public short UserId { get; set; }
+
+        public string FirstName { get; set; } = null!;
+
+        public string? MiddleName { get; set; }
+
+        public string LastName { get; set; } = null!;
+
+        public string Province { get; set; } = null!;
+
+        public string District { get; set; } = null!;
+
+        public string City { get; set; } = null!;
+
+        public string Gender { get; set; } = null!;
+
+        public string Phone { get; set; } = null!;
+
+        public string EmailAddress { get; set; } = null!;
+
+        public string? UserPhoto { get; set; }
+
+        public string UserRole { get; set; } = null!;
+
+        public string UserPassword { get; set; } = null!;
+
+        public string EncId { get; set; } = null!;
+
+
+        [DataType(DataType.Upload)]
+        public IFormFile? UserFile { get; set; } = null!;
+
+        public string EmailToken { get; set; } = null!;
+
+        //Company
+        public short CompanyId { get; set; }
+
+        public string CompanyName { get; set; } = null!;
+
+        public string FullAddress { get; set; } = null!;
+
+        public string OfficeEmail { get; set; } = null!;
+
+        public string? CompanyWebsiteUrl { get; set; }
+
+        public string RegistrationNumber { get; set; } = null!;
+
+        public string RegistrationDocument { get; set; } = null!;
+
+        public string PanNumber { get; set; } = null!;
+
+        public string PanDocument { get; set; } = null!;
+
+        public string CompanyType { get; set; } = null!;
+
+        public decimal? Rating { get; set; }
+
+        public string Position { get; set; } = null!;
+
+        public short? UserbidId { get; set; }
+
+        [DataType(DataType.Upload)]
+        public IFormFile? RegisterFile { get; set; } = null!;
+
+        [DataType(DataType.Upload)]
+        public IFormFile? PanFile { get; set; } = null!;
+
+        //Bank
+
+        public short BankId { get; set; }
+
+        public string BankName { get; set; } = null!;
+
+        public string AccountNumber { get; set; } = null!;
+
+        public string AccountType { get; set; } = null!;
+
+        public string AccountHolderName { get; set; } = null!;
+
+        public short? UserbankId { get; set; }
+
+    }
+}

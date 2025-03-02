@@ -1,0 +1,233 @@
+﻿@model IEnumerable<TenderEdit>
+@{
+    ViewData["Title"] = "Tender List";
+    Layout = "_Layout";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+
+<div class="bg-gray-50 min-h-screen p-8">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">
+            <i class="fas fa-file-contract mr-2"></i>Tender Management
+        </h1>
+        <p class="text-gray-600">Monitor and manage tender listings</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Tenders Card -->
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-blue-100 mr-4">
+                    <i class="fas fa-file-signature text-blue-500 text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-gray-500">Total Tenders</p>
+                    <h3 class="text-2xl font-bold">@ViewBag.TotalTenders</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Verified Tenders Card -->
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-100 mr-4">
+                    <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-gray-500">Verified Tenders</p>
+                    <h3 class="text-2xl font-bold">@ViewBag.VerifiedTenders</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Tenders Card -->
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-yellow-100 mr-4">
+                    <i class="fas fa-clock text-yellow-500 text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-gray-500">Pending Tenders</p>
+                    <h3 class="text-2xl font-bold">@ViewBag.PendingTenders</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Not Verified Tenders Card -->
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-red-100 mr-4">
+                    <i class="fas fa-times-circle text-red-500 text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-gray-500">Not Verified</p>
+                    <h3 class="text-2xl font-bold">@ViewBag.NotVerifiedTenders</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tender List Section -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+            <h2 class="text-xl font-semibold text-gray-800">Tender List</h2>
+
+            <!-- Filter Controls -->
+            <div class="flex flex-wrap gap-4">
+                <select id="statusFilter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5">
+                    <option value="">All Status</option>
+                    <option value="Verified">Verified</option>
+                    <option value="Not verified">Not Verified</option>
+                    <option value="Pending">Pending</option>
+                </select>
+                <input type="text" id="searchInput" placeholder="Search tenders..." class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 min-w-[200px]">
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3">Title</th>
+                        <th class="px-6 py-3">Budget</th>
+                        <th class="px-6 py-3">Issued By</th>
+                        <th class="px-6 py-3">Opening Date</th>
+                        <th class="px-6 py-3">Closing Date</th>
+                        <th class="px-6 py-3">Status</th>
+                        <th class="px-6 py-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var tender in Model)
+                    {
+                        <tr class="tender-row bg-white border-b hover:bg-gray-50"
+                            data-status="@tender.IsVerified.ToLower()">
+                            <td class="px-6 py-4">
+                                <div class="font-medium text-gray-900">@tender.Title</div>
+                                <div class="text-xs text-gray-500">@tender.TenderType</div>
+                            </td>
+                            <td class="px-6 py-4">@tender.BudgetEstimation.ToString("C0")</td>
+                            <td class="px-6 py-4">@tender.IssuedBy</td>
+                            <td class="px-6 py-4">@tender.OpeningDate.ToString("MMM dd, yyyy")</td>
+                            <td class="px-6 py-4">@tender.ClosingDate.ToString("MMM dd, yyyy")</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold
+                                    @(tender.IsVerified == "Verified" ? "bg-green-100 text-green-800" :
+                                        tender.IsVerified == "Pending" ? "bg-yellow-100 text-yellow-800" :
+                                        "bg-red-100 text-red-800")">
+                                    @tender.IsVerified
+                                </span>
+
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex gap-2">
+
+
+                                    <a asp-action="AdminTenderDetails" asp-controller="Admin" asp-route-id="@tender.EncId" class="btn text-gray-600 hover:text-gray-900" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+
+                                    <a href="javascript:void(0);" class="btn text-green-600 hover:text-green-900 verify-btn"
+                                       data-id="@tender.TenderId" data-status="Verified" title="Verify">
+                                        <i class="fas fa-check-circle"></i>
+                                    </a>
+
+                                    <a href="javascript:void(0);" class="btn text-green-600 hover:text-green-900 verify-btn"
+                                       data-id="@tender.TenderId" data-status="Not Verified" title="NotVerify">
+                                        <i class="fas fa-times-circle"></i>
+                                    </a>
+
+
+                                    <!-- Hidden Form for AJAX Submit -->
+                                    <form id="verifyForm_@tender.TenderId" class="hidden" method="POST" asp-action="UpdateVerifiedStatus" asp-controller="Admin">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="TenderId" value="@tender.TenderId" />
+                                        <input type="hidden" name="IsVerified" value="Verified" />
+                                        <input type="hidden" name="IsVerified" value="Not Verified" />
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.verify-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    let tenderId = this.getAttribute('data-id');
+                    let status = this.getAttribute('data-status'); // Get the current status (Verified or Not Verified)
+                    let form = document.getElementById(`verifyForm_${tenderId}`);
+                    form.querySelector('input[name="IsVerified"]').value = status; // Set the correct status in the form
+
+                    if (confirm(`Are you sure you want to mark this tender as ${status}?`)) {
+                        // Submit the hidden form via AJAX
+                        fetch(form.action, {
+                            method: form.method,
+                            body: new FormData(form),
+                            headers: {
+                                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert(`Tender ${status} successfully!`);
+                                    location.reload(); // Reload page to update status
+                                } else {
+                                    alert("Failed to update tender status.");
+                                }
+                            })
+                            .catch(error => console.error("Error:", error));
+                    }
+                });
+            });
+        });
+
+
+         document.addEventListener('DOMContentLoaded', function () {
+            const statusFilter = document.getElementById("statusFilter");
+            const searchInput = document.getElementById("searchInput");
+            const tenderRows = document.querySelectorAll(".tender-row");
+
+            // Filter by Status
+            statusFilter.addEventListener("change", function () {
+                const filterValue = statusFilter.value.toLowerCase();
+                tenderRows.forEach(row => {
+                    const tenderStatus = row.getAttribute("data-status");
+                    if (filterValue === "" || tenderStatus === filterValue) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+            });
+
+            // Search by Title or Type
+            searchInput.addEventListener("input", function () {
+                const searchText = searchInput.value.toLowerCase();
+                tenderRows.forEach(row => {
+                    const title = row.querySelector("td:nth-child(1)").textContent.toLowerCase();
+                    const type = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
+                    if (title.includes(searchText) || type.includes(searchText)) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+            });
+        });
+
+
+    </script>
+
+</div>

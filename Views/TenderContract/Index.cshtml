@@ -1,0 +1,757 @@
+﻿@model TenderApplicationViewModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tender Contract Agreement</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1a56db;
+            --border-color: #e5e7eb;
+        }
+
+        body {
+            background: #f9fafb;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+
+        .contract-container {
+            max-width: 1100px;
+            margin: 2rem auto;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 2rem;
+        }
+
+        .contract-header {
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-area {
+            margin-bottom: 1.5rem;
+        }
+
+        .logo-area img {
+            height: 80px;
+            width: auto;
+        }
+
+        .contract-number {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .contract-title {
+            color: #111827;
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin: 1rem 0;
+        }
+
+        .contract-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: #ffffff;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: #4b5563;
+            font-size: 0.875rem;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #111827;
+            padding: 0.5rem;
+            background: #f9fafb;
+            border-radius: 4px;
+        }
+
+
+
+        .signature-section {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .signature-box {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+        }
+
+        #issuerSignatureCanvas {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            cursor: crosshair;
+            background: #fff;
+        }
+
+        #contractorSignatureCanvas {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            cursor: crosshair;
+            background: #fff;
+        }
+
+        .signature-meta {
+            font-size: 0.875rem;
+            color: #6b7280;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .terms-section {
+            white-space: pre-line;
+            color: #374151;
+        }
+
+        .term-content {
+            padding-left: 2.5rem;
+        }
+
+        .term-item {
+
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+            .term-item:hover {
+                transform: translateY(-2px);
+            }
+
+        .term-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+
+
+
+
+        .parties-info {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .party-section {
+            padding: 0.5rem;
+            background: white;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 0rem;
+            white-space: normal;
+        }
+
+            .party-section strong {
+                color: #1a56db;
+            }
+
+            .party-section i {
+                font-size: 1.25rem;
+                flex-shrink: 0;
+                margin-top: 0.1rem;
+            }
+
+
+
+
+
+        .terms-container {
+            max-height: 800px;
+            overflow-y: auto;
+            padding-right: 1rem;
+            margin: 2rem auto;
+
+        }
+
+            .terms-container::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .terms-container::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 4px;
+            }
+
+            .terms-container::-webkit-scrollbar-thumb {
+                background: #888;
+                border-radius: 4px;
+            }
+
+                .terms-container::-webkit-scrollbar-thumb:hover {
+                    background: #555;
+                }
+
+
+    </style>
+</head>
+<body>
+
+
+    <div class="contract-container">
+        <!-- Contract Header -->
+        <div class="contract-header">
+            <div class="logo-area">
+                <img src="" alt="Company Logo">
+            </div>
+            <div class="contract-number">Contract Reference: TEN-2024-${@Model.Tender.TenderId}</div>
+            <h1 class="contract-title">@Model.Tender.Title</h1>
+            <span class="status-badge @Model.Application.ApplicationStatus">
+                <i class="fas fa-circle-check mr-2"></i>
+                @Model.Application.ApplicationStatus
+            </span>
+        </div>
+
+        <!-- Parties Information -->
+        <div class="contract-section">
+            <h2 class="section-title">
+                <i class="fas fa-users"></i>
+                Parties Information
+            </h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Issuing Organization</span>
+                    <span class="info-value">@Model.Tender.IssuedBy</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Publishing Authority</span>
+                    <span class="info-value">@Model.Publisher.FirstName @Model.Publisher.MiddleName @Model.Publisher.LastName</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Bidder Name</span>
+                    <span class="info-value">@Model.Bidder.FirstName @Model.Bidder.LastName</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Bidder Contact</span>
+                    <span class="info-value">@Model.Bidder.EmailAddress | @Model.Bidder.Phone</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tender Details -->
+        <div class="contract-section">
+            <h2 class="section-title">
+                <i class="fas fa-file-contract"></i>
+                Tender Details
+            </h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Issued Date</span>
+                    <span class="info-value">@Model.Tender.IssuedDate</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Closing Date</span>
+                    <span class="info-value">@Model.Tender.ClosingDate</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Budget Estimation</span>
+                    <span class="info-value">@Model.Tender.BudgetEstimation</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Project Duration</span>
+                    <span class="info-value">@Model.Tender.ProjectDuration</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Proposed Budget</span>
+                    <span class="info-value">@Model.Application.ProposedBudget</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Proposed Duration</span>
+                    <span class="info-value">@Model.Application.ProposedDuration</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="contract-section terms-section">
+            <h2 class="section-title">
+                <i class="fas fa-gavel"></i>
+                Contract Terms and Conditions
+            </h2>
+
+            <div class="parties-info p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Agreement of Parties</h3>
+                <!-- First Party -->
+                <div class="party-section mb-6">
+                    <div class="flex items-start gap-3">
+                        <i class="fas fa-building text-blue-600 mt-1"></i>
+                        <p class="text-gray-700 leading-relaxed">
+                            The first party to this agreement is <strong>@Model.Publisher.FirstName @Model.Publisher.MiddleName @Model.Publisher.LastName</strong>,
+                            a procurement officer duly registered and existing under the laws of Nepal, having its registered office at
+                            @Model.Publisher.Province Province, @Model.Publisher.District District, @Model.Publisher.City City. This tender was issued by
+                            <strong>@Model.Tender.IssuedBy</strong> on @Model.Tender.IssuedDate, who is duly authorized to enter into this
+                            contract on behalf of the First Party.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Second Party -->
+                <div class="party-section">
+                    <div class="flex items-start gap-3">
+                        <i class="fas fa-user-tie text-blue-600 mt-1"></i>
+                        <p class="text-gray-700 leading-relaxed">
+                            The second party to this agreement is <strong>@Model.Bidder.FirstName @Model.Bidder.MiddleName @Model.Bidder.LastName</strong>,
+                            representing <strong>@Model.Company.CompanyName</strong>, a company duly registered and existing under the laws of Nepal,
+                            having its registered office at @Model.Company.FullAddress. The Second Party is represented by
+                            <strong>@Model.Bidder.FirstName @Model.Bidder.MiddleName @Model.Bidder.LastName</strong> as @Model.Company.Position,
+                            who is duly authorized to enter into this contract on behalf of the Second Party.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="terms-container space-y-6">
+                <!-- Scope of Work -->
+                <div class="term-item bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                    <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
+                        <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center">1</span>
+                        Scope of Work
+                    </h3>
+                    <div class="space-y-2 pl-10">
+                        <p>The Contractor agrees to execute the work as specified in the tender document, including but not limited to:</p>
+                        <ul class="list-disc pl-5 space-y-1 text-gray-700">
+                            <li>All works specified in the technical specifications</li>
+                            <li>Implementation according to approved designs and drawings</li>
+                            <li>Quality assurance and testing as per industry standards</li>
+                            <li>Project documentation and reporting</li>
+                            <li>Compliance with all relevant regulations and standards</li>
+                        </ul>
+                        <p class="text-sm text-gray-600 mt-2">Reference: Tender Document @Model.Tender.TenderId</p>
+                    </div>
+                </div>
+
+                <!-- Contract Value -->
+                <div class="term-item bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                    <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
+                        <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center">2</span>
+                        Contract Value
+                    </h3>
+                    <div class="space-y-2 pl-10">
+                        <div class="bg-gray-50 p-3 rounded-md">
+                            <p class="font-medium">Total Contract Value: <span class="text-blue-600">@Model.Application.ProposedBudget</span></p>
+                        </div>
+                        <p class="text-gray-700">Payment Schedule:</p>
+                        <ul class="list-disc pl-5 space-y-1 text-gray-700">
+                            <li>20% - Advance Payment upon contract signing</li>
+                            <li>30% - Upon completion of 40% work</li>
+                            <li>30% - Upon completion of 80% work</li>
+                            <li>20% - Upon final completion and acceptance</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Duration -->
+                <div class="term-item bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                    <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
+                        <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center">3</span>
+                        Duration and Timeline
+                    </h3>
+                    <div class="space-y-2 pl-10">
+                        <div class="bg-gray-50 p-3 rounded-md">
+                            <p class="font-medium">Project Duration: <span class="text-blue-600">@Model.Application.ProposedDuration</span></p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <p>@User.FindFirst("Role")?.Value</p>
+
+                <div class="term-container">
+                    @if (Model.Terms != null && Model.Terms.Any())
+                    {
+                        @foreach (var term in Model.Terms)
+                        {
+                            <div class="term-item bg-white p-6 rounded-lg shadow-sm hover:shadow-md border border-gray-200">
+                                <h3 class="flex items-center gap-3 text-xl font-semibold text-gray-800 mb-4">
+                                    <span class="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center term-number">
+                                        <i class="fas fa-file-contract"></i>
+                                    </span>
+                                    Additional Terms and Conditions
+                                </h3>
+
+                                <div class="term-content">
+                                    <p class="text-gray-700 leading-relaxed">@term.TermDescription</p>
+
+                                    <div class="term-metadata grid grid-cols-2 gap-4">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fas fa-user text-blue-600"></i>
+                                            <span><strong>Created By:</strong> @term.CreatedBy</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <i class="fas fa-calendar text-blue-600"></i>
+                                            <span><strong>Created Date:</strong> @term.CreatedDate.ToString("MMMM dd, yyyy")</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="term-item bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                            <h3 class="flex items-center gap-3 text-xl font-semibold text-gray-800 mb-4">
+                                <span class="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center term-number">
+                                    <i class="fas fa-file-contract"></i>
+                                </span>
+                                Additional Terms and Conditions
+                            </h3>
+
+                            <div class="term-content">
+                                <p class="text-gray-500 italic flex items-center gap-2">
+                                    <i class="fas fa-info-circle"></i>
+                                    No terms available.
+                                </p>
+                            </div>
+                        </div>
+                    }
+
+
+
+                    @if (!(Model.Contract.SignedBySeller == true && Model.Contract.SignedByBuyer == true))
+                    {
+                        <a asp-action="AddTerm" asp-controller="TenderContract" asp-route-id="@Model.Contract.EncId"
+                           class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none">
+                            <i class="fas fa-plus"></i>
+                            Add Terms
+                        </a>
+                    }
+
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="container mx-auto p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Issuer Signature Section -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    @if (Model?.Contract?.SignedBySeller == true)
+                    {
+                        <div class="text-center">
+                            <div class="mb-4">
+                                <i class="fas fa-file-signature text-2xl text-blue-600"></i>
+                                <h3 class="text-xl font-bold text-gray-900 mt-2">Issuing Authority</h3>
+                            </div>
+                            <img src="~/uploads/signatures/@Model.Contract.SellerSignature"
+                                 alt="Seller Signature"
+                                 class="mx-auto border rounded-lg p-2 mb-4 max-w-[300px]" />
+                            <div class="space-y-2 text-gray-600">
+                                <p class="font-semibold">@Model.Publisher.FirstName @Model.Publisher.LastName</p>
+                                <p>@Model.Company.CompanyName</p>
+                                <p>Date: <span id="issuerDate" class="font-medium"></span></p>
+                            </div>
+                        </div>
+                    }
+                    else if (User.FindFirst("Role")?.Value == "Publisher")
+                    {
+                        <div class="text-center">
+                            <div class="mb-4">
+                                <i class="fas fa-pen-fancy text-2xl text-blue-600"></i>
+                                <h3 class="text-xl font-bold text-gray-900 mt-2">Issuing Authority</h3>
+                            </div>
+                            <canvas id="issuerSignatureCanvas"
+                                    class="mx-auto border-2 border-gray-200 rounded-lg mb-4"
+                                    width="300"
+                                    height="150"></canvas>
+                            <div class="flex justify-center gap-4 mb-4">
+                                <button onclick="clearSignature('issuer')"
+                                        class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                                    <i class="fas fa-eraser mr-2"></i> Clear
+                                </button>
+                                <button onclick="saveSignature('seller')"
+                                        class="flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+                                    <i class="fas fa-save mr-2"></i> Save
+                                </button>
+                            </div>
+                            <div class="space-y-2 text-gray-600">
+                                <p class="font-semibold">@Model.Publisher.FirstName @Model.Publisher.LastName</p>
+                                <p>@Model.Company.CompanyName</p>
+                                <p>Date: <span id="issuerDate" class="font-medium"></span></p>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Contractor Signature Section -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    @if (Model?.Contract?.SignedByBuyer == true)
+                    {
+                        <div class="text-center">
+                            <div class="mb-4">
+                                <i class="fas fa-file-signature text-2xl text-green-600"></i>
+                                <h3 class="text-xl font-bold text-gray-900 mt-2">Contractor</h3>
+                            </div>
+                            <img src="~/uploads/signatures/@Model.Contract.BuyerSignature"
+                                 alt="Buyer Signature"
+                                 class="mx-auto border rounded-lg p-2 mb-4 max-w-[300px]" />
+                            <div class="space-y-2 text-gray-600">
+                                <p class="font-semibold">@Model.Bidder.FirstName @Model.Bidder.MiddleName @Model.Bidder.LastName</p>
+                                <p>Date: <span id="contractorDate" class="font-medium"></span></p>
+                            </div>
+                        </div>
+                    }
+                    else if (User.FindFirst("Role")?.Value == "Bidder")
+                    {
+                        <div class="text-center">
+                            <div class="mb-4">
+                                <i class="fas fa-pen-fancy text-2xl text-green-600"></i>
+                                <h3 class="text-xl font-bold text-gray-900 mt-2">Contractor</h3>
+                            </div>
+                            <canvas id="contractorSignatureCanvas"
+                                    class="mx-auto border-2 border-gray-200 rounded-lg mb-4"
+                                    width="300"
+                                    height="150"></canvas>
+                            <div class="flex justify-center gap-4 mb-4">
+                                <button onclick="clearSignature('contractor')"
+                                        class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                                    <i class="fas fa-eraser mr-2"></i> Clear
+                                </button>
+                                <button onclick="saveSignature('buyer')"
+                                        class="flex items-center px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">
+                                    <i class="fas fa-save mr-2"></i> Save
+                                </button>
+                            </div>
+                            <div class="space-y-2 text-gray-600">
+                                <p class="font-semibold">@Model.Bidder.FirstName @Model.Bidder.MiddleName @Model.Bidder.LastName</p>
+                                <p>Date: <span id="contractorDate" class="font-medium"></span></p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <input type="hidden" id="contractId" value="@Model.Contract.ContractId" />
+        </div>
+
+
+
+
+
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a asp-action="DownloadPdf" asp-controller="PDF" asp-route-id="@Model.Application.EncId" class=" px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                <i class="fas fa-download mr-2"></i>Download PDF
+            </a>
+            @if (User.FindFirst("Role")?.Value == "Bidder")
+            {
+                <a asp-action="UserMessage" asp-controller="Chat" asp-route-receiverId="@Model.Publisher.UserId" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-paper-plane mr-2"></i>Send Message
+                </a>
+            }
+            else if (User.FindFirst("Role")?.Value == "Publisher")
+            {
+                <a asp-action="UserMessage" asp-controller="Chat" asp-route-receiverId="@Model.Bidder.UserId" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-paper-plane mr-2"></i>Send Message
+                </a>
+
+            }
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script>
+
+        // Wait for the DOM to be fully loaded
+        document.addEventListener("DOMContentLoaded", function () {
+            // Check if the canvas exists for Issuer and Contractor
+            if (document.getElementById('issuerSignatureCanvas')) {
+                initializeSignatureCanvas('issuerSignatureCanvas');
+            }
+
+            if (document.getElementById('contractorSignatureCanvas')) {
+                initializeSignatureCanvas('contractorSignatureCanvas');
+            }
+        });
+
+
+        // Set up signature pad for multiple canvases
+        function initializeSignatureCanvas(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;  // Make sure canvas exists before continuing
+
+            const ctx = canvas.getContext('2d');
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+
+            // Set up signature pad
+            ctx.strokeStyle = '#1f2937';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+
+            // Drawing event listeners
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+
+            // Touch events for mobile
+            canvas.addEventListener('touchstart', startDrawingTouch);
+            canvas.addEventListener('touchmove', drawTouch);
+            canvas.addEventListener('touchend', stopDrawing);
+
+            function startDrawing(e) {
+                isDrawing = true;
+                [lastX, lastY] = [e.offsetX, e.offsetY];
+            }
+
+            function startDrawingTouch(e) {
+                isDrawing = true;
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                [lastX, lastY] = [touch.clientX - rect.left, touch.clientY - rect.top];
+                e.preventDefault();
+            }
+
+            function draw(e) {
+                if (!isDrawing) return;
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.stroke();
+                [lastX, lastY] = [e.offsetX, e.offsetY];
+            }
+
+            function drawTouch(e) {
+                if (!isDrawing) return;
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+                ctx.stroke();
+                [lastX, lastY] = [touch.clientX - rect.left, touch.clientY - rect.top];
+                e.preventDefault();
+            }
+
+            function stopDrawing() {
+                isDrawing = false;
+            }
+
+            return ctx;
+        }
+
+        // Clear signature for specific canvas
+        function clearSignature(type) {
+            let canvasId = '';
+            if (type === 'issuer') {
+                canvasId = 'issuerSignatureCanvas';
+            } else if (type === 'contractor') {
+                canvasId = 'contractorSignatureCanvas';
+            }
+
+            const canvas = document.getElementById(canvasId);
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+
+
+
+        // Set current date dynamically
+        const currentDate = new Date().toLocaleDateString();
+        document.getElementById('issuerDate').textContent = currentDate;
+        document.getElementById('contractorDate').textContent = currentDate;
+
+
+        function saveSignature(role) {
+            // Get the contractId from the hidden input
+            let contractId = document.getElementById('contractId').value;
+
+            // Choose the correct canvas based on the role
+            let canvas = document.getElementById(role === "seller" ? "issuerSignatureCanvas" : "contractorSignatureCanvas");
+            let imageData = canvas.toDataURL("image/png"); // Convert canvas to Base64 PNG
+
+            // Send the data to the backend
+            fetch('/TenderContract/SaveSign', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    contractId: contractId,  // Pass ContractId
+                    signatureData: imageData,
+                    role: role
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+    </script>
+</body>
+</html>
+
+
+

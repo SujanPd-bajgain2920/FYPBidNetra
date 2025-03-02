@@ -1,0 +1,123 @@
+﻿@model TenderApplicationViewModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Term - Tender Management</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-custom {
+            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+        }
+
+        .contract-card {
+            transition: transform 0.3s ease;
+        }
+
+            .contract-card:hover {
+                transform: translateY(-5px);
+            }
+
+        .status-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen p-6">
+        <!-- Header -->
+        <div class="mb-8 text-center">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">
+                <i class="fas fa-file-contract mr-2"></i>Contract Terms Management
+            </h1>
+            <p class="text-gray-600">Add and manage tender terms efficiently</p>
+        </div>
+
+        <!-- Contract Details Card -->
+        <div class="max-w-4xl mx-auto mb-8">
+            <div class="bg-white rounded-lg shadow-lg p-6 contract-card">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+                            <i class="fas fa-info-circle mr-2"></i>Contract Details
+                        </h2>
+                        <div class="flex items-center">
+                            <span class="text-gray-600 w-32">Contract ID:</span>
+                            <span class="font-medium">@Model.Contract.ContractId</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-gray-600 w-32">Tender ID:</span>
+                            <span class="font-medium">@Model.Contract.ConTenderId</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-gray-600 w-32">Seller ID:</span>
+                            <span class="font-medium">@Model.Contract.SellerId</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-gray-600 w-32">Buyer ID:</span>
+                            <span class="font-medium">@Model.Contract.BuyerId</span>
+                        </div>
+
+                        <div class="flex items-center">
+                            <span class="text-gray-600 w-32">Buyer ID:</span>
+                            <span class="font-medium">@Model.Application.ApplicationId</span>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+                            <i class="fas fa-signature mr-2"></i>Signature Status
+                        </h2>
+                        <div class="flex items-center">
+                            <span class="text-gray-600 w-32">Seller Signed:</span>
+                            <span class="@(Model.Contract.SignedBySeller ? "text-green-600" : "text-red-600")">
+                                <i class="fas @(Model.Contract.SignedBySeller ? "fa-check-circle" : "fa-times-circle") mr-2"></i>
+                                @(Model.Contract.SignedBySeller ? "Signed" : "Pending")
+                            </span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-gray-600 w-32">Buyer Signed:</span>
+                            <span class="@(Model.Contract.SignedByBuyer ? "text-green-600" : "text-red-600")">
+                                <i class="fas @(Model.Contract.SignedByBuyer ? "fa-check-circle" : "fa-times-circle") mr-2"></i>
+                                @(Model.Contract.SignedByBuyer ? "Signed" : "Pending")
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Term Form -->
+        <div class="max-w-4xl mx-auto">
+            <form asp-action="AddTerm" asp-controller="TenderContract" method="post"  class="bg-white rounded-lg shadow-lg p-6">
+                <input type="hidden" name="id" value="@Model.Contract.EncId" />
+                <input type="hidden" name="id" value="@Model.Application.ApplicationId" />
+
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">
+                    <i class="fas fa-plus-circle mr-2"></i>Add New Term
+                </h2>
+
+
+                <div class="mb-6">
+                    <label class="block mb-2 text-sm font-medium text-gray-900">Term Description</label>
+                    <textarea name="termDescription" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none">
+                        <i class="fas fa-save mr-2"></i>Save Term
+                    </button>
+                    <button type="button" class="text-gray-500 bg-gray-100 hover:bg-gray-200 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+</body>
+</html>

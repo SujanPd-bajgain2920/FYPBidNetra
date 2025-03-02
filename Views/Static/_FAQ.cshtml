@@ -1,0 +1,169 @@
+﻿<style>
+    .accordion-button {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background-color: #f3f4f6;
+        border: none;
+        width: 100%;
+        text-align: left;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+        .accordion-button:hover {
+            background-color: #e5e7eb;
+        }
+
+    .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+        padding: 0 1.5rem;
+        opacity: 0;
+    }
+
+        .accordion-content.show {
+            max-height: 500px;
+            opacity: 1;
+        }
+
+    .accordion-button svg {
+        width: 40px;
+        height: 50px;
+        fill: red;
+        transition: transform 0.3s ease; /* Smooth rotation */
+    }
+
+    .accordion-button.active svg {
+        transform: rotate(45deg);
+    }
+
+    .faq {
+        margin-top: 10px;
+        background-color: rgba(255, 255, 255, 0.06);
+        border-top: none;
+    }
+
+    .faq-header {
+        display: flex;
+        align-items: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+        .faq-header svg {
+            margin-right: 0.5rem;
+            fill: red;
+        }
+</style>
+
+<div class="faq p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700" style="max-width: auto;">
+    <div class="faq-header">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-8 h-8">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-13c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm-1 6h2v6h-2z" />
+        </svg>
+
+        Frequently Asked Questions
+    </div>
+    <div class="grid grid-cols-2 gap-4 p-6 rounded-lg max-w-screen-lg mx-auto">
+        <!-- FAQ Item 1 -->
+        <div class="accordion-item">
+            <button class="accordion-button" id="faq1" onclick="toggleAccordion(1)">
+                <span>How does the blood donation process work?</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6 fill-red-500">
+                    <path d="M12 2c0.55 0 1 0.45 1 1v8h8c0.55 0 1 0.45 1 1s-0.45 1-1 1h-8v8c0 0.55-0.45 1-1 1s-1-0.45-1-1v-8H3c-0.55 0-1-0.45-1-1s0.45-1 1-1h8V3c0-0.55 0.45-1 1-1z" />
+                </svg>
+            </button>
+            <div id="answer1" class="accordion-content">
+                <ul class="text-sm">
+                    <li>You will complete donor registration...</li>
+                    <li>You will have your temperature checked...</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- FAQ Item 2 -->
+        <div class="accordion-item">
+            <button class="accordion-button" id="faq2" onclick="toggleAccordion(2)">
+                <span>How long can blood be kept after donation?</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6 fill-red-500">
+                    <path d="M12 2c0.55 0 1 0.45 1 1v8h8c0.55 0 1 0.45 1 1s-0.45 1-1 1h-8v8c0 0.55-0.45 1-1 1s-1-0.45-1-1v-8H3c-0.55 0-1-0.45-1-1s0.45-1 1-1h8V3c0-0.55 0.45-1 1-1z" />
+                </svg>
+            </button>
+            <div id="answer2" class="accordion-content">
+                <p class="text-sm">When test results are received...</p>
+            </div>
+        </div>
+
+        <!-- FAQ Item 3 -->
+        <div class="accordion-item">
+            <button class="accordion-button" id="faq3" onclick="toggleAccordion(3)">
+                <span>Can I eat before donating blood?</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6 fill-red-500">
+                    <path d="M12 2c0.55 0 1 0.45 1 1v8h8c0.55 0 1 0.45 1 1s-0.45 1-1 1h-8v8c0 0.55-0.45 1-1 1s-1-0.45-1-1v-8H3c-0.55 0-1-0.45-1-1s0.45-1 1-1h8V3c0-0.55 0.45-1 1-1z" />
+                </svg>
+            </button>
+            <div id="answer3" class="accordion-content">
+                <p class="text-sm">Eating regularly before donating...</p>
+            </div>
+        </div>
+
+        <!-- FAQ Item 4 -->
+        <div class="accordion-item">
+            <button class="accordion-button" id="faq4" onclick="toggleAccordion(4)">
+                <span>How many times can you donate blood?</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6 fill-red-500">
+                    <path d="M12 2c0.55 0 1 0.45 1 1v8h8c0.55 0 1 0.45 1 1s-0.45 1-1 1h-8v8c0 0.55-0.45 1-1 1s-1-0.45-1-1v-8H3c-0.55 0-1-0.45-1-1s0.45-1 1-1h8V3c0-0.55 0.45-1 1-1z" />
+                </svg>
+            </button>
+            <div id="answer4" class="accordion-content">
+                <p class="text-sm">You must wait at least eight weeks...</p>
+            </div>
+        </div>
+
+        <!-- FAQ Item 5 -->
+        <div class="accordion-item">
+            <button class="accordion-button" id="faq5" onclick="toggleAccordion(5)">
+                <span>What types of tests are performed on donated blood?</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6 fill-red-500">
+                    <path d="M12 2c0.55 0 1 0.45 1 1v8h8c0.55 0 1 0.45 1 1s-0.45 1-1 1h-8v8c0 0.55-0.45 1-1 1s-1-0.45-1-1v-8H3c-0.55 0-1-0.45-1-1s0.45-1 1-1h8V3c0-0.55 0.45-1 1-1z" />
+                </svg>
+            </button>
+            <div id="answer5" class="accordion-content">
+                <ul class="text-sm">
+                    <li>Hepatitis B surface antigen...</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- FAQ Item 6 -->
+        <div class="accordion-item">
+            <button class="accordion-button" id="faq6" onclick="toggleAccordion(6)">
+                <span>Can diabetic donate blood?</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6 fill-red-500">
+                    <path d="M12 2c0.55 0 1 0.45 1 1v8h8c0.55 0 1 0.45 1 1s-0.45 1-1 1h-8v8c0 0.55-0.45 1-1 1s-1-0.45-1-1v-8H3c-0.55 0-1-0.45-1-1s0.45-1 1-1h8V3c0-0.55 0.45-1 1-1z" />
+                </svg>
+            </button>
+            <div id="answer6" class="accordion-content">
+                <p class="text-sm">A diabetic person may donate...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleAccordion(index) {
+        const content = document.getElementById('answer' + index);
+        const button = document.getElementById('faq' + index);
+        const isOpen = content.classList.contains('show');
+
+        // Toggle the visibility of the content
+        content.classList.toggle('show', !isOpen);
+
+        // Toggle the active class on the button
+        button.classList.toggle('active', !isOpen);
+    }
+</script>

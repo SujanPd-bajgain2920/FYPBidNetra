@@ -1,0 +1,34 @@
+﻿
+namespace FYPBidNetra.Models
+{
+    public class CompanyEdit
+    {
+        public short CompanyId { get; set; }
+
+        public string CompanyName { get; set; } = null!;
+
+        public string FullAddress { get; set; } = null!;
+
+        public string OfficeEmail { get; set; } = null!;
+
+        public string? CompanyWebsiteUrl { get; set; }
+
+        public string RegistrationNumber { get; set; } = null!;
+
+        public string RegistrationDocument { get; set; } = null!;
+
+        public string PanNumber { get; set; } = null!;
+
+        public string PanDocument { get; set; } = null!;
+
+        public string CompanyType { get; set; } = null!;
+
+        public string Position { get; set; } = null!;
+
+       
+
+        public short? UserbidId { get; set; }
+
+       
+    }
+}

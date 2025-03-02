@@ -1,0 +1,233 @@
+﻿@model IEnumerable<Chat>
+@{
+    ViewData["Title"] = "Chat";
+}
+
+
+<style>
+    body {
+        background-color: #f0f2f5;
+    }
+
+    .chat-container {
+        height: calc(100vh - 120px);
+        max-width: 1000px;
+    }
+
+    .chat-header {
+        border-bottom: 1px solid #e4e6eb;
+        height: 65px;
+    }
+
+    .message-area {
+        height: calc(100% - 130px);
+        overflow-y: auto;
+    }
+
+    .message-bubble {
+        max-width: 80%;
+        word-wrap: break-word;
+    }
+
+    .sender-bubble {
+        background-color: #0084ff;
+        color: white;
+        border-radius: 18px;
+    }
+
+    .receiver-bubble {
+        background-color: #e4e6eb;
+        color: #050505;
+        border-radius: 18px;
+    }
+
+    .message-input {
+        border-top: 1px solid #e4e6eb;
+    }
+
+    .online-indicator {
+        width: 12px;
+        height: 12px;
+        background-color: #31a24c;
+        border-radius: 50%;
+        border: 2px solid white;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+    }
+
+    .message-time {
+        font-size: 0.7rem;
+        margin-top: 2px;
+    }
+
+    /* Custom scrollbar */
+    .message-area::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .message-area::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    .message-area::-webkit-scrollbar-thumb {
+        background: #bcc0c4;
+        border-radius: 10px;
+    }
+
+        .message-area::-webkit-scrollbar-thumb:hover {
+            background: #888;
+        }
+
+    .attachment-button:hover {
+        background-color: #f0f2f5;
+        border-radius: 50%;
+    }
+</style>
+
+<div class="chat-container mx-auto bg-white rounded-lg shadow-md overflow-hidden mt-4">
+    <!-- Chat header with user info -->
+    <div class="chat-header flex items-center p-3">
+        <div class="relative">
+            <img src="~/UserImage/@ViewBag.ProfilePic" alt="User Profile" class="w-10 h-10 rounded-full object-cover">
+
+        </div>
+        <div class="ml-3 flex-grow">
+            <h2 class="text-lg font-semibold">@ViewBag.ReceiverName</h2>
+
+        </div>
+    </div>
+
+    <!-- Messages area -->
+    <div id="messagesList" class="message-area p-4">
+        @{
+            DateTime? lastDate = null;
+            foreach (var message in Model)
+            {
+                // Display date divider if date changes
+                if (lastDate == null || lastDate.Value.Date != message.CreatedDate.Date)
+                {
+                    <div class="flex justify-center my-4">
+                        <span class="bg-gray-200 text-gray-600 text-xs px-2 py-1 rounded-full">
+                            @(message.CreatedDate.Date == DateTime.Today.Date ? "Today" :
+                            message.CreatedDate.Date == DateTime.Today.AddDays(-1).Date ? "Yesterday" :
+                            message.CreatedDate.ToString("MMMM d, yyyy"))
+                        </span>
+                    </div>
+                    lastDate = message.CreatedDate;
+                }
+
+                bool isSender = message.SenderId == ViewBag.CurrentUserId;
+
+                <div class="flex @(isSender ? "justify-end" : "justify-start") mb-4">
+                    @if (!isSender)
+                    {
+                        <div class="mr-2">
+                            <img src="~/UserImage/@ViewBag.ProfilePic" alt="User" class="w-8 h-8 rounded-full">
+                        </div>
+                    }
+                    <div>
+                        <div class="message-bubble p-3 @(isSender ? "sender-bubble" : "receiver-bubble")">
+                            @message.MessageText
+                        </div>
+                        <div class="@(isSender ? "text-right" : "text-left")">
+                            <span class="text-gray-500 message-time">@message.CreatedDate.ToString("h:mm tt")</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <!-- Message input area -->
+    <div class="message-input p-3">
+        <div class="flex items-center">
+            <button class="attachment-button p-2 mr-2">
+                <i class="fas fa-plus-circle text-blue-500 text-xl"></i>
+            </button>
+            <div class="flex-grow relative">
+                <input type="text" id="messageInput" class="w-full py-2 px-4 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300" placeholder="Aa">
+                <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <i class="far fa-smile text-gray-400"></i>
+                </div>
+            </div>
+            <button class="attachment-button p-2 ml-2">
+                <i class="fas fa-microphone text-gray-500 text-lg"></i>
+            </button>
+            <button id="sendButton" class="ml-2 text-blue-500 hover:text-blue-700" onclick="sendMessage()">
+                <i class="fas fa-paper-plane text-xl"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="receiverId" value="@ViewBag.ReceiverId" />
+<input type="hidden" id="currentUserId" value="@ViewBag.CurrentUserId" />
+
+
+
+@section Scripts {
+    <script>
+        const connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
+
+        connection.on("ReceiveMessage", function (senderId, message) {
+            console.log(`Message received from ${senderId}: ${message}`); // Debug log for incoming messages
+
+            // Create a new message element
+            var li = document.createElement("div");
+            li.classList.add("message");
+            li.innerHTML = `<div class="flex ${senderId == document.getElementById("currentUserId").value ? "justify-end" : "justify-start"}">
+                                                        <span class="inline-block rounded-lg p-2 ${senderId == document.getElementById("currentUserId").value ? "bg-blue-500 text-white" : "bg-gray-200 text-black"}">${message}</span>
+                                            </div>`;
+
+            // Append the new message to the messages list
+            document.getElementById("messagesList").appendChild(li);
+
+            // Scroll to the bottom of the messages list
+            var messagesList = document.getElementById("messagesList");
+            messagesList.scrollTop = messagesList.scrollHeight;
+        });
+
+        connection.start().then(() => {
+            console.log("Connected to SignalR hub.");
+        }).catch(err => console.error("Connection error: ", err));
+
+        function checkConnectionState() {
+            const state = connection.state;
+            console.log("Current connection state:", state); // Debug log for connection state
+            return state;
+        }
+
+        function sendMessage() {
+            var message = document.getElementById("messageInput").value;
+            var receiverId = document.getElementById("receiverId").value;
+            var currentUserId = document.getElementById("currentUserId").value;
+
+            if (message.trim() === "") return;
+
+            // Append sent message to the message list
+            var li = document.createElement("div");
+            li.classList.add("message");
+            li.innerHTML = `<div class="flex justify-end">
+                                                <span class="inline-block rounded-lg p-2 bg-blue-500 text-white">${message}</span>
+                                            </div>`;
+            document.getElementById("messagesList").appendChild(li);
+
+            connection.invoke("SendMessage", parseInt(currentUserId), parseInt(receiverId), message)
+                .then(() => {
+                    console.log("Message sent successfully.");
+                    checkConnectionState(); // Check connection state after sending message
+                })
+                .catch(err => {
+                    console.error("Error sending message: ", err);
+                    alert("Error sending message: " + err.message + "\nCheck server logs for details.");
+                });
+
+            document.getElementById("messageInput").value = ''; // Clear input
+
+            // Scroll to the bottom of the messages list
+            var messagesList = document.getElementById("messagesList");
+            messagesList.scrollTop = messagesList.scrollHeight;
+        }
+    </script>
+}

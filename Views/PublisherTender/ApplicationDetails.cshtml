@@ -1,0 +1,578 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Details</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .status-won {
+            background-color: #DEF7EC;
+            color: #03543F;
+            border: 1px solid #31C48D;
+        }
+
+        .status-lost {
+            background-color: #FDE8E8;
+            color: #9B1C1C;
+            border: 1px solid #F98080;
+        }
+
+        .status-pending {
+            background-color: #FEF3C7;
+            color: #92400E;
+            border: 1px solid #FBBF24;
+        }
+
+        .section-card {
+            transition: all 0.3s ease;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+            .section-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 12px -1px rgba(0, 0, 0, 0.1);
+            }
+
+        .info-label {
+            color: #6B7280;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            color: #111827;
+            font-weight: 500;
+        }
+
+        .award-btn {
+            transition: all 0.3s ease;
+        }
+
+            .award-btn:hover {
+                transform: scale(1.05);
+            }
+
+        .tender-header {
+            background: linear-gradient(to right, #1E40AF, #3B82F6);
+            color: white;
+        }
+
+        .styled-position {
+            font-family: 'Roboto', sans-serif; 
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #2c3e50;
+            background-color: #ecf0f1; 
+            padding: 5px 10px; 
+            border-radius: 5px; 
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1); 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+        }
+
+            .styled-position:hover {
+                color: #3498db; 
+                background-color: #f4f6f7; 
+                cursor: pointer; 
+            }
+
+        
+
+        .document-preview {
+            width: 100%;
+            height: 80vh;
+            border: none;
+        }
+
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen py-8">
+
+    <div class="container mx-auto px-4">
+        <div class="container mx-auto px-4 py-4">
+            <button onclick="history.back()" class="flex items-center text-blue-600 hover:text-blue-800 font-semibold">
+                <i class="fas fa-arrow-left mr-2"></i> Back
+            </button>
+        </div>
+        <!-- Top Status Bar -->
+        <div class="section-card mb-8">
+            <div class="tender-header p-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h1 class="text-2xl font-bold mb-2">@Model.Tender.Title</h1>
+                        <p class="text-blue-100">Application ID: @Model.Application.ApplicationId</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="status-badge @(Model.Application.ApplicationStatus.ToLower() == "won" ? "status-won" :
+                                              Model.Application.ApplicationStatus.ToLower() == "lost" ? "status-lost" :
+                                              "status-pending")">
+                            @Model.Application.ApplicationStatus
+                        </span>
+                        @if (Model.Application.ApplicationStatus == "Pending")
+                        {
+                           <!-- Award Tender Dropdown -->
+                                <div class="relative inline-block">
+                                    <button class="btn text-blue-600 hover:text-blue-900 award-dropdown-btn" title="Award Tender">
+                                        <i class="fas fa-trophy"></i>
+                                    </button>
+                                    <div class="hidden absolute bg-white shadow-md border rounded-md p-2 mt-2 w-32 award-dropdown">
+                                        <button class="block w-full text-left px-3 py-1 text-green-600 hover:bg-gray-200 award-btn" data-id="@Model.Application.ApplicationId" data-status="Won">🏆 Won</button>
+                                                            <button class="block w-full text-left px-3 py-1 text-red-600 hover:bg-gray-200 award-btn" data-id="@Model.Application.ApplicationId" data-status="Lost">❌ Lost</button>
+                                    </div>
+                                </div>
+
+                                <!-- Hidden Form for AJAX Submission -->
+                                <form id="awardForm_@Model.Application.ApplicationId" class="hidden" method="POST" asp-action="AwardTender" asp-controller="PublisherTender">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="ApplicationId" value="@Model.Application.ApplicationId" />
+                                    <input type="hidden" name="ApplicationStatus" />
+                                </form>
+  
+                        }
+                    </div>
+                   
+                </div>
+               
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <a asp-action="Index" asp-controller="TenderContract" asp-route-id="@Model.Application.EncId"
+                   class="apply-button">
+                    <i class="fas fa-paper-plane mr-2"></i>
+                    Contract Now
+                </a>
+                <div>
+                    <p class="info-label">Issued By</p>
+                    <p class="info-value"><i class="fas fa-building mr-2 text-blue-600"></i>@Model.Tender.IssuedBy</p>
+                </div>
+                <div>
+                    <p class="info-label">Budget Estimation</p>
+                    <p class="info-value"><i class="fas fa-money-bill mr-2 text-green-600"></i>@Model.Tender.BudgetEstimation.ToString("C")</p>
+                </div>
+                <div>
+                    <p class="info-label">Project Duration</p>
+                    <p class="info-value"><i class="fas fa-clock mr-2 text-blue-600"></i>@Model.Tender.ProjectDuration</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Company Profile -->
+            <div class="section-card p-6">
+                <!-- Header Section -->
+                <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
+                    <div class="flex items-center space-x-4">
+                        <div class="bg-blue-100 p-3 rounded-lg">
+                            <i class="fas fa-building text-2xl text-blue-600"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-semibold text-gray-900">Company Profile</h2>
+                            <p class="text-gray-500 text-sm mt-1">Business Registration Details</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="px-4 py-2 bg-blue-100 text-blue-800 rounded-full font-medium flex items-center">
+                            <i class="fas fa-briefcase mr-2"></i>
+                            @Model.Company.CompanyType
+                        </span>
+                        @* <span class="px-4 py-2 bg-green-100 text-green-800 rounded-full font-medium flex items-center">
+                            <i class="fas fa-star mr-2"></i>
+                            Rating: @Model.Company.Rating
+                        </span> *@
+                    </div>
+                </div>
+
+                <!-- Company Information Grid -->
+                <div class="grid grid-cols-2 gap-8">
+                    <!-- Left Column -->
+                    <div class="space-y-6">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <div class="flex items-start space-x-3">
+                                <div class="mt-1">
+                                    <i class="fas fa-building text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600 mb-1">Company Name</p>
+                                    <p class="text-lg font-semibold text-gray-900">@Model.Company.CompanyName</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <div class="flex items-start space-x-3">
+                                <div class="mt-1">
+                                    <i class="fas fa-fingerprint text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600 mb-1">Registration Number</p>
+                                    <p class="font-mono text-lg font-semibold text-gray-900">@Model.Company.RegistrationNumber</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <div class="flex items-start space-x-3">
+                                <div class="mt-1">
+                                    <i class="fas fa-map-marker-alt text-red-500"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600 mb-1">Office Address</p>
+                                    <p class="text-gray-900">@Model.Company.FullAddress</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <div class="flex items-start space-x-3">
+                                <div class="mt-1">
+                                    <i class="fas fa-envelope text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600 mb-1">Email Address</p>
+                                    <a href="mailto:@Model.Company.OfficeEmail"
+                                       class="text-blue-600 hover:text-blue-800 transition-colors">
+                                        @Model.Company.OfficeEmail
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <div class="flex items-start space-x-3">
+                                <div class="mt-1">
+                                    <i class="fas fa-globe text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600 mb-1">Website</p>
+                                    <a href="@Model.Company.CompanyWebsiteUrl"
+                                       target="_blank"
+                                       class="text-blue-600 hover:text-blue-800 transition-colors flex items-center">
+                                        @Model.Company.CompanyWebsiteUrl
+                                        <i class="fas fa-external-link-alt text-xs ml-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <div class="flex items-start space-x-3">
+                                <div class="mt-1">
+                                    <i class="fas fa-file-write text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600 mb-1">Position</p>
+                                    <p class="text-gray-900">@Model.Company.Position</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                
+            </div>
+
+            <!-- Application Details Section -->
+            <div class="section-card p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">
+                    <i class="fas fa-file-alt mr-2 text-blue-600"></i>Application Details
+                </h2>
+
+                <div class="space-y-6">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="info-label">Proposed Budget</div>
+                        <div class="info-value text-green-600 text-2xl font-bold">
+                            $@Model.Application.ProposedBudget
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="info-label">Proposed Duration</div>
+                        <div class="info-value">@Model.Application.ProposedDuration</div>
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="info-label">Application Document</div>
+                        <div class="flex gap-4 mt-2">
+                            <!-- Download Button -->
+                            <button class="action-button bg-blue-600 text-white hover:bg-blue-700" onclick="downloadDocument()">
+                                <i class="fas fa-download mr-2"></i>Download
+                            </button>
+
+                            <!-- Preview Button -->
+                            <button class="action-button bg-gray-600 text-white hover:bg-gray-700" onclick="previewDocument()">
+                                <i class="fas fa-eye mr-2"></i>Preview
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Document Preview Modal -->
+            <div id="documentPreview" tabindex="-1" aria-hidden="true"
+                 class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                <div class="relative w-full max-w-4xl max-h-full">
+                    <div class="relative bg-white rounded-lg shadow">
+                        <div class="flex items-center justify-between p-4 border-b">
+                            <h3 class="text-xl font-semibold text-gray-900">
+                                Document Preview
+                            </h3>
+                            <button type="button"
+                                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center"
+                                    onclick="closePreview()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="p-6">
+                            <iframe id="docViewer" class="document-preview" width="100%" height="600px" frameborder="0"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bank Details Section -->
+            <div class="section-card p-6">
+                <h2 class="text-2xl font-semibold text-gray-900 flex items-center gap-2 border-b pb-4">
+                    <i class="fas fa-university text-blue-600 text-3xl"></i>Bank Details
+                </h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
+                    <!-- Bank Name -->
+                    <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                        <i class="fas fa-building text-blue-600 text-xl"></i>
+                        <div>
+                            <p class="text-sm text-gray-500">Bank Name</p>
+                            <p class="text-lg font-medium text-gray-900">@Model.Bank.BankName</p>
+                        </div>
+                    </div>
+
+                    <!-- Account Holder -->
+                    <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                        <i class="fas fa-user text-green-600 text-xl"></i>
+                        <div>
+                            <p class="text-sm text-gray-500">Account Holder</p>
+                            <p class="text-lg font-medium text-gray-900">@Model.Bank.AccountHolderName</p>
+                        </div>
+                    </div>
+
+                    <!-- Account Number -->
+                    <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                        <i class="fas fa-credit-card text-indigo-600 text-xl"></i>
+                        <div>
+                            <p class="text-sm text-gray-500">Account Number</p>
+                            <p class="text-lg font-medium text-gray-900">@Model.Bank.AccountNumber</p>
+                        </div>
+                    </div>
+
+                    <!-- Account Type -->
+                    <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                        <i class="fas fa-file-invoice-dollar text-red-600 text-xl"></i>
+                        <div>
+                            <p class="text-sm text-gray-500">Account Type</p>
+                            <p class="text-lg font-medium text-gray-900">@Model.Bank.AccountType</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bidder Details -->
+            <div class="section-card p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">
+                    <i class="fas fa-user mr-2 text-blue-600"></i>Bidder Details
+                </h2>
+                <div class="flex gap-6">
+                    <!-- Profile Image Section -->
+                    <div class="flex-shrink-0">
+                        <div class="relative w-48 h-48 rounded-lg overflow-hidden shadow-lg border-4 border-white">
+                            @if (string.IsNullOrEmpty(Model.User.UserPhoto))
+                            {
+                                <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                                    <i class="fas fa-user-circle text-gray-400 text-6xl"></i>
+                                </div>
+                            }
+                            else
+                            {
+                                <img src="~/UserImage/@Model.User.UserPhoto"
+                                     alt="@Model.User.FirstName's photo"
+                                     class="w-full h-full object-cover"
+                                     onerror="this.onerror=null; this.src='path/to/default-image.jpg';">
+                            }
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-2">
+                                <span class="text-white text-sm font-medium">
+                                    <i class="fas fa-circle text-green-400 text-xs mr-1"></i>Bidder
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Details Section -->
+                    <div class="flex-grow grid grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div>
+                                <p class="info-label">Name</p>
+                                <p class="info-value text-lg">
+                                    @Model.User.FirstName @Model.User.MiddleName @Model.User.LastName
+                                    <span class="styled-position">@Model.Company.Position</span>
+                                </p>
+                            </div>
+                            <div>
+                                <p class="info-label">Contact</p>
+                                <p class="info-value">
+                                    <i class="fas fa-envelope mr-2 text-blue-600"></i>@Model.User.EmailAddress<br>
+                                    <i class="fas fa-phone mr-2 text-blue-600"></i>@Model.User.Phone
+                                </p>
+                            </div>
+                            <div>
+                                <p class="info-label">Role</p>
+                                <p class="info-value">
+                                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                                        @Model.User.UserRole
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <p class="info-label">Location</p>
+                                <div class="info-value">
+                                    <p class="flex items-center">
+                                        <i class="fas fa-map-marker-alt mr-2 text-red-500"></i>
+                                        @Model.User.Province
+                                    </p>
+                                    <p class="ml-5">@Model.User.District, @Model.User.City</p>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="info-label">Verification Status</p>
+                                <p class="info-value">
+                                    <span class="inline-flex items-center">
+                                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                        Verified Account
+                                    </span>
+                                </p>
+                            </div>
+                           
+                        </div>
+                        <a asp-action="UserMessage" asp-controller="Chat" asp-route-receiverId="@Model.User.UserId" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-paper-plane mr-2"></i>Send Message
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Toggle dropdown visibility
+            document.querySelectorAll('.award-dropdown-btn').forEach(button => {
+                button.addEventListener('click', function (event) {
+                    event.stopPropagation();
+                    let dropdown = this.nextElementSibling;
+                    dropdown.classList.toggle('hidden');
+                });
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function (event) {
+                document.querySelectorAll('.award-dropdown').forEach(dropdown => {
+                    dropdown.classList.add('hidden');
+                });
+            });
+
+            // Award Tender Status Update
+            document.querySelectorAll('.award-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    let applicationId = this.getAttribute('data-id');
+                    let applicationStatus = this.getAttribute('data-status');
+                    let form = document.getElementById(`awardForm_${applicationId}`);
+                    let formData = new FormData(form);
+                    formData.set('ApplicationStatus', applicationStatus);
+
+                    if (confirm(`Are you sure you want to mark this tender as '${applicationStatus}'?`)) {
+                        fetch(form.action, {
+                            method: form.method,
+                            body: formData,
+                            headers: {
+                                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                   let alertMessage = `Tender marked as '${applicationStatus}' successfully!`;
+                    
+                    // If the status is "Won", show the contract message
+                    if (applicationStatus === "Won") {
+                        alertMessage += "\nContract has been generated.";
+                    }
+
+                    alert(alertMessage); // Show the combined message
+                     location.reload();
+                                   
+                                    
+                                } else {
+                                    alert("Failed to update award status: " + data.message);
+                                }
+                            })
+                            .catch(error => console.error("Error:", error));
+                    }
+                });
+            });
+        });
+
+
+        function downloadDocument() {
+            const filePath = '@Url.Content("~/ProposalTender/")' + '@Model.Application.ApplicationDocument';
+
+            const link = document.createElement('a');
+            link.href = filePath;
+            link.download = '@Model.Application.ApplicationDocument'; // Uses actual filename
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+
+        // Function to preview the document
+        function previewDocument() {
+            const filePath = '@Url.Content("~/ProposalTender/")' + '@Model.Application.ApplicationDocument';
+
+            const iframe = document.getElementById('docViewer');
+
+            // If the file is a PDF or image, directly set it
+            if (filePath.endsWith('.pdf') || filePath.endsWith('.jpg') || filePath.endsWith('.png')) {
+                iframe.src = filePath;
+            } else {
+                // If it's a .docx or .xlsx file, use Google Docs Viewer
+                iframe.src = `https://docs.google.com/gview?url=${encodeURIComponent(window.location.origin + filePath)}&embedded=true`;
+            }
+
+            // Open the modal
+            document.getElementById('documentPreview').classList.remove('hidden');
+        }
+
+        // Function to close the preview modal
+        function closePreview() {
+            document.getElementById('documentPreview').classList.add('hidden');
+        }
+
+    </script>
+</body>
+</html>

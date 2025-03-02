@@ -1,0 +1,267 @@
+﻿@model ProfileViewModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Profile Header -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <div class="w-32 h-32 rounded-full bg-gray-200 overflow-hidden">
+                    <img src="~/UserImage/@Model.User.UserPhoto" alt="Profile Picture" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1 text-center md:text-left">
+                    <h1 class="text-2xl font-bold text-gray-800">@Model.User.FirstName @Model.User.MiddleName @Model.User.LastName</h1>
+                    <p class="text-gray-600">@Model.User.EmailAddress</p>
+                    <p class="text-gray-500 mt-2">
+                        <i class="fas fa-map-marker-alt mr-2"></i>
+                        @Model.User.Province Province, @Model.User.District District, @Model.User.City City, 
+                    </p>
+                    <p class="text-gray-500">
+                        <i class="fas fa-phone-alt mr-2"></i>@Model.User.Phone
+                    </p>
+                    <p>
+                        <i class="fas fa-user-tag mr-2"></i>@Model.User.UserRole</p>
+                </div>
+                <div>
+                    <button id="editProfileBtn" class="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5">
+                        <i class="fas fa-edit mr-2"></i>Edit Profile
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Profile Form (Initially hidden) -->
+        <div id="editProfileForm" class="bg-white rounded-lg shadow-lg p-6 mb-6 hidden">
+            <form method="post" asp-action="EditProfile" asp-controller="Home" enctype="multipart/form-data">
+                
+                
+                <input asp-for="User.Gender" hidden />
+                <input asp-for="User.UserRole" hidden/>
+                <input asp-for="User.UserPassword" hidden/>
+                <input asp-for="User.UserPhoto" hidden/>
+                <div class="space-y-4">
+                    <div class="mb-5 group relative z-0 w-full">
+                        <input asp-for="User.UserFile"
+                               type="file"
+                               class="py-2.5 px-0 text-gray-900 bg-transparent border-gray-300 peer block w-4/ appearance-none border-0 border-b-2 text-sm focus:outline-none focus:ring-0 focus:border-blue-600 dark:text-white dark:border-gray-600 dark:focus:border-blue-500" placeholder=" "  />
+                        <label asp-for="User.UserFile"
+                               class="text-gray-500 -translate-y-6 top-3 origin-[0] absolute -z-10 scale-75 transform text-sm duration-300 dark:text-gray-400 peer-focus:font-medium peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Upload Photo</label>
+                        <span asp-validation-for="User.UserFile" class="text-red-400"></span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                        <div class="mb-5 group relative z-0 w-full">
+                            <input asp-for="User.FirstName" type="text" class="py-2.5 px-0 text-gray-900 bg-transparent border-gray-300 peer block w-full appearance-none border-0 border-b-2 text-sm focus:outline-none focus:ring-0 focus:border-blue-600 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 peer-focus:bg-transparent" placeholder=" " required />
+                            <label asp-for="User.FirstName" class="text-gray-500 -translate-y-6 top-3 origin-[0] absolute -z-10 scale-75 transform text-sm duration-300 dark:text-gray-400 peer-focus:font-medium peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">First Name</label>
+                            <span asp-validation-for="User.FirstName" class="text-red-400"></span>
+                        </div>
+
+                        <div class="mb-5 group relative z-0 w-full">
+                            <input asp-for="@Model.User.MiddleName" type="text" class="py-2.5 px-0 text-gray-900 bg-transparent border-gray-300 peer block w-full appearance-none border-0 border-b-2 text-sm focus:outline-none focus:ring-0 focus:border-blue-600 dark:text-white dark:border-gray-600 dark:focus:border-blue-500" placeholder=" " required />
+                            <label asp-for="@Model.User.MiddleName" class="text-gray-500 -translate-y-6 top-3 origin-[0] absolute -z-10 scale-75 transform text-sm duration-300 dark:text-gray-400 peer-focus:font-medium peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Middle Name</label>
+                            <span asp-validation-for="@Model.User.MiddleName" class="text-red-400"></span>
+                        </div>
+
+                        <div class="mb-5 group relative z-0 w-full">
+                            <input asp-for="@Model.User.LastName" type="text" class="py-2.5 px-0 text-gray-900 bg-transparent border-gray-300 peer block w-full appearance-none border-0 border-b-2 text-sm focus:outline-none focus:ring-0 focus:border-blue-600 dark:text-white dark:border-gray-600 dark:focus:border-blue-500" placeholder=" " required />
+                            <label asp-for="@Model.User.LastName" class="text-gray-500 -translate-y-6 top-3 origin-[0] absolute -z-10 scale-75 transform text-sm duration-300 dark:text-gray-400 peer-focus:font-medium peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Last Name</label>
+                            <span asp-validation-for="@Model.User.LastName" class="text-red-400"></span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+                        <!-- Province Dropdown -->
+                        <div class="mb-5 group relative z-0 w-full">
+                            <select asp-for="@Model.User.Province" id="provinceDropdown" class="py-2.5 px-0 text-gray-900 bg-transparent border-gray-300 peer block w-full appearance-none border-0 border-b-2 text-sm focus:outline-none focus:ring-0 focus:border-blue-600 dark:text-white dark:border-gray-600 dark:focus:border-blue-500" required>
+                                <option value="" disabled selected>Select Province</option>
+                                <option value="Koshi">Koshi</option>
+                                <option value="Madhesh">Madhesh</option>
+                                <option value="Bagmati">Bagmati</option>
+                                <option value="Gandaki">Gandaki</option>
+                                <option value="Lumbini">Lumbini</option>
+                                <option value="Karnali">Karnali</option>
+                                <option value="Sudurpashchim">Sudurpashchim</option>
+                            </select>
+                            <label asp-for="@Model.User.Province" class="text-gray-500 -translate-y-6 top-3 origin-[0] absolute -z-10 scale-75 transform text-sm duration-300 dark:text-gray-400 peer-focus:font-medium peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Province</label>
+                        </div>
+
+                        <!-- District Dropdown -->
+                        <div class="mb-5 group relative z-0 w-full">
+                            <select asp-for="@Model.User.District" id="districtDropdown" class="py-2.5 px-0 text-gray-900 bg-transparent border-gray-300 peer block w-full appearance-none border-0 border-b-2 text-sm focus:outline-none focus:ring-0 focus:border-blue-600 dark:text-white dark:border-gray-600 dark:focus:border-blue-500" required>
+                                <option value="" disabled selected>Select District</option>
+                            </select>
+                            <label asp-for="@Model.User.District" class="text-gray-500 -translate-y-6 top-3 origin-[0] absolute -z-10 scale-75 transform text-sm duration-300 dark:text-gray-400 peer-focus:font-medium peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">District</label>
+                        </div>
+
+                        <!-- City Dropdown -->
+                        <div class="mb-5 group relative z-0 w-full">
+                            <input asp-for="@Model.User.City" type="text" class="py-2.5 px-0 text-gray-900 bg-transparent border-gray-300 peer block w-full appearance-none border-0 border-b-2 text-sm focus:outline-none focus:ring-0 focus:border-blue-600 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 peer-focus:bg-transparent" placeholder=" " required />
+                            <label asp-for="@Model.User.City" class="text-gray-500 -translate-y-6 top-3 origin-[0] absolute -z-10 scale-75 transform text-sm duration-300 dark:text-gray-400 peer-focus:font-medium peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">City</label>
+                            <span asp-validation-for="@Model.User.City" class="text-red-400"></span>
+                        </div>
+                    </div>
+
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                        <!-- Email Address -->
+                        <div class="mb-5 group relative z-0 w-full">
+                            <input asp-for="@Model.User.EmailAddress" type="email" class="py-2.5 px-0 text-gray-900 bg-transparent border-gray-300 peer block w-full appearance-none border-0 border-b-2 text-sm focus:outline-none focus:ring-0 focus:border-blue-600 dark:text-white dark:border-gray-600 dark:focus:border-blue-500" placeholder=" " required />
+                            <label asp-for="@Model.User.EmailAddress" class="text-gray-500 -translate-y-6 top-3 origin-[0] absolute -z-10 scale-75 transform text-sm duration-300 dark:text-gray-400 peer-focus:font-medium peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Email Address</label>
+                            <span asp-validation-for="@Model.User.EmailAddress" class="text-red-400"></span>
+                        </div>
+
+                       
+
+                        <!-- Phone -->
+                        <div class="mb-5 group relative z-0 w-full">
+                            <input asp-for="@Model.User.Phone" class="py-2.5 px-0 text-gray-900 bg-transparent border-gray-300 peer block w-full appearance-none border-0 border-b-2 text-sm focus:outline-none focus:ring-0 focus:border-blue-600 dark:text-white dark:border-gray-600 dark:focus:border-blue-500" placeholder=" " required />
+                            <label asp-for="@Model.User.Phone" class="text-gray-500 -translate-y-6 top-3 origin-[0] absolute -z-10 scale-75 transform text-sm duration-300 dark:text-gray-400 peer-focus:font-medium peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Phone</label>
+                            <span asp-validation-for="@Model.User.Phone" class="text-red-400"></span>
+                        </div>
+
+                        
+                    </div>
+                    <div class="flex justify-end gap-4">
+                        <button type="submit" class="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg px-5 py-2.5">Save Changes</button>
+                        <button type="button" id="cancelEditBtn" class="text-white bg-gray-600 hover:bg-gray-700 font-medium rounded-lg px-5 py-2.5">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        @if (User.FindFirst("Role")?.Value == "Bidder")
+        {
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Company Information -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-building text-2xl text-blue-600 mr-3"></i>
+                        <h2 class="text-xl font-semibold">Company Details</h2>
+                    </div>
+                    @if (Model.Company != null)
+                    {
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <span class="text-gray-600 w-32">Company Name:</span>
+                                <span class="font-medium">@Model.Company.CompanyName</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-gray-600 w-32">Registration:</span>
+                                <span class="font-medium">@Model.Company.RegistrationNumber</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-gray-600 w-32">Type:</span>
+                                <span class="font-medium">@Model.Company.CompanyType</span>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-gray-500 italic">No company information available</p>
+                    }
+                </div>
+
+                <!-- Bank Information -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-university text-2xl text-blue-600 mr-3"></i>
+                        <h2 class="text-xl font-semibold">Bank Details</h2>
+                    </div>
+                    @if (Model.Bank != null)
+                    {
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <span class="text-gray-600 w-32">Bank Name:</span>
+                                <span class="font-medium">@Model.Bank.BankName</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-gray-600 w-32">Account No:</span>
+                                <span class="font-medium">••••••@Model.Bank.AccountNumber.Substring(Math.Max(0, Model.Bank.AccountNumber.Length - 4))</span>
+                            </div>
+                       
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-gray-500 italic">No bank information available</p>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+
+    <script>
+        // JavaScript to toggle visibility of the edit profile form
+        document.getElementById('editProfileBtn').addEventListener('click', function () {
+            document.getElementById('editProfileForm').classList.toggle('hidden');
+        });
+
+        document.getElementById('cancelEditBtn').addEventListener('click', function () {
+            document.getElementById('editProfileForm').classList.add('hidden');
+        });
+
+
+        const districtOptions = {
+            Koshi: [
+                "Bhojpur", "Dhankuta", "Ilam", "Jhapa", "Khotang", "Morang", "Okhaldhunga", "Panchthar", "Sankhuwasabha", "Solukhumbu", "Sunsari", "Taplejung", "Terhathum", "Udayapur",
+            ],
+            Madhesh: [
+                "Bara", "Dhanusa", "Mahottari", "Parsa", "Rautahat", "Saptari", "Sarlahi", "Siraha",
+            ],
+            Bagmati: [
+                "Bhaktapur", "Chitwan", "Dhading", "Dolakha", "Kathmandu", "Kavrepalanchok", "Lalitpur", "Makawanpur", "Nuwakot", "Ramechhap", "Rasuwa", "Sindhuli", "Sindhupalchok",
+            ],
+            Gandaki: [
+                "Baglung", "Gorkha", "Kaski", "Lamjung", "Manang", "Mustang", "Myagdi", "Nawalpur", "Parbat", "Syangja", "Tanahu District",
+            ],
+            Lumbini: [
+                "Arghakhanchi", "Banke", "Bardiya", "Dang", "Gulmi", "Kapilvastu", "Parasi", "Palpa", "Pyuthan", "Rolpa", "Rukum", "Rupandehi",
+            ],
+            Karnali: [
+                "Dailekh District", "Dolpa District", "Humla District", "Jajarkot District", "Jumla District", "Kalikot District", "Mugu District", "Rukum Paschim District", "Salyan District", "Surkhet District",
+            ],
+            Sudurpashchim: [
+                "Achham", "Baitadi", "Bajhang", "Bajura", "Dadeldhura", "Darchula", "Doti", "Kailali", "Kanchanpur",
+            ],
+        };
+
+        const provinceDropdown = document.getElementById("provinceDropdown");
+        const districtDropdown = document.getElementById("districtDropdown");
+
+        provinceDropdown.addEventListener("change", () => {
+            const selectedProvince = provinceDropdown.value;
+            console.log("Selected Province: ", selectedProvince);  // Debugging line
+            const districts = districtOptions[selectedProvince] || [];
+            console.log("Districts: ", districts);  // Debugging line
+
+            // Clear existing district options
+            districtDropdown.innerHTML = '<option value="" disabled selected>Select District</option>';
+
+            // Populate district dropdown
+            if (districts.length > 0) {
+                districts.forEach((district) => {
+                    const option = document.createElement("option");
+                    option.value = district;
+                    option.textContent = district;
+                    districtDropdown.appendChild(option);
+                });
+            } else {
+                const option = document.createElement("option");
+                option.textContent = "No districts available";
+                districtDropdown.appendChild(option);
+            }
+        });
+    </script>
+</body>
+</html>

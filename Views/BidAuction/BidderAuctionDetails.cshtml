@@ -1,0 +1,586 @@
+﻿@model AuctionDetailsViewModel
+
+<title>Auction Details - @Model.Auction.Title</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+    }
+
+    body {
+        background: #f8fafc;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .page-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .auction-header {
+        background: linear-gradient(135deg, #7e22ce, #a855f7);
+        border-radius: 1rem 1rem 0 0;
+        padding: 2.5rem 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .auction-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .status-active {
+        background: var(--success);
+        color: white;
+    }
+
+    .status-completed {
+        background: var(--danger);
+        color: white;
+    }
+
+    .status-upcoming {
+        background: var(--warning);
+        color: white;
+    }
+
+    .tabs-container {
+        background: white;
+        padding: 0 1rem;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .tabs-wrapper {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .tab-button {
+        padding: 1rem 1.5rem;
+        color: #64748b;
+        font-weight: 600;
+        position: relative;
+        transition: all 0.3s ease;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+        .tab-button.active {
+            color: var(--primary);
+        }
+
+            .tab-button.active::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 2px;
+                background: var(--primary);
+            }
+
+    .bid-button {
+        background: var(--primary);
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+        .bid-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .bid-button i {
+            transition: transform 0.3s ease;
+        }
+
+        .bid-button:hover i {
+            transform: translateX(4px);
+        }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .info-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+        .info-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+    .publisher-card {
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .publisher-photo {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        margin: 0 auto 1rem;
+        border: 4px solid #e2e8f0;
+    }
+
+    .timeline-container {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        padding: 2rem 0;
+    }
+
+    .timeline-item {
+        flex: 1;
+        text-align: center;
+        position: relative;
+    }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #e2e8f0;
+            z-index: 0;
+        }
+
+    .timeline-point {
+        width: 40px;
+        height: 40px;
+        background: white;
+        border: 2px solid var(--primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+        margin: 0 auto 1rem;
+    }
+
+    .description-box {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin: 2rem 0;
+        border-left: 4px solid #a855f7;
+    }
+
+    .countdown-container {
+        background: linear-gradient(to right, #4f46e5, #7c3aed);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        color: white;
+        text-align: center;
+        margin-top: 1.5rem;
+    }
+
+    .countdown-timer {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .countdown-item {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        min-width: 70px;
+    }
+
+    .countdown-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .item-image-container {
+        border-radius: 1rem;
+        overflow: hidden;
+        position: relative;
+        height: 300px;
+    }
+
+    .item-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .item-image-container:hover .item-image {
+        transform: scale(1.05);
+    }
+
+    .bid-history {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .bid-entry {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+        transition: background-color 0.3s ease;
+    }
+
+        .bid-entry:hover {
+            background-color: #f8fafc;
+        }
+
+    .bid-amount {
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .highest-bid {
+        background-color: rgba(16, 185, 129, 0.1);
+        border-left: 4px solid var(--success);
+    }
+</style>
+
+<body>
+    <div class="page-container">
+        <div class="auction-header">
+            <div class="flex justify-between items-center mb-6">
+                <button onclick="history.back()" class="text-white/80 hover:text-white transition-all">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <div class="flex gap-4">
+                    <span class="status-badge status-@Model.Auction.AuctionStatus.ToLower()">
+                        <i class="fas @(Model.Auction.AuctionStatus.ToLower() == "active" ? "fa-gavel" :
+                                   Model.Auction.AuctionStatus.ToLower() == "completed" ? "fa-flag-checkered" : "fa-hourglass-start")"></i>
+                        @Model.Auction.AuctionStatus
+                    </span>
+                </div>
+            </div>
+
+            <h1 class="text-3xl font-bold text-white mb-4">@Model.Auction.Title</h1>
+            <div class="flex items-center gap-6 text-white/90">
+                <span class="flex items-center gap-2">
+                    <i class="fas fa-hashtag"></i>
+                    <span>@Model.Auction.AuctionId</span>
+                </span>
+                <span class="flex items-center gap-2">
+                    <i class="fas fa-tags"></i>
+                    <span>@Model.Auction.AuctionType</span>
+                </span>
+            </div>
+        </div>
+
+        <div class="tabs-container">
+            <div class="tabs-wrapper">
+                <button onclick="showTab('details')" class="tab-button active">
+                    <i class="fas fa-info-circle mr-2"></i>Details
+                </button>
+                <button onclick="showTab('bids')" class="tab-button">
+                    <i class="fas fa-gavel mr-2"></i>Bid History
+                </button>
+            </div>
+            @if (Model.Auction.AuctionStatus.ToLower() == "active")
+            {
+                <a asp-action="MonitorAuction" asp-controller="BidAuction" asp-route-id="@Model.Auction.EncId"
+                   class="bid-button">
+                    <i class="fas fa-hand-point-up mr-2"></i>
+                    Place Bid
+                </a>
+            }
+        </div>
+
+        <div class="bg-white min-h-screen">
+            <div id="details-tab" class="tab-content">
+                @if (Model.Auction.AuctionStatus.ToLower() == "active")
+                {
+                    <div class="countdown-container mx-6 mt-6">
+                        <h3 class="text-xl font-semibold mb-2">Auction Ends In</h3>
+                        <div class="countdown-timer" id="countdown-timer">
+                            <div class="countdown-item">
+                                <div class="countdown-value" id="days">--</div>
+                                <div class="countdown-label">Days</div>
+                            </div>
+                            <div class="countdown-item">
+                                <div class="countdown-value" id="hours">--</div>
+                                <div class="countdown-label">Hours</div>
+                            </div>
+                            <div class="countdown-item">
+                                <div class="countdown-value" id="minutes">--</div>
+                                <div class="countdown-label">Mins</div>
+                            </div>
+                            <div class="countdown-item">
+                                <div class="countdown-value" id="seconds">--</div>
+                                <div class="countdown-label">Secs</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="content-grid">
+                    <!-- Item Image Card -->
+                    <div class="info-card">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                            <i class="fas fa-image text-purple-600 mr-2"></i>Item Image
+                        </h3>
+                        <div class="item-image-container">
+                            @if (!string.IsNullOrEmpty(Model.Auction.ItemImage))
+                            {
+                                <img src="~/AuctionImage/@Model.Auction.ItemImage"
+                                     alt="@Model.Auction.Title"
+                                     class="item-image">
+                            }
+                            else
+                            {
+                                <div class="flex items-center justify-center h-full bg-gray-100">
+                                    <i class="fas fa-image text-6xl text-gray-400"></i>
+                                </div>
+                            }
+                        </div>
+                        <div class="mt-4 flex justify-between items-center">
+                            <div>
+                                <span class="text-gray-600">Starting Price</span>
+                                <div class="text-xl font-bold text-purple-700">
+                                    @Model.Auction.StartingPrice.ToString("C")
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Publisher Card -->
+                    <div class="info-card publisher-card">
+                        @if (!string.IsNullOrEmpty(Model.User.UserPhoto))
+                        {
+                            <img src="~/UserImage/@Model.User.UserPhoto"
+                                 alt="Publisher"
+                                 class="publisher-photo object-cover">
+                        }
+                        else
+                        {
+                            <div class="publisher-photo bg-purple-100 flex items-center justify-center">
+                                <i class="fas fa-user text-4xl text-purple-500"></i>
+                            </div>
+                        }
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">
+                            @Model.User.FirstName @Model.User.MiddleName @Model.User.LastName
+                        </h3>
+                        <span class="inline-block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
+                            @Model.User.UserRole
+                        </span>
+                        <div class="space-y-3 text-left">
+                            <div class="flex items-center gap-3 text-gray-600">
+                                <i class="fas fa-envelope"></i>
+                                <span>@Model.User.EmailAddress</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-gray-600">
+                                <i class="fas fa-phone"></i>
+                                <span>@Model.User.Phone</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-gray-600">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>@Model.User.City, @Model.User.District</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Auction Details -->
+                <div class="info-card mx-6 my-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-info-circle text-purple-600 mr-2"></i>Auction Information
+                    </h3>
+                    <div class="description-box">
+                        <h4 class="text-lg font-semibold mb-3">Item Description</h4>
+                        <p class="text-gray-700 leading-relaxed">
+                            @Model.Auction.AuctionDescription
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                        <div>
+                            <h4 class="text-lg font-semibold mb-3">Auction Details</h4>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-600">Auction Type</span>
+                                    <span class="font-medium">@Model.Auction.AuctionType</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-600">Verification Status</span>
+                                    
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-600">Starting Price</span>
+                                    <span class="font-medium">@Model.Auction.StartingPrice.ToString("C")</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-semibold mb-3">Bidding Requirements</h4>
+                            <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                <li>All bids are final and cannot be retracted</li>
+                                <li>Minimum bid increment is 5% of current bid</li>
+                                <li>Winner must complete payment within 3 days</li>
+                                <li>Shipping arrangements to be discussed after auction</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline -->
+                <div class="info-card mx-6 my-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6">
+                        <i class="fas fa-clock text-purple-600 mr-2"></i>Timeline
+                    </h3>
+                    <div class="timeline-container">
+                        <div class="timeline-item">
+                            <div class="timeline-point">
+                                <i class="fas fa-flag text-purple-600"></i>
+                            </div>
+                            <div class="font-medium">Start Date</div>
+                            <div class="text-sm text-gray-600">
+                                @Model.Auction.StartDate.ToString("MMM dd, yyyy")
+                            </div>
+                            <div class="text-xs text-gray-500">
+                                @Model.Auction.StartTime
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-point">
+                                <i class="fas fa-hourglass-half text-purple-600"></i>
+                            </div>
+                            <div class="font-medium">Current Status</div>
+                            <div class="text-sm font-semibold text-purple-600">
+                                @Model.Auction.AuctionStatus
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-point">
+                                <i class="fas fa-flag-checkered text-purple-600"></i>
+                            </div>
+                            <div class="font-medium">End Date</div>
+                            <div class="text-sm text-gray-600">
+                                @Model.Auction.EndDate.ToString("MMM dd, yyyy")
+                            </div>
+                            <div class="text-xs text-gray-500">
+                                @Model.Auction.EndTime
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+           
+                  
+                   
+        </div>
+    </div>
+       
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+    <script>
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+
+            tabs.forEach(tab => {
+                tab.classList.add('hidden');
+            });
+
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(`${tabName}-tab`).classList.remove('hidden');
+            document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
+        }
+
+        function updateCountdown() {
+            const endDateStr = '@Model.Auction.EndDate.ToString("yyyy-MM-dd")' + 'T' + '@Model.Auction.EndTime.ToString("HH:mm:ss")';
+            const endDate = new Date(endDateStr + 'Z'); // Convert to UTC
+            const now = new Date();
+
+            const timeRemaining = endDate - now;
+
+            if (timeRemaining <= 0) {
+                ['days', 'hours', 'minutes', 'seconds'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = '00';
+                });
+
+                // Reload after auction ends
+                setTimeout(() => location.reload(), 3000);
+                return;
+            }
+
+            const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+            // Ensure elements exist before updating
+            const updateElement = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = value.toString().padStart(2, '0');
+            };
+
+            updateElement('days', days);
+            updateElement('hours', hours);
+            updateElement('minutes', minutes);
+            updateElement('seconds', seconds);
+        }
+
+        // Ensure countdown starts only if auction is active
+        document.addEventListener('DOMContentLoaded', function () {
+            if ('@Model.Auction.AuctionStatus.ToLower()' === 'active') {
+                updateCountdown();
+                setInterval(updateCountdown, 1000);
+            }
+        });
+
+    </script>
+</body>

@@ -1,0 +1,603 @@
+﻿@model TenderApplicationViewModel
+
+
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+    }
+
+    body {
+        background: #f8fafc;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .page-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .tender-header {
+        background: linear-gradient(135deg, #1e40af, #3b82f6);
+        border-radius: 1rem 1rem 0 0;
+        padding: 2.5rem 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .tender-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .status-open {
+        background: var(--success);
+        color: white;
+    }
+
+    .status-closed {
+        background: var(--danger);
+        color: white;
+    }
+
+    .status-pending {
+        background: var(--warning);
+        color: white;
+    }
+
+    .tabs-container {
+        background: white;
+        padding: 0 1rem;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .tabs-wrapper {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .tab-button {
+        padding: 1rem 1.5rem;
+        color: #64748b;
+        font-weight: 600;
+        position: relative;
+        transition: all 0.3s ease;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+        .tab-button.active {
+            color: var(--primary);
+        }
+
+            .tab-button.active::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 2px;
+                background: var(--primary);
+            }
+
+    .apply-button {
+        background: var(--primary);
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+        .apply-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .apply-button i {
+            transition: transform 0.3s ease;
+        }
+
+        .apply-button:hover i {
+            transform: translateX(4px);
+        }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .info-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+        .info-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+    .publisher-card {
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .publisher-photo {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        margin: 0 auto 1rem;
+        border: 4px solid #e2e8f0;
+    }
+
+    .timeline-container {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        padding: 2rem 0;
+    }
+
+    .timeline-item {
+        flex: 1;
+        text-align: center;
+        position: relative;
+    }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #e2e8f0;
+            z-index: 0;
+        }
+
+    .timeline-point {
+        width: 40px;
+        height: 40px;
+        background: white;
+        border: 2px solid var(--primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+        margin: 0 auto 1rem;
+    }
+
+    .pdf-viewer {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        height: 800px;
+        overflow-y: auto;
+    }
+
+    .action-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .primary-button {
+        background: var(--primary);
+        color: white;
+    }
+
+        .primary-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+    #pdf-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+
+        #pdf-container canvas {
+            max-width: 100%;
+            height: auto;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+    .description-box {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin: 2rem 0;
+        border-left: 4px solid #3b82f6;
+    }
+</style>
+
+<body>
+    <div class="page-container">
+        <div class="tender-header">
+            <div class="flex justify-between items-center mb-6">
+                <button onclick="history.back()" class="text-white/80 hover:text-white transition-all">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <div class="flex gap-4">
+                    <span class="status-badge status-@Model.Application.ApplicationStatus.ToLower()">
+                        <i class="fas @(Model.Application.ApplicationStatus.ToLower() == "Won" ? "fa-door-open" :
+                                      Model.Application.ApplicationStatus.ToLower() == "Lost" ? "fa-lock" : "fa-clock")"></i>
+                        @Model.Application.ApplicationStatus
+                    </span>
+                </div>
+            </div>
+
+            <h1 class="text-3xl font-bold text-white mb-4">@Model.Tender.Title</h1>
+            <div class="flex items-center gap-6 text-white/90">
+                <span class="flex items-center gap-2">
+                    <i class="fas fa-hashtag"></i>
+                    <span>@Model.Tender.TenderId</span>
+                </span>
+            </div>
+        </div>
+
+        <a asp-action="Index" asp-controller="TenderContract" asp-route-id="@Model.Application.EncId"
+           class="apply-button">
+            <i class="fas fa-paper-plane mr-2"></i>
+            Contract Now
+        </a>
+
+        <div class="tabs-container">
+            <div class="tabs-wrapper">
+                <button onclick="showTab('details')" class="tab-button active">
+                    <i class="fas fa-info-circle mr-2"></i>Details
+                </button>
+                <button onclick="showTab('applications')" class="tab-button">
+                    <i class="fas fa-file-alt mr-2"></i>Application
+                </button>
+                <button onclick="showTab('documents')" class="tab-button">
+                    <i class="fas fa-file-alt mr-2"></i>Documents
+                </button>
+            </div>
+
+           
+            
+        </div>
+
+        <div class="bg-white min-h-screen">
+            <div id="details-tab" class="tab-content">
+                <div class="content-grid">
+                    <!-- Publisher Card -->
+                    <div class="info-card publisher-card">
+                        @if (!string.IsNullOrEmpty(Model.User.UserPhoto))
+                        {
+                            <img src="@Url.Content("~/UserImage/" + Model.User.UserPhoto)"
+                                 alt="Publisher"
+                                 class="publisher-photo object-cover">
+                        }
+                        else
+                        {
+                            <div class="publisher-photo bg-blue-100 flex items-center justify-center">
+                                <i class="fas fa-user text-4xl text-blue-500"></i>
+                            </div>
+                        }
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">
+                            @Model.User.FirstName @Model.User.MiddleName @Model.User.LastName
+                        </h3>
+                        <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
+                            @Model.User.UserRole
+                        </span>
+                        <div class="space-y-3 text-left">
+                            <div class="flex items-center gap-3 text-gray-600">
+                                <i class="fas fa-envelope"></i>
+                                <span>@Model.User.EmailAddress</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-gray-600">
+                                <i class="fas fa-phone"></i>
+                                <span>@Model.User.Phone</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-gray-600">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>@Model.User.City, @Model.User.District</span>
+                            </div>
+                        </div>
+                        <a asp-action="UserMessage" asp-controller="Chat" asp-route-receiverId="@Model.User.UserId" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-paper-plane mr-2"></i>Send Message
+                        </a>
+                    </div>
+
+                    <!-- Tender Details -->
+                    <div class="info-card">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                            <i class="fas fa-info-circle text-blue-600 mr-2"></i>Tender Information
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600">Type</span>
+                                <span class="font-medium">@Model.Tender.TenderType</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600">Duration</span>
+                                <span class="font-medium">@Model.Tender.ProjectDuration</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600">Budget</span>
+                                <span class="font-medium">@Model.Tender.BudgetEstimation.ToString("C")</span>
+                            </div>
+
+                            <div class="description-box">
+                                <h4 class="text-lg font-semibold mb-3">Project Description</h4>
+                                <p class="text-gray-700 leading-relaxed">
+                                    @Model.Tender.TenderDescription
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline -->
+                <div class="info-card mx-6 my-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6">
+                        <i class="fas fa-clock text-blue-600 mr-2"></i>Timeline
+                    </h3>
+                    <div class="timeline-container">
+                        <div class="timeline-item">
+                            <div class="timeline-point">
+                                <i class="fas fa-flag text-blue-600"></i>
+                            </div>
+                            <div class="font-medium">Issue Date</div>
+                            <div class="text-sm text-gray-600">
+                                @Model.Tender.IssuedDate.ToString("MMM dd, yyyy")
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-point">
+                                <i class="fas fa-door-open text-blue-600"></i>
+                            </div>
+                            <div class="font-medium">Opening Date</div>
+                            <div class="text-sm text-gray-600">
+                                @Model.Tender.OpeningDate.ToString("MMM dd, yyyy")
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-point">
+                                <i class="fas fa-lock text-blue-600"></i>
+                            </div>
+                            <div class="font-medium">Closing Date</div>
+                            <div class="text-sm text-gray-600">
+                                @Model.Tender.ClosingDate.ToString("MMM dd, yyyy")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="applications-tab" class="tab-content">
+                <!-- Edit Form Modal -->
+                <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
+                    <div class="bg-white w-1/2 rounded-lg shadow-lg p-6 relative">
+                        <button onclick="closeEditModal()" class="absolute top-2 right-2 text-gray-600 hover:text-gray-800">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                        <h2 class="text-xl font-bold mb-4">Edit Application</h2>
+
+                        <form asp-action="EditApplyTender" asp-controller="BidTender" enctype="multipart/form-data" id="editForm">
+                            <div asp-validation-summary="ModelOnly" class="p-4 mb-6 text-sm text-red-800 rounded-lg bg-red-50"></div>
+                            <input asp-for="Application.ApplicationId" type="number" />
+
+                            <div class="mb-4">
+                                <label asp-for="Application.ProposedDuration" class="block text-gray-700">Proposed Duration</label>
+                                <input asp-for="Application.ProposedDuration" type="text" class="w-full border p-2 rounded">
+                                <span asp-validation-for="Application.ProposedDuration" class="text-sm text-red-600 mt-1"></span>
+                            </div>
+                            <div class="mb-4">
+                                <label asp-for="Application.ProposedBudget" class="block text-gray-700">Proposed Budget</label>
+                                <input asp-for="Application.ProposedBudget" type="number" class="w-full border p-2 rounded">
+                                <span asp-validation-for="Application.ProposedBudget" class="text-sm text-red-600 mt-1"></span>
+                            </div>
+                            <div class="mb-4">
+                                <label asp-for="Application.TenderFile" class="block text-gray-700">Proposed Budget</label>
+                                <input asp-for="Application.TenderFile" type="file" class="w-full border p-2 rounded">
+                                <span asp-validation-for="Application.TenderFile" class="text-sm text-red-600 mt-1"></span>
+                            </div>
+                            <div class="flex justify-end gap-2">
+                                <button type="button" onclick="closeEditModal()" class="bg-gray-500 text-white px-4 py-2 rounded">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                @if (Model.Tender.TenderStatus.ToLower() == "open")
+                {
+                    <button onclick="openEditModal()" class="apply-button">
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        Edit Now
+                    </button>
+                }
+
+                <div class="content-grid">
+                    <!-- Tender Application Details -->
+                    <div class="info-card">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                            <i class="fas fa-info-circle text-blue-600 mr-2"></i>Tender Application Information
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600">Proposed Duration</span>
+                                <span class="font-medium">@Model.Application.ProposedDuration</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600">Budget</span>
+                                <span class="font-medium">@Model.Application.ProposedBudget.ToString("C")</span>
+                            </div>
+
+                            <div class="description-box">
+                                <h4 class="text-lg font-semibold mb-3">Application Status</h4>
+                                <p class="text-gray-700 leading-relaxed">
+                                    @Model.Application.ApplicationStatus
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="documents-tab" class="tab-content hidden">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold text-gray-800">
+                            <i class="fas fa-file-alt text-blue-600 mr-2"></i>Tender Documents
+                        </h3>
+                        <a href="@Url.Content("~/TenderDocument/" + Model.Tender.TenderDocument)"
+                           class="action-button primary-button" download>
+                            <i class="fas fa-download"></i>
+                            Download PDF
+                        </a>
+                    </div>
+
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold text-gray-800">
+                            <i class="fas fa-file-alt text-blue-600 mr-2"></i>Application Documents
+                        </h3>
+                        <a href="@Url.Content("~/ProposalTender/" + Model.Application.ApplicationDocument)"
+                           class="action-button primary-button" download>
+                            <i class="fas fa-download"></i>
+                            Download PDF
+                        </a>
+                    </div>
+
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    
+
+
+    <script>
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+
+            tabs.forEach(tab => {
+                tab.classList.add('hidden');
+            });
+
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(`${tabName}-tab`).classList.remove('hidden');
+            document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
+        }
+
+       
+
+        // Add event listener for document ready
+        document.addEventListener('DOMContentLoaded', function () {
+            // Show details tab by default
+            showTab('details');
+
+            // Initialize tooltips if any
+            const tooltips = document.querySelectorAll('[data-tooltip]');
+            tooltips.forEach(tooltip => {
+                // Add tooltip functionality if needed
+            });
+
+            // Handle download button loading state
+            const downloadButton = document.querySelector('.primary-button');
+            if (downloadButton) {
+                downloadButton.addEventListener('click', function () {
+                    this.classList.add('opacity-75', 'cursor-wait');
+                    this.querySelector('i').classList.add('fa-spin');
+
+                    // Reset button state after download starts
+                    setTimeout(() => {
+                        this.classList.remove('opacity-75', 'cursor-wait');
+                        this.querySelector('i').classList.remove('fa-spin');
+                    }, 1000);
+                });
+            }
+        });
+
+
+        function openEditModal() {
+            document.getElementById("editModal").classList.remove("hidden");
+        }
+
+        function closeEditModal() {
+            document.getElementById("editModal").classList.add("hidden");
+        }
+
+        $("#editForm").submit(function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            let formData = new FormData(this); // Collect form data
+
+            $.ajax({
+                url: "/BidTender/EditApplyTender",
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        window.location.href = response.redirectUrl; // Redirect to ApplyTenderDetails
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert("Error updating tender.");
+                }
+            });
+        });
+
+    </script>
+
+</body>
