@@ -611,6 +611,177 @@ namespace FYPBidNetra.Controllers
         }
 
 
+        [HttpGet]
+        public IActionResult EditTender(string id)
+        {
+            UpdateTenderStatuses();
+            int tenderid;
+            try
+            {
+                tenderid = Convert.ToInt32(_protector.Unprotect(id));
+            }
+            catch
+            {
+                return BadRequest("Invalid tender ID.");
+            }
+
+            var tender = _context.TenderDetails
+                .Where(t => t.TenderId == tenderid)
+                .Select(t => new TenderEdit
+                {
+                    TenderId = t.TenderId,
+                    Title = t.Title,
+                    IssuedBy = t.IssuedBy,
+                    IssuedDate = t.IssuedDate,
+                    TenderType = t.TenderType,
+                    TenderStatus = t.TenderStatus,
+                    OpeningDate = t.OpeningDate,
+                    ClosingDate = t.ClosingDate,
+                    ProjectDuration = t.ProjectDuration,
+                    BudgetEstimation = t.BudgetEstimation,
+                    TenderDescription = t.TenderDescription,
+                    IsVerified = t.IsVerified,
+                    PublishedByUserId = t.PublishedByUserId,
+                    AwardStatus = t.AwardStatus,
+                    AwardCompanyId = t.AwardCompanyId,
+                    AwardDate = t.AwardDate,
+                    TenderDocument = t.TenderDocument,
+                    EncId = _protector.Protect(t.TenderId.ToString())
+                })
+                .FirstOrDefault();
+
+            if (tender == null)
+            {
+                return NotFound("Tender not found.");
+            }
+
+            //return Json(tender);
+
+            return View(tender);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditTender(TenderEdit t)
+        {
+            UpdateTenderStatuses();
+            try
+            {
+                string? existingFile = _context.TenderDetails
+                    .Where(td => td.TenderId == t.TenderId)
+                    .Select(td => td.TenderDocument)
+                    .FirstOrDefault();
+
+               // return Json(existingFile);
+
+                if (t.TenderFile != null)
+                {
+                    string fileName = "TenderDocument" + Guid.NewGuid() + Path.GetExtension(t.TenderFile.FileName);
+                    string filePath = Path.Combine(_env.WebRootPath, "TenderDocument", fileName);
+
+                    if (!Directory.Exists(Path.Combine(_env.WebRootPath, "TenderDocument")))
+                    {
+                        Directory.CreateDirectory(Path.Combine(_env.WebRootPath, "TenderDocument"));
+                    }
+
+                    using (FileStream stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await t.TenderFile.CopyToAsync(stream);
+                    }
+
+                    t.TenderDocument = fileName;
+                }
+                else
+                {
+                    // Retain existing document if no new file is uploaded
+                    t.TenderDocument = existingFile;
+                }
+
+                var tender = _context.TenderDetails.FirstOrDefault(td => td.TenderId == t.TenderId);
+                if (tender == null)
+                {
+                    return NotFound("Tender not found.");
+                }
+               // return Json(tender);
+                // Updating existing tender details
+                tender.Title = t.Title;
+                tender.IssuedBy = t.IssuedBy;
+                tender.IssuedDate = t.IssuedDate;
+                tender.TenderType = t.TenderType;
+                tender.TenderStatus = t.TenderStatus;
+                tender.OpeningDate = t.OpeningDate;
+                tender.ClosingDate = t.ClosingDate;
+                tender.ProjectDuration = t.ProjectDuration;
+                tender.BudgetEstimation = t.BudgetEstimation;
+                tender.TenderDescription = t.TenderDescription;
+                tender.IsVerified = t.IsVerified;
+                tender.PublishedByUserId = Convert.ToInt16(User.Identity!.Name);
+                tender.AwardStatus = t.AwardStatus;
+                tender.AwardCompanyId = t.AwardCompanyId;
+                tender.AwardDate = t.AwardDate;
+                tender.TenderDocument = t.TenderDocument;
+
+                //return Json(tender);
+                _context.Update(tender);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Tender updated successfully!";
+                return RedirectToAction("TenderPage", "PublisherTender");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "An error occurred while updating the tender. Please try again.");
+                return View(t);
+            }
+        }
+
+
+        [HttpGet]
+        public ActionResult DeleteTender(string id)
+        {
+            int tenderId = Convert.ToInt32(_protector.Unprotect(id));
+
+            // Find the tender in the database
+            var tender = _context.TenderDetails
+                .Where(t => t.TenderId == tenderId)
+                .Select(t => new TenderEdit
+                {
+                    TenderId = t.TenderId,
+                    Title = t.Title,
+                    IssuedBy = t.IssuedBy,
+                    TenderStatus = t.TenderStatus
+                })
+                .FirstOrDefault();
+
+            if (tender == null)
+            {
+                return NotFound();
+            }
+
+            return View(tender); 
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteTenderConfirmed(string id)
+        {
+            short tenderId = Convert.ToInt16(_protector.Unprotect(id));
+
+            var tender = await _context.TenderDetails.FindAsync(tenderId);
+            if (tender != null)
+            {
+                _context.TenderDetails.Remove(tender);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Tender deleted successfully!";
+                return RedirectToAction("TenderPage", "PublisherTender");
+            }
+
+            TempData["ErrorMessage"] = "Tender not found!";
+            return RedirectToAction("TenderPage", "PublisherTender");
+        }
+
+
+
+
 
     }
 }
