@@ -109,26 +109,23 @@ namespace FYPBidNetra.Controllers
 
         private void UpdateAuctionStatuses()
         {
-            var nepalTime = DateTime.UtcNow.AddMinutes(345); // Current time in Nepal Time (UTC+5:45)
+            var currentDate = DateTime.UtcNow.AddMinutes(345); // Current date-time in Nepal time
             var auctions = _context.AuctionDetails.ToList();
 
             foreach (var auction in auctions)
             {
-                // Convert start and end times to Nepal TimeZone
+                // Combine the date and time
                 var openingDateTime = new DateTime(auction.StartDate.Year, auction.StartDate.Month, auction.StartDate.Day,
-                                                   auction.StartTime.Hour, auction.StartTime.Minute, auction.StartTime.Second,
-                                                   DateTimeKind.Utc).AddMinutes(345); // Convert to Nepal time
-
+                                                   auction.StartTime.Hour, auction.StartTime.Minute, auction.StartTime.Second);
                 var closingDateTime = new DateTime(auction.EndDate.Year, auction.EndDate.Month, auction.EndDate.Day,
-                                                   auction.EndTime.Hour, auction.EndTime.Minute, auction.EndTime.Second,
-                                                   DateTimeKind.Utc).AddMinutes(345); // Convert to Nepal time
+                                                   auction.EndTime.Hour, auction.EndTime.Minute, auction.EndTime.Second);
 
-                // Compare Nepal Time with auction start and end times
-                if (nepalTime >= openingDateTime && nepalTime < closingDateTime)
+                // Compare the current date with the auction start and end times
+                if (currentDate >= openingDateTime && currentDate < closingDateTime)
                 {
                     auction.AuctionStatus = "Active";
                 }
-                else if (nepalTime >= closingDateTime)
+                else if (currentDate >= closingDateTime)
                 {
                     auction.AuctionStatus = "Completed";
                 }
@@ -140,7 +137,6 @@ namespace FYPBidNetra.Controllers
 
             _context.SaveChanges();
         }
-
 
 
         public IActionResult AuctionList()
@@ -630,6 +626,197 @@ namespace FYPBidNetra.Controllers
             {
                 return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
             }
+        }
+
+
+        [HttpGet]
+        public IActionResult EditAuction(string id)
+        {
+            UpdateAuctionStatuses();
+            int auctionid;
+            try
+            {
+                auctionid = Convert.ToInt32(_protector.Unprotect(id));
+            }
+            catch
+            {
+                return BadRequest("Invalid auction ID.");
+            }
+
+            var auction = _context.AuctionDetails
+                .Where(t => t.AuctionId == auctionid)
+                .Select(t => new AuctionEdit
+                {
+                    AuctionId = t.AuctionId,
+                    Title = t.Title,
+                    AuctionDescription = t.AuctionDescription,
+                    ItemImage = t.ItemImage,
+                    StartingPrice = t.StartingPrice,
+                    StartDate = t.StartDate,
+                    IsVerified = t.IsVerified,
+                    PublishedByUserId = t.PublishedByUserId,
+                    StartTime = t.StartTime,
+                    EndTime = t.EndTime,
+                    EndDate = t.EndDate,
+                    AuctionType = t.AuctionType,
+                    AuctionStatus = t.AuctionStatus,
+                    BuyerId = t.BuyerId,
+                    WinningBidAmount = t.WinningBidAmount,
+                    AwardStatus = t.AwardStatus,
+                    EncId = _protector.Protect(t.AuctionId.ToString())
+                })
+                .FirstOrDefault();
+
+            if (auction == null)
+            {
+                return NotFound("Auction not found.");
+            }
+
+            //return Json(auction);
+
+            return View(auction);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditAuction(AuctionEdit a)
+        {
+            UpdateAuctionStatuses();
+            try
+            {
+                string? existingFile = _context.AuctionDetails
+                    .Where(ad => ad.AuctionId == a.AuctionId)
+                    .Select(ad => ad.ItemImage)
+                    .FirstOrDefault();
+
+                // return Json(existingFile);
+
+                if (a.AuctionFile != null)
+                {
+                    string fileName = "AuctionImage" + Guid.NewGuid() + Path.GetExtension(a.AuctionFile.FileName);
+                    string filePath = Path.Combine(_env.WebRootPath, "AuctionImage", fileName);
+
+                    if (!Directory.Exists(Path.Combine(_env.WebRootPath, "AuctionImage")))
+                    {
+                        Directory.CreateDirectory(Path.Combine(_env.WebRootPath, "AuctionImage"));
+                    }
+
+                    using (FileStream stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await a.AuctionFile.CopyToAsync(stream);
+                    }
+
+                    a.ItemImage = fileName;
+                }
+                else
+                {
+                    // Retain existing document if no new file is uploaded
+                    a.ItemImage = existingFile;
+                }
+
+                var auction = _context.AuctionDetails.FirstOrDefault(td => td.AuctionId == a.AuctionId);
+                if (auction == null)
+                {
+                    return NotFound("Auction not found.");
+                }
+                // return Json(auction);
+                // Updating existing auction details
+
+                auction.AuctionId = a.AuctionId;
+                auction.Title = a.Title;
+                auction.AuctionDescription = a.AuctionDescription;
+                auction.ItemImage = a.ItemImage;
+                auction.StartingPrice = a.StartingPrice;
+                auction.StartDate = a.StartDate;
+                auction.IsVerified = a.IsVerified;
+                auction.PublishedByUserId = Convert.ToInt16(User.Identity!.Name); 
+                auction.StartTime = a.StartTime;
+                auction.EndTime = a.EndTime;
+                auction.EndDate = a.EndDate;
+                auction.AuctionType = a.AuctionType;
+                auction.AuctionStatus = a.AuctionStatus;
+                auction.BuyerId = a.BuyerId;
+                auction.WinningBidAmount = a.WinningBidAmount;
+               /* tender.Title = t.Title;
+                tender.IssuedBy = t.IssuedBy;
+                tender.IssuedDate = t.IssuedDate;
+                tender.TenderType = t.TenderType;
+                tender.TenderStatus = t.TenderStatus;
+                tender.OpeningDate = t.OpeningDate;
+                tender.ClosingDate = t.ClosingDate;
+                tender.ProjectDuration = t.ProjectDuration;
+                tender.BudgetEstimation = t.BudgetEstimation;
+                tender.TenderDescription = t.TenderDescription;
+                tender.IsVerified = t.IsVerified;
+                tender.PublishedByUserId = Convert.ToInt16(User.Identity!.Name);
+                tender.AwardStatus = t.AwardStatus;
+                tender.AwardCompanyId = t.AwardCompanyId;
+                tender.AwardDate = t.AwardDate;
+                tender.TenderDocument = t.TenderDocument;*/
+
+                //return Json(tender);
+                _context.Update(auction);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Auction updated successfully!";
+                return RedirectToAction("AuctionPage", "PublisherAuction");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "An error occurred while updating the auction. Please try again.");
+                return View(a);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult DeleteAuction(string id)
+        {
+            int auctionId = Convert.ToInt32(_protector.Unprotect(id));
+
+            // Find the tender in the database
+            var auction = _context.AuctionDetails
+                .Where(t => t.AuctionId == auctionId)
+                .Select(t => new AuctionEdit
+                {
+                    AuctionId = t.AuctionId,
+                    Title = t.Title,
+                    AuctionDescription = t.AuctionDescription,
+                    ItemImage = t.ItemImage,
+                    StartingPrice = t.StartingPrice,
+                    StartDate = t.StartDate,
+                    StartTime = t.StartTime,
+                    EndTime = t.EndTime,
+                    EndDate = t.EndDate,
+                    AuctionType = t.AuctionType,
+                    AuctionStatus = t.AuctionStatus,
+                    IsVerified = t.IsVerified
+                })
+                .FirstOrDefault();
+
+            if (auction == null)
+            {
+                return NotFound();
+            }
+
+            return View(auction);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAuctionConfirmed(string id)
+        {
+            short auctionId = Convert.ToInt16(_protector.Unprotect(id));
+
+            var Auction = await _context.AuctionDetails.FindAsync(auctionId);
+            if (Auction != null)
+            {
+                _context.AuctionDetails.Remove(Auction);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Auction deleted successfully!";
+                return RedirectToAction("AuctionPage", "PublisherAuction");
+            }
+
+            TempData["ErrorMessage"] = "Auction not found!";
+            return RedirectToAction("AuctionPage", "PublisherAuction");
         }
 
 

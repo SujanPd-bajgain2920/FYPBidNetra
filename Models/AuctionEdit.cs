@@ -34,6 +34,8 @@ namespace FYPBidNetra.Models
 
         public string IsVerified { get; set; } = null!;
 
+        public string AwardStatus { get; set; } = null!;
+
         public string EncId { get; set; } = null!;
 
         [DataType(DataType.Upload)]

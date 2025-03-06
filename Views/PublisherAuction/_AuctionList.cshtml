@@ -137,12 +137,34 @@
                                         <span>@auction.StartingPrice</span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-center">
+                                <td class="px-6 py-4 text-center space-x-2">
                                     <a asp-action="AuctionDetails" asp-controller="PublisherAuction" asp-route-id="@auction.EncId"
                                        class="action-button inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md">
                                         <i class="fas fa-eye mr-2"></i>
                                         View Details
                                     </a>
+
+                                    @if (auction.IsVerified == "Pending")
+                                    {
+
+
+                                        <!-- Edit Button -->
+                                        <a asp-action="EditAuction" asp-controller="PublisherAuction" asp-route-id="@auction.EncId"
+                                           class="action-button inline-flex items-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-md">
+                                            <i class="fas fa-edit mr-1"></i>
+                                            Edit
+                                        </a>
+
+                                        <!-- Delete Button -->
+                                        <form asp-action="DeleteAuctionConfirmed" asp-controller="PublisherAuction" asp-route-id="@auction.EncId" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="action-button inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-md">
+                                                <i class="fas fa-trash-alt mr-1"></i>
+                                                Delete
+                                            </button>
+                                        </form>
+                                    }
+
                                 </td>
                             </tr>
                         }

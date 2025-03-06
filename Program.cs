@@ -1,5 +1,6 @@
 using FYPBidNetra.Models;
 using FYPBidNetra.Security;
+using FYPBidNetra.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Rotativa.AspNetCore;
@@ -14,6 +15,8 @@ namespace FYPBidNetra
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddHostedService<AuctionBackgroundService>();
 
 
 

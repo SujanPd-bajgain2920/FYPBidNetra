@@ -288,31 +288,7 @@
                     </div>
                 </div>
 
-                <!-- Countdown Timer (if auction is active) -->
-                @if (Model.Auction.AuctionStatus.ToLower() == "active")
-                {
-                    <div class="mt-6 auction-countdown">
-                        <h3 class="text-lg font-semibold mb-2">Auction Ending In</h3>
-                        <div class="grid grid-cols-4 gap-2 text-center">
-                            <div>
-                                <div class="text-2xl font-bold" id="days">--</div>
-                                <div class="text-xs opacity-75">Days</div>
-                            </div>
-                            <div>
-                                <div class="text-2xl font-bold" id="hours">--</div>
-                                <div class="text-xs opacity-75">Hours</div>
-                            </div>
-                            <div>
-                                <div class="text-2xl font-bold" id="minutes">--</div>
-                                <div class="text-xs opacity-75">Minutes</div>
-                            </div>
-                            <div>
-                                <div class="text-2xl font-bold" id="seconds">--</div>
-                                <div class="text-xs opacity-75">Seconds</div>
-                            </div>
-                        </div>
-                    </div>
-                }
+                
             </div>
 
             <!-- Bid Details Section -->
@@ -573,6 +549,61 @@
                 }, 1000);
             }
         });
+
+            function autoAwardBid(bidId) {
+                // Get the CSRF token
+                var token = $('input[name="__RequestVerificationToken"]').val();
+    
+                $.ajax({
+                    url: '@Url.Action("AwardBid", "PublisherAuction")',
+                    type: 'POST',
+                    data: {
+                        BidId: bidId,
+                        BidStatus: 'Accepted',
+                        __RequestVerificationToken: token
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Show success message
+                            alert('Bid awarded successfully!');
+                            
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Error occurred while awarding bid');
+                    }
+                });
+            }
+
+            // Function to check auction status and auto-award
+            function checkAndAwardBid() {
+                var currentDate = new Date();
+                var endDate = new Date('@Model.Auction.EndDate.ToString("yyyy-MM-dd") @Model.Auction.EndTime.ToString("HH:mm:ss")');
+                var auctionStatus = '@Model.Auction.AuctionStatus';
+                var bidStatus = '@Model.AuctionBidEdit.BidStatus';
+                var bidId = '@Model.AuctionBidEdit.BidId';
+    
+                if (currentDate >= endDate && auctionStatus === 'Completed' && bidStatus === 'Pending') {
+                    // Check if this is the highest bid
+                    var highestBidAmount = @Model.HighestBidAmount;
+                    var currentBidAmount = @Model.AuctionBidEdit.BidAmount;
+        
+                    if (currentBidAmount >= highestBidAmount) {
+                        autoAwardBid(bidId);
+                    }
+                }
+            }
+
+            // Check every minute
+            setInterval(checkAndAwardBid, 60000);
+
+            // Initial check when page loads
+            $(document).ready(function() {
+                checkAndAwardBid();
+            });
+
     </script>
 </body>
 </html>

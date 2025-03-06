@@ -1,0 +1,271 @@
+﻿@model AuctionEdit
+
+@{
+    Layout = "_Layout";
+}
+<style>
+    .form-card {
+        animation: slideIn 0.5s ease-out;
+    }
+
+
+
+    .input-group {
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+        .input-group:focus-within {
+            transform: translateY(-2px);
+        }
+
+    .input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6b7280;
+    }
+
+    .icon-input {
+        padding-left: 2.5rem !important;
+    }
+
+    .form-section {
+        border-left: 4px solid #3b82f6;
+        padding-left: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .image-preview {
+        max-width: 300px;
+        max-height: 300px;
+        object-fit: contain;
+        border-radius: 0.5rem;
+        display: none;
+    }
+
+    .submit-btn {
+        background: linear-gradient(to right, #2563eb, #3b82f6);
+        transition: all 0.3s ease;
+    }
+
+        .submit-btn:hover {
+            background: linear-gradient(to right, #1d4ed8, #2563eb);
+            transform: translateY(-2px);
+        }
+</style>
+
+
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen py-8">
+    <div class="container mx-auto px-4 max-w-4xl">
+        <!-- Header Section -->
+        <div class="flex items-center justify-between mb-8">
+            <button onclick="history.back()" class="text-blue-600 hover:text-blue-800 transition-colors duration-300">
+                <i class="fas fa-arrow-left text-2xl"></i>
+            </button>
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">
+                Publish New Auction
+            </h1>
+        </div>
+
+        <!-- Form Card -->
+        <div class="form-card bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="p-8">
+                <form asp-action="EditAuction" asp-controller="PublisherAuction" method="POST" enctype="multipart/form-data" id="auctionForm">
+                    <div asp-validation-summary="ModelOnly" class="p-4 mb-6 text-sm text-red-800 rounded-lg bg-red-50"></div>
+                    <input asp-for="AuctionId" type="number" value="@Model.AuctionId" />
+                    <input asp-for="IsVerified" type="text" value="@Model.IsVerified" />
+                    <input asp-for="AuctionStatus" type="text" value="@Model.AuctionStatus" />
+                    <input asp-for="AwardStatus" type="text" value="@Model.AwardStatus" />
+
+                    <!-- Basic Information Section -->
+                    <div class="form-section">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-6">
+                            <i class="fas fa-info-circle mr-2 text-blue-600"></i>Basic Information
+                        </h2>
+
+                        <div class="space-y-6">
+                            <!-- Title -->
+                            <div class="input-group">
+                                <label asp-for="Title" class="block text-sm font-medium text-gray-700 mb-2">Auction Title</label>
+                                <div class="relative">
+                                    <i class="fas fa-heading input-icon"></i>
+                                    <input asp-for="Title" type="text" required
+                                           class="icon-input block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500"
+                                           placeholder="Enter auction title">
+                                </div>
+                                <span asp-validation-for="Title" class="text-sm text-red-600 mt-1"></span>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="input-group">
+                                <label asp-for="AuctionDescription" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                                <div class="relative">
+                                    <textarea asp-for="AuctionDescription" required
+                                              class="block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500"
+                                              rows="4"
+                                              placeholder="Provide a detailed description"></textarea>
+                                </div>
+                                <span asp-validation-for="AuctionDescription" class="text-sm text-red-600 mt-1"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Financial Details -->
+                    <div class="form-section">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-6">
+                            <i class="fas fa-money-bill-wave mr-2 text-blue-600"></i>Price Details
+                        </h2>
+
+                        <div class="input-group">
+                            <label asp-for="StartingPrice" class="block text-sm font-medium text-gray-700 mb-2">Starting Price</label>
+                            <div class="relative">
+                                <i class="fas fa-rupee-sign input-icon"></i>
+                                <input type="number" asp-for="StartingPrice" required
+                                       class="icon-input block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500"
+                                       placeholder="Enter starting price"
+                                       step="0.01">
+                            </div>
+                            <span asp-validation-for="StartingPrice" class="text-sm text-red-600 mt-1"></span>
+                        </div>
+                    </div>
+
+                    <!-- Auction Details -->
+                    <div class="form-section">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-6">
+                            <i class="fas fa-gavel mr-2 text-blue-600"></i>Auction Details
+                        </h2>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Auction Type -->
+                            <div class="input-group">
+                                <label asp-for="AuctionType" class="block text-sm font-medium text-gray-700 mb-2">Auction Type</label>
+                                <div class="relative">
+                                    <i class="fas fa-tags input-icon"></i>
+                                    <select asp-for="AuctionType" required
+                                            class="icon-input block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
+                                        <option value="Live">Live Auction</option>
+                                        <option value="Silent">Silent Auction</option>
+                                        <option value="Sealed">Sealed Bid</option>
+                                    </select>
+                                </div>
+                                <span asp-validation-for="AuctionType" class="text-sm text-red-600 mt-1"></span>
+                            </div>
+
+                        </div>
+
+                        <!-- Dates and Times -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Start Date & Time</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="input-group">
+                                        <div class="relative">
+                                            <i class="far fa-calendar input-icon"></i>
+                                            <input asp-for="StartDate" type="date" required
+                                                   class="icon-input block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
+                                        </div>
+                                        <span asp-validation-for="StartDate" class="text-sm text-red-600 mt-1"></span>
+                                    </div>
+                                    <div class="input-group">
+                                        <div class="relative">
+                                            <i class="far fa-clock input-icon"></i>
+                                            <input asp-for="StartTime" type="time" required
+                                                   class="icon-input block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
+                                        </div>
+                                        <span asp-validation-for="StartTime" class="text-sm text-red-600 mt-1"></span>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">End Date & Time</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="input-group">
+                                        <div class="relative">
+                                            <i class="far fa-calendar input-icon"></i>
+                                            <input asp-for="EndDate" type="date" required
+                                                   class="icon-input block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
+                                        </div>
+                                        <span asp-validation-for="EndDate" class="text-sm text-red-600 mt-1"></span>
+                                    </div>
+                                    <div class="input-group">
+                                        <div class="relative">
+                                            <i class="far fa-clock input-icon"></i>
+                                            <input asp-for="EndTime" type="time" required
+                                                   class="icon-input block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
+                                        </div>
+                                        <span asp-validation-for="EndTime" class="text-sm text-red-600 mt-1"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Upload -->
+                    <div class="form-section">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-6">
+                            <i class="fas fa-image mr-2 text-blue-600"></i>Item Image
+                        </h2>
+
+                        <div class="input-group">
+                            <label asp-for="AuctionFile" class="block text-sm font-medium text-gray-700 mb-2">Upload Image</label>
+                            <div class="relative">
+                                <input asp-for="AuctionFile" type="file" accept="image/*"
+                                       class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
+                                       onchange="previewImage(event)">
+                            </div>
+                            <span asp-validation-for="AuctionFile" class="text-sm text-red-600 mt-1"></span>
+                            <!-- Image Preview -->
+                            <div class="mt-4">
+                                <img id="imagePreview" class="image-preview" src="#" alt="Preview">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="submit-btn w-full py-4 px-6 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl">
+                        <i class="fas fa-gavel mr-2"></i>Publish Auction
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Image Preview Script -->
+    <script>
+        function previewImage(event) {
+            const preview = document.getElementById('imagePreview');
+            const file = event.target.files[0];
+
+            if (file) {
+                preview.style.display = 'block';
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                }
+
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+                preview.src = '#';
+            }
+        }
+
+        // Form validation for dates
+        document.getElementById('auctionForm').addEventListener('submit', function(event) {
+            const startDate = new Date(document.getElementById('StartDate').value + 'T' + document.getElementById('StartTime').value);
+            const endDate = new Date(document.getElementById('EndDate').value + 'T' + document.getElementById('EndTime').value);
+
+            if (endDate <= startDate) {
+                event.preventDefault();
+                alert('End date and time must be after start date and time');
+            }
+        });
+    </script>
+</body>
