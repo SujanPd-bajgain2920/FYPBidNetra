@@ -6,88 +6,174 @@
 
 <!-- Flowbite CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/flowbite.min.css">
-
 <!-- Flowbite JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/flowbite.min.js"></script>
-
 <!-- FontAwesome for icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<div class="p-8 max-w-3xl mx-auto">
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h1 class="text-2xl font-bold text-gray-900 mb-2">
-            <i class="fas fa-file-signature mr-2"></i>Tender Proposal
-        </h1>
-        <p class="text-gray-500">Complete the form below to submit your proposal</p>
+<style>
+    .section-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+    .input-animated {
+        transition: all 0.3s ease;
+    }
+
+        .input-animated:focus {
+            transform: scale(1.02);
+        }
+
+    .submit-btn {
+        background: linear-gradient(90deg, #4F46E5 0%, #7C3AED 100%);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4);
+        }
+
+    .hidden {
+        display: none;
+    }
+</style>
+
+<body class="min-h-screen py-12 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-white rounded-t-2xl shadow-lg p-8 mb-1 text-center">
+                <h1 class="text-3xl font-bold text-indigo-600 mb-4">
+                    <i class="fas fa-file-signature mr-3"></i>Tender Proposal Application
+                </h1>
+                <p class="text-gray-600">Submit your proposal with confidence</p>
+            </div>
+
+            <form id="proposalForm" asp-action="AppliedTender" asp-controller="BidTender" enctype="multipart/form-data" method="Post" class="space-y-6">
+                <div asp-validation-summary="ModelOnly" class="p-4 mb-6 text-sm text-red-800 rounded-lg bg-red-50"></div>
+
+                <div class="section-card rounded-2xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-indigo-600 mb-6">
+                        <i class="fas fa-file-contract mr-3"></i>Tender Details
+                    </h2>
+
+                    <input asp-for="CompanyApplyId" type="number" value="@Model.CompanyApplyId" />
+                    <input asp-for="TenderAppllyId" type="number" value="@Model.TenderAppllyId" />
+
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label asp-for="ProposedDuration" class="block mb-2 text-sm font-semibold text-gray-700">Proposed Duration <span class="text-red-500">*</span></label>
+                            <input asp-for="ProposedDuration" type="text" class="input-animated w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-indigo-500" required>
+                            <span asp-validation-for="ProposedDuration" class="text-sm text-red-600 mt-1"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="ProposedBudget" class="block mb-2 text-sm font-semibold text-gray-700">Proposal Amount (NPR) <span class="text-red-500">*</span></label>
+                            <input asp-for="ProposedBudget" type="number" class="input-animated w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-indigo-500" required>
+                            <span asp-validation-for="ProposedBudget" class="text-sm text-red-600 mt-1"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card rounded-2xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-indigo-600 mb-6">
+                        <i class="fas fa-upload mr-3"></i>Required Documents
+                    </h2>
+                    <div>
+                        <label asp-for="TenderFile" class="block mb-2 text-sm font-semibold text-gray-700">Proposal Document <span class="text-red-500">*</span></label>
+                        <input asp-for="TenderFile" type="file" class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-indigo-500" accept=".pdf" required>
+                        <span asp-validation-for="TenderFile" class="text-sm text-red-600 mt-1"></span>
+                    </div>
+                </div>
+
+                <div class="section-card rounded-2xl shadow-lg p-8">
+                    <div class="flex items-center mb-6">
+                        <input type="checkbox" id="terms" class="w-5 h-5 text-indigo-600 border-2 border-gray-300 rounded" required>
+                        <label for="terms" class="ml-3 text-sm font-medium text-gray-700">
+                            I agree to the <a href="#" class="text-indigo-600 hover:text-indigo-800">terms and conditions</a>
+                            and agree to pay NPR 10 application fee <span class="text-red-500">*</span>
+                        </label>
+                    </div>
+                    <button type="button" onclick="initiatePayment()" class="submit-btn w-full py-4 px-6 rounded-lg text-white font-semibold text-lg">
+                        <i class="fas fa-paper-plane mr-2"></i> Pay & Submit Proposal (NPR 10)
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <form asp-action="AppliedTender" asp-controller="BidTender" enctype="multipart/form-data" method="Post">
-        <div asp-validation-summary="ModelOnly" class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50"></div>
-
-        <input asp-for="CompanyApplyId" type="hidden" value="@Model.CompanyApplyId" />
-        <input asp-for="TenderAppllyId" type="hidden" value="@Model.TenderAppllyId" />
-
-        <div class="bg-white rounded-lg shadow p-6 mb-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                <i class="fas fa-file-contract mr-2"></i>Proposal Details
-            </h2>
-
-            <div class="grid gap-6 mb-6 md:grid-cols-2">
-                <div>
-                    <label asp-for="ProposedDuration" class="block mb-2 text-sm font-medium text-gray-900">
-                        Proposed Duration <span class="text-red-500">*</span>
-                    </label>
-                    <input asp-for="ProposedDuration" type="text"
-                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                           placeholder="e.g., 3 months" required>
-                    <span asp-validation-for="ProposedDuration" class="text-sm text-red-600"></span>
-                </div>
-
-                <div>
-                    <label asp-for="ProposedBudget" class="block mb-2 text-sm font-medium text-gray-900">
-                        Proposal Amount (USD) <span class="text-red-500">*</span>
-                    </label>
-                    <input asp-for="ProposedBudget" type="number"
-                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                           placeholder="e.g., 5000" required>
-                    <span asp-validation-for="ProposedBudget" class="text-sm text-red-600"></span>
-                </div>
-            </div>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white p-5 rounded-lg shadow-lg text-center">
+            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+            <p class="text-gray-700">Processing Payment...</p>
         </div>
+    </div>
 
-        <div class="bg-white rounded-lg shadow p-6 mb-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                <i class="fas fa-upload mr-2"></i>Required Documents
-            </h2>
+    <script>
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+        }
 
-            <div>
-                <label asp-for="TenderFile" class="block mb-2 text-sm font-medium text-gray-900">
-                    Upload PDF Document <span class="text-red-500">*</span>
-                </label>
-                <input asp-for="TenderFile"
-                       class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
-                       type="file"
-                       accept=".pdf"
-                       required>
-                <span asp-validation-for="TenderFile" class="text-sm text-red-600"></span>
-            </div>
-        </div>
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
 
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center mb-4">
-                <input id="terms" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" required>
-                <label for="terms" class="ml-2 text-sm font-medium text-gray-900">
-                    I agree to the <a href="#" class="text-blue-600 hover:underline">terms and conditions</a>
-                    <span class="text-red-500">*</span>
-                </label>
-            </div>
+        function initiatePayment() {
+            if (!document.getElementById('proposalForm').checkValidity()) {
+                document.getElementById('proposalForm').reportValidity();
+                return;
+            }
 
-            <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3">
-                <i class="fas fa-paper-plane mr-2"></i>Submit Proposal
-            </button>
-        </div>
-    </form>
-</div>
+            const tenderId = document.getElementById('TenderAppllyId').value;
+
+            // Store form data in session storage before payment
+            const formData = new FormData(document.getElementById('proposalForm'));
+            const formObject = {};
+            formData.forEach((value, key) => formObject[key] = value);
+            sessionStorage.setItem('proposalData', JSON.stringify(formObject));
+
+            $.ajax({
+                url: '/Payment/InitiatePayment',
+                type: 'POST',
+                data: { tenderId: tenderId },
+                success: function (response) {
+                    if (response.success) {
+                        window.location.href = response.redirectUrl;
+                    } else {
+                        alert(response.message || 'Payment initiation failed');
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while initiating payment');
+                }
+            });
+        }
+
+        // Check payment status and submit form on successful payment
+        $(document).ready(function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('payment') === 'success') {
+                const storedData = sessionStorage.getItem('proposalData');
+                if (storedData) {
+                    const formData = JSON.parse(storedData);
+                    Object.keys(formData).forEach(key => {
+                        const input = document.querySelector(`[name="${key}"]`);
+                        if (input) input.value = formData[key];
+                    });
+                    sessionStorage.removeItem('proposalData');
+                    document.getElementById('proposalForm').submit();
+                }
+            }
+        });
+    </script>
+</body>

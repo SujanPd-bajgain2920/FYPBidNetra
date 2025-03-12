@@ -432,6 +432,20 @@ namespace FYPBidNetra.Controllers
 
             try
             {
+                // Check if payment is completed
+                var payment = await _context.Payments
+                    .FirstOrDefaultAsync(p => p.PayTenderId == t.TenderAppllyId &&
+                                            p.PayByUser == Convert.ToInt16(User.Identity.Name) &&
+                                            p.PaymentStatus == "Verified");
+
+                if (payment == null)
+                {
+                    ModelState.AddModelError("", "Payment is required to submit the proposal.");
+                    return View(t);
+                }
+
+                System.Diagnostics.Debug.WriteLine($"Found verified payment: ID={payment.PaymentId}");
+
                 // Generate the next ApplicationId
                 short maxid = _context.TenderApplications.Any()
                     ? Convert.ToInt16(_context.TenderApplications.Max(x => x.ApplicationId) + 1)
