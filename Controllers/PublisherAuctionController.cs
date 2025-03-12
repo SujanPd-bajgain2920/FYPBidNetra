@@ -586,7 +586,7 @@ namespace FYPBidNetra.Controllers
             return View(viewModel);
         }
 
-        [HttpPost]
+        /*[HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AwardBid(long BidId, string BidStatus)
         {
@@ -666,7 +666,104 @@ namespace FYPBidNetra.Controllers
                 return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
             }
         }
+*/
 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AwardBid(long BidId, string BidStatus)
+        {
+            try
+            {
+                var AuctionBid = await _context.AuctionBids
+                    .Include(b => b.Bidder) // Include the User details
+                    .FirstOrDefaultAsync(a => a.BidId == BidId);
+
+                if (AuctionBid == null)
+                {
+                    return Json(new { success = false, message = "Bid not found." });
+                }
+
+                if (AuctionBid.BidStatus != "Pending")
+                {
+                    return Json(new { success = false, message = "Bid is not in a pending state." });
+                }
+
+                AuctionBid.BidStatus = BidStatus;
+
+                if (BidStatus == "Accepted")
+                {
+                    var auction = await _context.AuctionDetails
+                        .FirstOrDefaultAsync(t => t.AuctionId == AuctionBid.AuctionBidId);
+                    var currentDate = DateOnly.FromDateTime(DateTime.UtcNow.AddMinutes(345));
+
+                    if (auction != null)
+                    {
+                        auction.AuctionStatus = "Completed";
+                        auction.AwardStatus = "Awarded";
+                        auction.BuyerId = AuctionBid.BidderId;
+                        auction.WinningBidAmount = AuctionBid.BidAmount;
+                        
+
+                        _context.Update(auction);
+
+                        var otherBids = await _context.AuctionBids
+                            .Where(a => a.AuctionBidId == AuctionBid.AuctionBidId && a.BidId != BidId)
+                            .ToListAsync();
+
+                        foreach (var bid in otherBids)
+                        {
+                            bid.BidStatus = "Rejected";
+                        }
+
+                        var contract = new ContractDetail
+                        {
+                            ContractId = (short)(_context.ContractDetails.Max(c => c.ContractId) + 1),
+                            ConAuctionId = auction.AuctionId,
+                            SellerId = auction.PublishedByUserId,
+                            BuyerId = AuctionBid.BidderId,
+                            ContractCreateDate = currentDate,
+                            ContractStatus = "Pending",
+                            SignedBySeller = false,
+                            SignedByBuyer = false,
+                        };
+
+                        _context.Add(contract);
+
+                        // Send email to winning bidder
+                        if (AuctionBid.Bidder?.EmailAddress != null)
+                        {
+                            string winnerEmailBody = $@"
+                        <h2>Congratulations! You've Won the Auction</h2>
+                        <p>Your bid for the following auction has been accepted:</p>
+                        <ul>
+                            <li><strong>Auction Title:</strong> {auction.Title}</li>
+                            <li><strong>Your Winning Bid:</strong> {AuctionBid.BidAmount:C}</li>
+                           
+                        </ul>
+                        <p>A contract has been generated. Please login to your account to review and sign the contract.</p>";
+
+                            await _emailService.SendEmailAsync(
+                                AuctionBid.Bidder.EmailAddress,
+                                "Congratulations! Auction Award Notification",
+                                winnerEmailBody);
+                        }
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                return Json(new
+                {
+                    success = true,
+                    message = "Bid status updated successfully. Contract has been generated.",
+                    redirectUrl = Url.Action("AuctionIndex", "Contract")
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
+            }
+        }
 
         [HttpGet]
         public IActionResult EditAuction(string id)
