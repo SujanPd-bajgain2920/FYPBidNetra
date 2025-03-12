@@ -1,5 +1,6 @@
 ﻿using FYPBidNetra.Models;
 using FYPBidNetra.Security;
+using FYPBidNetra.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
@@ -17,14 +18,18 @@ namespace FYPBidNetra.Controllers
         private readonly FypContext _context;
         private readonly IWebHostEnvironment _env;
         private readonly IDataProtector _protector;
-        private readonly IHubContext<AuctionHub> _hubContext;
+       
+        private readonly EmailService _emailService;
+        private readonly IConfiguration _configuration;
 
-        public BidTenderController(FypContext context, IWebHostEnvironment env, DataSecurityProvider key, IDataProtectionProvider provider, IHubContext<AuctionHub> hubContext)
+        public BidTenderController(FypContext context, IWebHostEnvironment env, 
+            DataSecurityProvider key, IDataProtectionProvider provider, EmailService emailService )
         {
             _context = context;
             _env = env;
             _protector = provider.CreateProtector(key.Key);
-            _hubContext = hubContext;
+            _emailService = emailService;
+
         }
 
         private void UpdateTenderStatuses()
@@ -422,7 +427,7 @@ namespace FYPBidNetra.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AppliedTender(TenderApplicationEdit t)
+        public async Task<IActionResult> AppliedTender(TenderApplicationEdit t)
         {
 
             try
@@ -480,10 +485,40 @@ namespace FYPBidNetra.Controllers
 
                 //return Json(tenders);
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
+                // Get tender and company details for the email
+                var tender = await _context.TenderDetails
+                    .Include(t => t.PublishedByUser)
+                    .FirstOrDefaultAsync(t => t.TenderId == tenders.TenderAppllyId);
 
-                return View(t);
+                var company = await _context.Companies
+                    .FirstOrDefaultAsync(c => c.CompanyId == t.CompanyApplyId);
+
+                if (tender?.PublishedByUser?.EmailAddress != null)
+                {
+                    // Send email to publisher
+                    string emailBody = $@"
+                <h2>New Tender Proposal Received</h2>
+                <p>A new proposal has been submitted for your tender:</p>
+                <ul>
+                    <li><strong>Tender Title:</strong> {tender.Title}</li>
+                    <li><strong>Company Name:</strong> {company?.CompanyName}</li>
+                    <li><strong>Proposed Budget:</strong> {t.ProposedBudget:C}</li>
+                    <li><strong>Proposed Duration:</strong> {t.ProposedDuration}</li>
+                    <li><strong>Status:</strong> Pending Review</li>
+                </ul>
+                <p>Please login to your account to review the proposal.</p>";
+
+                    await _emailService.SendEmailAsync(
+                        tender.PublishedByUser.EmailAddress,
+                        "New Tender Proposal Received",
+                        emailBody);
+                }
+
+                return RedirectToAction("TenderBidTab", "BidTender", new { activeTab = "ApplyTenderList" });
+                //return View(t);
+               
             }
             catch (Exception ex)
             {

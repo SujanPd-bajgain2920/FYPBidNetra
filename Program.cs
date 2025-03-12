@@ -16,7 +16,7 @@ namespace FYPBidNetra
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
-            builder.Services.AddHostedService<AuctionBackgroundService>();
+            builder.Services.AddScoped<EmailService>();
 
 
 

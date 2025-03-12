@@ -1,5 +1,6 @@
 ﻿using FYPBidNetra.Models;
 using FYPBidNetra.Security;
+using FYPBidNetra.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
@@ -17,12 +18,18 @@ namespace FYPBidNetra.Controllers
         private readonly FypContext _context;
         private readonly IDataProtector _protector;
         private readonly IWebHostEnvironment _env;
+        private readonly EmailService _emailService;
+        private readonly IConfiguration _configuration;
 
-        public PublisherAuctionController(FypContext context, DataSecurityProvider p, IDataProtectionProvider provider, IWebHostEnvironment env)
+        public PublisherAuctionController(FypContext context, DataSecurityProvider p,
+            IDataProtectionProvider provider, IWebHostEnvironment env,
+            EmailService emailService, IConfiguration configuration)
         {
             _context = context;
             _protector = provider.CreateProtector(p.Key);
             _env = env;
+            _emailService = emailService;
+            _configuration = configuration;
         }
 
 
@@ -42,7 +49,7 @@ namespace FYPBidNetra.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult PublishAuction(AuctionEdit a)
+        public async Task<IActionResult> PublishAuction(AuctionEdit a)
         {
             //return Json(t);
             try
@@ -93,7 +100,39 @@ namespace FYPBidNetra.Controllers
                 //return Json(auctionList);
                 // Save the auction to the database
                 _context.Add(auctionList);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
+                try
+                {
+                    var adminEmail = _configuration.GetValue<string>("EmailSettings:AdminEmail");
+                    if (string.IsNullOrEmpty(adminEmail))
+                    {
+                        throw new Exception("Admin email is not configured in appsettings.json");
+                    }
+
+                    // Send email notification to admin
+                    var subject = "New Auction Verification Required";
+                    var body = $@"
+                    <h2>New Auction Published</h2>
+                    <p>A new auction has been published and requires verification:</p>
+                    <ul>
+                        <li><strong>Auction ID:</strong> {a.AuctionId}</li>
+                        <li><strong>Title:</strong> {a.Title}</li>
+                        <li><strong>Type:</strong> {a.AuctionType}</li>
+                        <li><strong>Starting Price:</strong> {a.StartingPrice:C}</li>
+                        <li><strong>Start Date:</strong> {a.StartDate:d}</li>
+                        <li><strong>End Date:</strong> {a.EndDate:d}</li>
+                    </ul>
+                    <p>Please review and verify this auction.</p>";
+
+                    await _emailService.SendEmailAsync(adminEmail, subject, body);
+                    TempData["SuccessMessage"] = "Auction published successfully!";
+                }
+                catch (Exception emailEx)
+                {
+                    // Log the email error but don't stop the auction creation process
+                    Console.WriteLine($"Email sending failed: {emailEx.Message}");
+                    TempData["WarningMessage"] = "Auction saved successfully, but notification email could not be sent.";
+                }
 
                 TempData["SuccessMessage"] = "Auction published successfully!";
                 return RedirectToAction("AuctionPage", "PublisherAuction");

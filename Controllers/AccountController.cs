@@ -158,7 +158,7 @@ namespace FYPBidNetra.Controllers
                             Rating = u.Rating,
                             Position = u.Position
                         };
-                        // return Json(company);
+                         //return Json(company);
                         Bank bank = new()
                         {
                             BankId = u.BankId,

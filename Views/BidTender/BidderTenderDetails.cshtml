@@ -298,7 +298,7 @@
             </div>
             @if (Model.Tender.TenderStatus.ToLower() == "open")
             {
-                <a href="@Url.Action("Apply", "Tender", new { id = Model.Tender.TenderId })"
+                <a asp-action="AppliedTender" asp-controller="BidTender" asp-route-id="@Model.Tender.TenderId"
                    class="apply-button">
                     <i class="fas fa-paper-plane mr-2"></i>
                     Apply Now

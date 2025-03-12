@@ -1,5 +1,6 @@
 ﻿using FYPBidNetra.Models;
 using FYPBidNetra.Security;
+using FYPBidNetra.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
@@ -17,12 +18,18 @@ namespace FYPBidNetra.Controllers
         private readonly FypContext _context;
         private readonly IDataProtector _protector;
         private readonly IWebHostEnvironment _env;
+        private readonly EmailService _emailService;
+        private readonly IConfiguration _configuration;
 
-        public PublisherTenderController(FypContext context, DataSecurityProvider p, IDataProtectionProvider provider, IWebHostEnvironment env)
+        public PublisherTenderController(FypContext context, DataSecurityProvider p,
+            IDataProtectionProvider provider, IWebHostEnvironment env,
+            EmailService emailService, IConfiguration configuration)
         {
             _context = context;
             _protector = provider.CreateProtector(p.Key);
             _env = env;
+            _emailService = emailService;
+            _configuration = configuration;
         }
 
 
@@ -169,7 +176,7 @@ namespace FYPBidNetra.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult PublishTender(TenderEdit t)
+        public async Task<IActionResult> PublishTender(TenderEdit t)
         {
             //return Json(t);
             try
@@ -235,7 +242,142 @@ namespace FYPBidNetra.Controllers
                 //return Json(tenderList);
                 // Save the tender to the database
                 _context.Add(tenderList);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
+
+                try
+                {
+                    var adminEmail = _configuration.GetValue<string>("EmailSettings:AdminEmail");
+                    if (string.IsNullOrEmpty(adminEmail))
+                    {
+                        throw new Exception("Admin email is not configured in appsettings.json");
+                    }
+
+                    // Send email notification to admin
+                    var subject = "New Tender Verification Required";
+                    var body = $@"
+                        <!DOCTYPE html>
+                        <html lang='en'>
+                        <head>
+                            <meta charset='UTF-8'>
+                            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                            <title>Tender Verification Required</title>
+                            <style>
+                                body {{
+                                    font-family: 'Segoe UI', Arial, sans-serif;
+                                    line-height: 1.6;
+                                    color: #333;
+                                    margin: 0;
+                                    padding: 0;
+                                }}
+                                .container {{
+                                    max-width: 600px;
+                                    margin: 0 auto;
+                                    padding: 20px;
+                                }}
+                                .header {{
+                                    background-color: #0056b3;
+                                    padding: 20px;
+                                    text-align: center;
+                                    color: white;
+                                    border-top-left-radius: 5px;
+                                    border-top-right-radius: 5px;
+                                }}
+                                .content {{
+                                    background-color: #ffffff;
+                                    padding: 20px;
+                                    border-left: 1px solid #ddd;
+                                    border-right: 1px solid #ddd;
+                                }}
+                                .footer {{
+                                    background-color: #f8f8f8;
+                                    padding: 15px;
+                                    text-align: center;
+                                    font-size: 12px;
+                                    color: #666;
+                                    border-bottom-left-radius: 5px;
+                                    border-bottom-right-radius: 5px;
+                                    border: 1px solid #ddd;
+                                }}
+                                .button {{
+                                    display: inline-block;
+                                    background-color: #0056b3;
+                                    color: white;
+                                    padding: 10px 20px;
+                                    text-decoration: none;
+                                    border-radius: 4px;
+                                    margin-top: 15px;
+                                }}
+                                .info-table {{
+                                    width: 100%;
+                                    border-collapse: collapse;
+                                    margin: 15px 0;
+                                }}
+                                .info-table td {{
+                                    padding: 8px;
+                                    border-bottom: 1px solid #eee;
+                                }}
+                                .info-table td:first-child {{
+                                    font-weight: bold;
+                                    width: 140px;
+                                }}
+                            </style>
+                        </head>
+                        <body>
+                            <div class='container'>
+                                <div class='header'>
+                                    <h1 style='margin:0;'>Tender Verification</h1>
+                                </div>
+                                <div class='content'>
+                                    <h2 style='color:#0056b3;'>New Tender Requires Verification</h2>
+                                    <p>A new tender has been published in the system and requires your verification before it becomes publicly available.</p>
+            
+                                    <table class='info-table'>
+                                        <tr>
+                                            <td>Tender ID:</td>
+                                            <td>{t.TenderId}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Title:</td>
+                                            <td>{t.Title}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Published By:</td>
+                                            <td>{t.IssuedBy}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Type:</td>
+                                            <td>{t.TenderType}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Date Published:</td>
+                                            <td>{DateTime.Now.ToString("dd MMM yyyy, HH:mm")}</td>
+                                        </tr>
+                                    </table>
+            
+                                    <p>Please review this tender for accuracy and compliance with organizational guidelines.</p>
+            
+                                    <div style='text-align: center;'>
+               
+                                    </div>
+                                </div>
+                                <div class='footer'>
+                                    <p>This is an automated message from the BidNetra. Please do not reply to this email.</p>
+                                    <p>© 2025 BidNetra. All rights reserved.</p>
+                                </div>
+                            </div>
+                        </body>
+                        </html>";
+
+                    await _emailService.SendEmailAsync(adminEmail, subject, body);
+                }
+                catch (Exception emailEx)
+                {
+                    // Log the email error but don't stop the tender creation process
+                    // The tender is saved, but email failed
+                    Console.WriteLine($"Email sending failed: {emailEx.Message}");
+                    TempData["WarningMessage"] = "Tender saved successfully, but notification email could not be sent.";
+                    return RedirectToAction("TenderPage", "PublisherTender");
+                }
 
                 TempData["SuccessMessage"] = "Tender published successfully!";
                 return RedirectToAction("TenderPage", "PublisherTender");
@@ -517,12 +659,111 @@ namespace FYPBidNetra.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AwardTender(long ApplicationId, string ApplicationStatus)
-        {
+        /* public IActionResult AwardTender(long ApplicationId, string ApplicationStatus)
+         {
 
+             try
+             {
+                 var application = _context.TenderApplications.FirstOrDefault(a => a.ApplicationId == ApplicationId);
+
+                 if (application == null)
+                 {
+                     return Json(new { success = false, message = "Application not found." });
+                 }
+
+                 if (application.ApplicationStatus != "Pending")
+                 {
+                     return Json(new { success = false, message = "Application is not in a pending state." });
+                 }
+
+                 // Update the application status
+                 application.ApplicationStatus = ApplicationStatus;
+
+                 // Update TenderDetails if the application is marked as "Won"
+                 if (ApplicationStatus == "Won")
+                 {
+                     var tender = _context.TenderDetails.FirstOrDefault(t => t.TenderId == application.TenderAppllyId);
+                     if (tender == null)
+                     {
+                         return Json(new { success = false, message = "Tender details not found." });
+                     }
+
+                     var currentDate = DateOnly.FromDateTime(DateTime.UtcNow.AddMinutes(345));
+
+                     if (tender != null)
+                     {
+                         tender.AwardStatus = "Awarded";
+                         tender.AwardCompanyId = application.CompanyApplyId;
+                         tender.AwardDate = currentDate;
+
+                         _context.Update(tender);
+
+                         // Update all other applications for this tender to "Lost"
+                         var otherApplications = _context.TenderApplications
+                             .Where(a => a.TenderAppllyId == application.TenderAppllyId && a.ApplicationId != ApplicationId)
+                             .ToList();
+
+                         foreach (var app in otherApplications)
+                         {
+                             app.ApplicationStatus = "Lost";
+                         }
+
+                         // Now, create the contract
+                         var company = _context.Companies.FirstOrDefault(c => c.CompanyId == application.CompanyApplyId);
+                         if (company != null)
+                         {
+                             short newContractId = 1;
+                             if (_context.ContractDetails.Any())
+                             {
+                                 newContractId = (short)(_context.ContractDetails.Max(c => c.ContractId) + 1);
+                             }
+
+                             var contract = new ContractDetail
+                             {
+                                 ContractId = newContractId,
+                                 ConTenderId = tender.TenderId,
+                                 ConCompanyId = application.CompanyApplyId,
+
+                                 SellerId = tender.PublishedByUserId, // Assuming seller ID comes from the tender
+                                 BuyerId = application.CompanyApplyId, // Buyer is the awarded company
+                                 ContractCreateDate = currentDate,
+                                 ContractStatus = "Pending",
+                                 SignedBySeller = false,
+                                 SignedByBuyer = false,
+
+                             };
+
+                             _context.Add(contract);
+                         }
+                     }
+                 }
+
+                 _context.SaveChanges();
+                 return Json(new
+                 {
+                     success = true,
+                     message = "Tender status updated successfully. Contract has been generated.",
+                     redirectUrl = Url.Action("Index", "TenderContract")
+                 });
+             }
+             catch (Exception ex)
+             {
+                 return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
+             }
+         }*/
+
+
+
+        [HttpPost]
+        
+        public async Task<IActionResult> AwardTender(long ApplicationId, string ApplicationStatus)
+        {
             try
             {
-                var application = _context.TenderApplications.FirstOrDefault(a => a.ApplicationId == ApplicationId);
+                var application = await _context.TenderApplications
+                    .Include(a => a.CompanyApply)
+                        .ThenInclude(c => c.Userbid)
+                    .FirstOrDefaultAsync(a => a.ApplicationId == ApplicationId);
 
                 if (application == null)
                 {
@@ -534,13 +775,14 @@ namespace FYPBidNetra.Controllers
                     return Json(new { success = false, message = "Application is not in a pending state." });
                 }
 
-                // Update the application status
                 application.ApplicationStatus = ApplicationStatus;
 
-                // Update TenderDetails if the application is marked as "Won"
                 if (ApplicationStatus == "Won")
                 {
-                    var tender = _context.TenderDetails.FirstOrDefault(t => t.TenderId == application.TenderAppllyId);
+                    var tender = await _context.TenderDetails
+                        .Include(t => t.PublishedByUser)
+                        .FirstOrDefaultAsync(t => t.TenderId == application.TenderAppllyId);
+
                     if (tender == null)
                     {
                         return Json(new { success = false, message = "Tender details not found." });
@@ -548,55 +790,68 @@ namespace FYPBidNetra.Controllers
 
                     var currentDate = DateOnly.FromDateTime(DateTime.UtcNow.AddMinutes(345));
 
-                    if (tender != null)
+                    tender.AwardStatus = "Awarded";
+                    tender.AwardCompanyId = application.CompanyApplyId;
+                    tender.AwardDate = currentDate;
+
+                    _context.Update(tender);
+
+                    var otherApplications = _context.TenderApplications
+                        .Where(a => a.TenderAppllyId == application.TenderAppllyId && a.ApplicationId != ApplicationId)
+                        .ToList();
+
+                    foreach (var app in otherApplications)
                     {
-                        tender.AwardStatus = "Awarded";
-                        tender.AwardCompanyId = application.CompanyApplyId;
-                        tender.AwardDate = currentDate;
+                        app.ApplicationStatus = "Lost";
+                    }
 
-                        _context.Update(tender);
-
-                        // Update all other applications for this tender to "Lost"
-                        var otherApplications = _context.TenderApplications
-                            .Where(a => a.TenderAppllyId == application.TenderAppllyId && a.ApplicationId != ApplicationId)
-                            .ToList();
-
-                        foreach (var app in otherApplications)
+                    // Create contract
+                    var company = await _context.Companies.FirstOrDefaultAsync(c => c.CompanyId == application.CompanyApplyId);
+                    if (company != null)
+                    {
+                        short newContractId = 1;
+                        if (_context.ContractDetails.Any())
                         {
-                            app.ApplicationStatus = "Lost";
+                            newContractId = (short)(_context.ContractDetails.Max(c => c.ContractId) + 1);
                         }
 
-                        // Now, create the contract
-                        var company = _context.Companies.FirstOrDefault(c => c.CompanyId == application.CompanyApplyId);
-                        if (company != null)
+                        var contract = new ContractDetail
                         {
-                            short newContractId = 1;
-                            if (_context.ContractDetails.Any())
-                            {
-                                newContractId = (short)(_context.ContractDetails.Max(c => c.ContractId) + 1);
-                            }
+                            ContractId = newContractId,
+                            ConTenderId = tender.TenderId,
+                            ConCompanyId = application.CompanyApplyId,
+                            SellerId = tender.PublishedByUserId,
+                            BuyerId = application.CompanyApplyId,
+                            ContractCreateDate = currentDate,
+                            ContractStatus = "Pending",
+                            SignedBySeller = false,
+                            SignedByBuyer = false,
+                        };
 
-                            var contract = new ContractDetail
-                            {
-                                ContractId = newContractId,
-                                ConTenderId = tender.TenderId,
-                                ConCompanyId = application.CompanyApplyId,
+                        _context.Add(contract);
 
-                                SellerId = tender.PublishedByUserId, // Assuming seller ID comes from the tender
-                                BuyerId = application.CompanyApplyId, // Buyer is the awarded company
-                                ContractCreateDate = currentDate,
-                                ContractStatus = "Pending",
-                                SignedBySeller = false,
-                                SignedByBuyer = false,
+                        // Send email to winning bidder
+                        if (application.CompanyApply?.Userbid?.EmailAddress != null)
+                        {
+                            string winnerEmailBody = $@"
+                        <h2>Congratulations! You've Won the Tender</h2>
+                        <p>Your proposal for the following tender has been accepted:</p>
+                        <ul>
+                            <li><strong>Tender Title:</strong> {tender.Title}</li>
+                            <li><strong>Company Name:</strong> {company.CompanyName}</li>
+                            <li><strong>Award Date:</strong> {currentDate:d}</li>
+                        </ul>
+                        <p>A contract has been generated. Please login to your account to review and sign the contract.</p>";
 
-                            };
-
-                            _context.Add(contract);
+                            await _emailService.SendEmailAsync(
+                                application.CompanyApply.Userbid.EmailAddress,
+                                "Congratulations! Tender Award Notification",
+                                winnerEmailBody);
                         }
                     }
                 }
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return Json(new
                 {
                     success = true,
@@ -609,6 +864,7 @@ namespace FYPBidNetra.Controllers
                 return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
             }
         }
+
 
 
         [HttpGet]
