@@ -396,7 +396,7 @@ namespace FYPBidNetra.Controllers
         }
 
         [HttpGet]
-        public IActionResult AppliedTender(int id) // id will hold the TenderId
+        public IActionResult AppliedTender(int id) 
         {
 
             int currentUserID = Convert.ToInt16(User.Identity!.Name);
@@ -404,25 +404,26 @@ namespace FYPBidNetra.Controllers
                 .Where(t => t.UserbidId == currentUserID)
                 .FirstOrDefault();
 
-            // Retrieve the tender details using the TenderId (id)
+            
             var tenderDetails = _context.TenderDetails
                 .Where(t => t.TenderId == id)
                 .FirstOrDefault();
 
             if (tenderDetails == null)
             {
-                return NotFound(); // Tender not found, handle as needed
+                return NotFound(); 
             }
 
-            // You can now pass the tender details to the view for displaying
+            
             var model = new TenderApplicationEdit
             {
                 TenderAppllyId = tenderDetails.TenderId,
+               
                 CompanyApplyId = company.CompanyId
-                // Map other necessary details from tenderDetails as needed
+               
             };
 
-            return View(model); // Display the tender application form
+            return View(model); 
         }
 
         [HttpPost]
@@ -432,20 +433,7 @@ namespace FYPBidNetra.Controllers
 
             try
             {
-                // Check if payment is completed
-                var payment = await _context.Payments
-                    .FirstOrDefaultAsync(p => p.PayTenderId == t.TenderAppllyId &&
-                                            p.PayByUser == Convert.ToInt16(User.Identity.Name) &&
-                                            p.PaymentStatus == "Verified");
-
-                if (payment == null)
-                {
-                    ModelState.AddModelError("", "Payment is required to submit the proposal.");
-                    return View(t);
-                }
-
-                System.Diagnostics.Debug.WriteLine($"Found verified payment: ID={payment.PaymentId}");
-
+               
                 // Generate the next ApplicationId
                 short maxid = _context.TenderApplications.Any()
                     ? Convert.ToInt16(_context.TenderApplications.Max(x => x.ApplicationId) + 1)
@@ -509,6 +497,26 @@ namespace FYPBidNetra.Controllers
                 var company = await _context.Companies
                     .FirstOrDefaultAsync(c => c.CompanyId == t.CompanyApplyId);
 
+                // Create payment record
+                var payment = new Payment
+                {
+                    PaymentId = (short)(_context.Payments.Any() ?
+                        _context.Payments.Max(p => p.PaymentId) + 1 : 1),
+                    PayTenderId = t.TenderAppllyId,
+                    PayCompanyId = t.CompanyApplyId,
+                    PayToUser = tender.PublishedByUserId,
+                    PayByUser = Convert.ToInt16(User.Identity.Name),
+                    PaymentAmount = 10,
+                    PaymentDate = DateTime.Now,
+                    PaymentMethod = "Esewa",
+                    PaymentStatus = "Pending"
+                };
+
+                _context.Payments.Add(payment);
+                await _context.SaveChangesAsync();
+
+                
+
                 if (tender?.PublishedByUser?.EmailAddress != null)
                 {
                     // Send email to publisher
@@ -530,7 +538,7 @@ namespace FYPBidNetra.Controllers
                         emailBody);
                 }
 
-                return RedirectToAction("TenderBidTab", "BidTender", new { activeTab = "ApplyTenderList" });
+                return RedirectToAction("Index", "Payment");
                 //return View(t);
                
             }

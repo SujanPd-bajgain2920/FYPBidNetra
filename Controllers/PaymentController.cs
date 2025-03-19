@@ -16,6 +16,24 @@ namespace FYPBidNetra.Controllers
             _context = context;
         }
 
+
+        
+        public async Task<IActionResult> Index()
+        {
+            int currentUserId = Convert.ToInt16(User.Identity.Name);
+
+            var pendingPayments = await _context.Payments
+                .Include(p => p.PayTender) 
+                .Include(p => p.PayToUserNavigation) 
+                .Include(p => p.PayByUserNavigation) 
+                .Include(p => p.PayCompany) 
+                .Where(p => p.PayByUser == currentUserId && p.PaymentStatus == "Pending")
+                .OrderByDescending(p => p.PaymentDate)
+                .ToListAsync();
+
+            return View(pendingPayments);
+        }
+
         [HttpPost]
         public async Task<IActionResult> InitiatePayment(short tenderId)
         {
@@ -45,23 +63,7 @@ namespace FYPBidNetra.Controllers
                 string currentUrl = new Uri($"{Request.Scheme}://{Request.Host}").AbsoluteUri;
                 string referenceId = $"bid-{DateTime.Now.Ticks}";
 
-                // Create payment record
-                var payment = new Payment
-                {
-                    PaymentId = (short)(_context.Payments.Any() ?
-                        _context.Payments.Max(p => p.PaymentId) + 1 : 1),
-                    PayTenderId = tenderId,
-                    PayCompanyId = company.CompanyId,
-                    PayToUser = tender.PublishedByUserId,
-                    PayByUser = (short)currentUserId,
-                    PaymentAmount = 10,
-                    PaymentDate = DateTime.Now,
-                    PaymentMethod = "Esewa",
-                    PaymentStatus = "Pending"
-                };
-
-                _context.Payments.Add(payment);
-                await _context.SaveChangesAsync();
+                
 
                 dynamic request = new
                 {
@@ -78,9 +80,7 @@ namespace FYPBidNetra.Controllers
                     SignedFieldNames = "total_amount,transaction_uuid,product_code"
                 };
 
-                // Add debug logging
-                System.Diagnostics.Debug.WriteLine($"Created Payment ID: {payment.PaymentId}");
-                System.Diagnostics.Debug.WriteLine($"Success URL: {request.SuccessUrl}");
+                
 
                 var response = await paymentManager.InitiatePaymentAsync<ApiResponse>(request);
                 return Json(new { success = true, redirectUrl = response.data });
@@ -125,7 +125,7 @@ namespace FYPBidNetra.Controllers
                         await _context.SaveChangesAsync();
                         System.Diagnostics.Debug.WriteLine("Payment verified successfully");
 
-                        return Redirect($"/BidTender/AppliedTender/{payment.PayTenderId}?payment=success");
+                        return RedirectToAction("TenderBidTab", "BidTender", new { activeTab = "ApplyTenderList" });
                     }
                 }
 

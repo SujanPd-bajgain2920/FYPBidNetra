@@ -20,3 +20,39 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .grid-cols-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .section-header {
+        padding: 1rem 1.5rem;
+    }
+
+    .section-body {
+        padding: 1.5rem;
+    }
+}

@@ -1,0 +1,58 @@
+﻿@model IEnumerable<Payment>
+
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <h2 class="text-2xl font-bold mb-6">Pending Payments</h2>
+
+        @foreach (var payment in Model)
+        {
+            <div class="border rounded-lg p-6 mb-4 hover:shadow-md transition-shadow">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">@payment.PayTender?.Title</h3>
+                        <p class="text-gray-600">Payment Amount: NPR @payment.PaymentAmount</p>
+                        <p class="text-gray-600">Payment Date: @payment.PaymentDate.ToString("MMM dd, yyyy")</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Payment To: @payment.PayToUserNavigation?.FirstName @payment.PayToUserNavigation?.LastName</p>
+                        <p class="text-gray-600">Payment By: @payment.PayByUserNavigation?.FirstName @payment.PayByUserNavigation?.LastName</p>
+                        <p class="text-gray-600">Company: @payment.PayCompany?.CompanyName</p>
+                    </div>
+                </div>
+
+                <div class="mt-4 flex justify-end">
+                    <button onclick="initiatePayment(@payment.PaymentId)" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+                        Continue Payment
+                    </button>
+                </div>
+            </div>
+        }
+
+        @if (!Model.Any())
+        {
+            <div class="text-center text-gray-500 py-8">
+                No pending payments found.
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    function initiatePayment(paymentId) {
+        $.ajax({
+            url: '/Payment/InitiatePayment',
+            type: 'POST',
+            data: { tenderId: paymentId },
+            success: function(response) {
+                if (response.success) {
+                    window.location.href = response.redirectUrl;
+                } else {
+                    alert(response.message || 'Payment initiation failed');
+                }
+            },
+            error: function() {
+                alert('An error occurred while initiating payment');
+            }
+        });
+    }
+</script>
