@@ -188,7 +188,22 @@ namespace FYPBidNetra.Controllers
                     OpeningDate = t.OpeningDate,
                     ClosingDate = t.ClosingDate,
                     IsVerified = t.IsVerified,
-                    EncId = _protector.Protect(t.TenderId.ToString())
+                    AwardDate = t.AwardDate,
+                    AwardStatus = t.AwardStatus,
+                    EncId = _protector.Protect(t.TenderId.ToString()),
+                    AwardedCompany = t.AwardCompanyId != null ? new CompanyEdit
+                    {
+                        CompanyId = t.AwardCompany.CompanyId,
+                        CompanyName = t.AwardCompany.CompanyName,
+                        FullAddress = t.AwardCompany.FullAddress,
+                        OfficeEmail = t.AwardCompany.OfficeEmail,
+                        CompanyWebsiteUrl = t.AwardCompany.CompanyWebsiteUrl,
+                        CompanyType = t.AwardCompany.CompanyType,
+                        Position = t.AwardCompany.Position,
+                        Rating = t.AwardCompany.Rating,
+                        UserbidId = t.AwardCompany.UserbidId,
+
+                    } : null
                 })
                   .ToList();
             //return Json(tenders);
