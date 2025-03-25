@@ -328,36 +328,50 @@
         color: #10b981;
         font-weight: 600;
     }
-    
+
     .hidden {
         display: none;
     }
+
+    /* Add these new styles */
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        background-color: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 0.5rem;
+        color: #374151;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+    }
+
+        .back-button:hover {
+            background-color: #f3f4f6;
+            border-color: #d1d5db;
+            transform: translateX(-5px);
+        }
+
+        .back-button i {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .back-button:hover i {
+            transform: translateX(-5px);
+        }
     
     
 </style>
 
 <body>
     <div class="page-container">
-        <div class="progress-steps">
-            <div class="step completed">
-                <div class="step-circle">
-                    <i class="fas fa-check"></i>
-                </div>
-                <div class="step-label">Tender Selection</div>
-            </div>
-            <div class="step active">
-                <div class="step-circle">2</div>
-                <div class="step-label">Proposal Details</div>
-            </div>
-            <div class="step">
-                <div class="step-circle">3</div>
-                <div class="step-label">Payment</div>
-            </div>
-            <div class="step">
-                <div class="step-circle">4</div>
-                <div class="step-label">Submission</div>
-            </div>
-        </div>
+        <button type="button" class="back-button" id="backButton">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back</span>
+        </button>
 
         <div class="header-card">
             <h1 class="text-3xl font-bold mb-2">Tender Proposal Application</h1>
@@ -471,5 +485,7 @@
             }
             showLoading();
         });
+
+        
     </script>
 </body>

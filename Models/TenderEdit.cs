@@ -45,5 +45,7 @@ namespace FYPBidNetra.Models
         public IFormFile? TenderFile { get; set; } = null!;
 
          public TenderApplicationEdit Application { get; set; }
+
+        public CompanyEdit? AwardedCompany { get; set; }
     }
 }

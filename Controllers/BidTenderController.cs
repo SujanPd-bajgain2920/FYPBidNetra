@@ -284,6 +284,7 @@ namespace FYPBidNetra.Controllers
                      ProjectDuration = t.ProjectDuration,
                      BudgetEstimation = t.BudgetEstimation,
                      TenderDescription = t.TenderDescription,
+                     TenderDocument = t.TenderDocument,
                      IsVerified = t.IsVerified,
                      PublishedByUserId = t.PublishedByUserId,
                      EncId = _protector.Protect(t.TenderId.ToString())

@@ -8,6 +8,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using System.Net.Mail;
 using System.Net;
+using System.Text.RegularExpressions;
 
 
 namespace FYPBidNetra.Controllers
@@ -41,6 +42,20 @@ namespace FYPBidNetra.Controllers
             //return Json(u);  
             try
             {
+                // Validate email format
+                if (!Regex.IsMatch(u.EmailAddress, @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"))
+                {
+                    ModelState.AddModelError("EmailAddress", "Please enter a valid email address");
+                    return View(u);
+                }
+
+                // Validate phone number format (Nepal)
+                if (!Regex.IsMatch(u.Phone, @"^\+977[0-9]{10}$"))
+                {
+                    ModelState.AddModelError("Phone", "Phone number must start with +977 followed by 10 digits");
+                    return View(u);
+                }
+
                 var users = _context.UserLists.Where(x => x.EmailAddress == u.EmailAddress).FirstOrDefault();
                 if (users == null)
                 {

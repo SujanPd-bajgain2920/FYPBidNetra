@@ -25,8 +25,8 @@ namespace FYPBidNetra.Models
 
         public string Position { get; set; } = null!;
 
-       
 
+        public decimal? Rating { get; set; }
         public short? UserbidId { get; set; }
 
        

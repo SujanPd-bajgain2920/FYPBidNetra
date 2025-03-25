@@ -165,7 +165,16 @@
 
                             <!-- Email Address -->
                             <div class="mb-5 group relative z-0 w-full">
-                                <input asp-for="EmailAddress" type="email" class="py-2.5 px-0 text-gray-900 bg-transparent border-gray-300 peer block w-full appearance-none border-0 border-b-2 text-sm focus:outline-none focus:ring-0 focus:border-blue-600 dark:text-white dark:border-gray-600 dark:focus:border-blue-500" placeholder=" " required />
+                                <input asp-for="EmailAddress" 
+                                       type="email" 
+                                       class="py-2.5 px-0 text-gray-900 bg-transparent border-gray-300 peer block w-full appearance-none border-0 border-b-2 text-sm focus:outline-none focus:ring-0 focus:border-blue-600 dark:text-white dark:border-gray-600 dark:focus:border-blue-500" 
+                                       placeholder=" " 
+                                       required 
+                                       data-val="true"
+                                       data-val-required="Email is required"
+                                       data-val-email="Please enter a valid email address"
+                                       data-val-regex="Please enter a valid email address"
+                                       data-val-regex-pattern="^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" />
                                 <label asp-for="EmailAddress" class="text-gray-500 -translate-y-6 top-3 origin-[0] absolute -z-10 scale-75 transform text-sm duration-300 dark:text-gray-400 peer-focus:font-medium peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Email Address</label>
                                 <span asp-validation-for="EmailAddress" class="text-red-400"></span>
                             </div>
@@ -184,8 +193,16 @@
 
                             <!-- Phone -->
                             <div class="mb-5 group relative z-0 w-full">
-                                <input asp-for="Phone" class="py-2.5 px-0 text-gray-900 bg-transparent border-gray-300 peer block w-full appearance-none border-0 border-b-2 text-sm focus:outline-none focus:ring-0 focus:border-blue-600 dark:text-white dark:border-gray-600 dark:focus:border-blue-500" placeholder=" " required />
-                                <label asp-for="Phone" class="text-gray-500 -translate-y-6 top-3 origin-[0] absolute -z-10 scale-75 transform text-sm duration-300 dark:text-gray-400 peer-focus:font-medium peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Phone</label>
+                                <input asp-for="Phone"
+                                       type="tel"
+                                       class="py-2.5 px-0 text-gray-900 bg-transparent border-gray-300 peer block w-full appearance-none border-0 border-b-2 text-sm focus:outline-none focus:ring-0 focus:border-blue-600 dark:text-white dark:border-gray-600 dark:focus:border-blue-500"
+                                       placeholder=" "
+                                       required
+                                       data-val="true"
+                                       data-val-required="Phone number is required"
+                                       data-val-regex="Phone number must start with +977 followed by 10 digits"
+                                       data-val-regex-pattern="^\+977[0-9]{10}$" />
+                                <label asp-for="Phone" class="text-gray-500 -translate-y-6 top-3 origin-[0] absolute -z-10 scale-75 transform text-sm duration-300 dark:text-gray-400 peer-focus:font-medium peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Phone (+977XXXXXXXXXX)</label>
                                 <span asp-validation-for="Phone" class="text-red-400"></span>
                             </div>
 
@@ -503,7 +520,36 @@
             updateHeader();
         };
 
+        $(document).ready(function () {
+            $.validator.addMethod(
+                "emailRegex",
+                function (value, element) {
+                    return /^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
+                },
+                "Please enter a valid email address"
+            );
 
+            $.validator.addMethod(
+                "phoneRegex",
+                function (value, element) {
+                    return /^\+977[0-9]{10}$/.test(value);
+                },
+                "Phone number must start with +977 followed by 10 digits"
+            );
+
+            $("form").validate({
+                rules: {
+                    EmailAddress: {
+                        required: true,
+                        emailRegex: true
+                    },
+                    Phone: {
+                        required: true,
+                        phoneRegex: true
+                    }
+                }
+            });
+        });
 
 
     </script>

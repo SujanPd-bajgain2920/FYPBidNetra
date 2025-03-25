@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,45 +8,73 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+       
+      
+
+        /* Base styles */
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        }
+
+        .page-container {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Status badges */
         .status-badge {
             padding: 0.5rem 1rem;
             border-radius: 9999px;
             font-weight: 600;
-            text-align: center;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .status-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .status-won {
-            background-color: #DEF7EC;
-            color: #03543F;
-            border: 1px solid #31C48D;
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #047857;
+            border: none;
         }
 
         .status-lost {
-            background-color: #FDE8E8;
-            color: #9B1C1C;
-            border: 1px solid #F98080;
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #b91c1c;
+            border: none;
         }
 
         .status-pending {
-            background-color: #FEF3C7;
-            color: #92400E;
-            border: 1px solid #FBBF24;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+            border: none;
         }
 
+        /* Cards */
         .section-card {
+            animation: slideInUp 0.6s ease-out;
             transition: all 0.3s ease;
-            background: white;
             border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+            background: white;
+            margin-bottom: 1.5rem;
         }
 
-            .section-card:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 12px -1px rgba(0, 0, 0, 0.1);
-            }
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
 
+        /* Info items */
         .info-label {
             color: #6B7280;
             font-size: 0.875rem;
@@ -57,123 +86,312 @@
             font-weight: 500;
         }
 
-        .award-btn {
-            transition: all 0.3s ease;
-        }
-
-            .award-btn:hover {
-                transform: scale(1.05);
-            }
-
+        /* Header */
         .tender-header {
-            background: linear-gradient(to right, #1E40AF, #3B82F6);
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
             color: white;
+            position: relative;
+            overflow: hidden;
         }
 
+        .tender-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: translate(30%, -30%);
+        }
+
+        /* Position badge */
         .styled-position {
-            font-family: 'Roboto', sans-serif; 
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: #2c3e50;
-            background-color: #ecf0f1; 
-            padding: 5px 10px; 
-            border-radius: 5px; 
-            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1); 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #4b5563;
+            background-color: #f3f4f6;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: inline-flex;
+            align-items: center;
+            margin-left: 0.5rem;
         }
 
-            .styled-position:hover {
-                color: #3498db; 
-                background-color: #f4f6f7; 
-                cursor: pointer; 
-            }
+        .styled-position i {
+            margin-right: 0.375rem;
+            color: #3b82f6;
+        }
 
-        
-
+        /* Document preview */
         .document-preview {
             width: 100%;
             height: 80vh;
             border: none;
+            border-radius: 0.5rem;
         }
 
+        /* Info cards */
+        .info-card {
+            background-color: #f9fafb;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            transition: all 0.3s ease;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .info-card:hover {
+            background-color: #f3f4f6;
+            transform: translateX(5px);
+        }
+
+        /* Buttons */
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            gap: 0.5rem;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-button.primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .action-button.secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+        }
+
+        .action-button.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        /* Rating stars */
+        .rating {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .rating-stars {
+            display: inline-flex;
+            color: #fbbf24;
+            margin-right: 0.5rem;
+        }
+
+        .rating-value {
+            font-weight: 600;
+            color: #4b5563;
+        }
+
+        /* Back button */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            color: #3b82f6;
+            background-color: #eff6ff;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #dbeafe;
+            transform: translateX(-5px);
+        }
+
+        /* Award dropdown */
+        .award-dropdown {
+            z-index: 10;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+            width: 150px;
+            right: 0;
+        }
+
+        .award-btn {
+            padding: 0.75rem 1rem;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .award-btn:hover {
+            background-color: #f3f4f6;
+        }
+
+        .award-btn.won:hover {
+            background-color: #d1fae5;
+        }
+
+        .award-btn.lost:hover {
+            background-color: #fee2e2;
+        }
+
+        /* Contract button */
+        .contract-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+        }
+
+        .contract-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Profile image */
+        .profile-image-container {
+            position: relative;
+            width: 10rem;
+            height: 10rem;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 4px solid white;
+        }
+
+        .profile-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-badge {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+            padding: 0.5rem;
+            color: white;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen py-8">
-
-    <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4 py-4">
-            <button onclick="history.back()" class="flex items-center text-blue-600 hover:text-blue-800 font-semibold">
-                <i class="fas fa-arrow-left mr-2"></i> Back
+    <div class="page-container container mx-auto px-4">
+        <!-- Back button -->
+        <div class="mb-6">
+            <button onclick="history.back()" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back</span>
             </button>
         </div>
+        
         <!-- Top Status Bar -->
-        <div class="section-card mb-8">
+        <div class="section-card">
             <div class="tender-header p-6">
-                <div class="flex justify-between items-start">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h1 class="text-2xl font-bold mb-2">@Model.Tender.Title</h1>
-                        <p class="text-blue-100">Application ID: @Model.Application.ApplicationId</p>
+                        <p class="text-blue-100 flex items-center gap-2">
+                            <i class="fas fa-hashtag"></i>
+                            <span>Application ID: @Model.Application.ApplicationId</span>
+                        </p>
                     </div>
-                    <div class="flex items-center space-x-4">
+                    <div class="flex items-center gap-4">
                         <span class="status-badge @(Model.Application.ApplicationStatus.ToLower() == "won" ? "status-won" :
                                               Model.Application.ApplicationStatus.ToLower() == "lost" ? "status-lost" :
                                               "status-pending")">
+                            <i class="fas @(Model.Application.ApplicationStatus.ToLower() == "won" ? "fa-trophy" :
+                                    Model.Application.ApplicationStatus.ToLower() == "lost" ? "fa-times-circle" :
+                                    "fa-hourglass-half")"></i>
                             @Model.Application.ApplicationStatus
                         </span>
                         @if (Model.Application.ApplicationStatus == "Pending")
                         {
-                           <!-- Award Tender Dropdown -->
-                                <div class="relative inline-block">
-                                    <button class="btn text-blue-600 hover:text-blue-900 award-dropdown-btn" title="Award Tender">
-                                        <i class="fas fa-trophy"></i>
+                            <!-- Award Tender Dropdown -->
+                            <div class="relative inline-block">
+                                <button class="action-button primary award-dropdown-btn" title="Award Tender">
+                                    <i class="fas fa-trophy"></i>
+                                    <span>Award</span>
+                                </button>
+                                <div class="hidden absolute award-dropdown mt-2">
+                                    <button class="award-btn won w-full" data-id="@Model.Application.ApplicationId" data-status="Won">
+                                        <i class="fas fa-trophy text-green-600"></i>
+                                        <span>Award</span>
                                     </button>
-                                    <div class="hidden absolute bg-white shadow-md border rounded-md p-2 mt-2 w-32 award-dropdown">
-                                        <button class="block w-full text-left px-3 py-1 text-green-600 hover:bg-gray-200 award-btn" data-id="@Model.Application.ApplicationId" data-status="Won">🏆 Won</button>
-                                                            <button class="block w-full text-left px-3 py-1 text-red-600 hover:bg-gray-200 award-btn" data-id="@Model.Application.ApplicationId" data-status="Lost">❌ Lost</button>
-                                    </div>
+                                    <button class="award-btn lost w-full" data-id="@Model.Application.ApplicationId" data-status="Lost">
+                                        <i class="fas fa-times-circle text-red-600"></i>
+                                        <span>Reject</span>
+                                    </button>
                                 </div>
+                            </div>
 
-                                <!-- Hidden Form for AJAX Submission -->
-                                <form id="awardForm_@Model.Application.ApplicationId" class="hidden" method="POST" asp-action="AwardTender" asp-controller="PublisherTender">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="ApplicationId" value="@Model.Application.ApplicationId" />
-                                    <input type="hidden" name="ApplicationStatus" />
-                                </form>
-  
+                            <!-- Hidden Form for AJAX Submission -->
+                            <form id="awardForm_@Model.Application.ApplicationId" class="hidden" method="POST" asp-action="AwardTender" asp-controller="PublisherTender">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="ApplicationId" value="@Model.Application.ApplicationId" />
+                                <input type="hidden" name="ApplicationStatus" />
+                            </form>
                         }
                     </div>
-                   
                 </div>
-               
             </div>
+            
             <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
                 <a asp-action="Index" asp-controller="TenderContract" asp-route-id="@Model.Application.EncId"
-                   class="apply-button">
-                    <i class="fas fa-paper-plane mr-2"></i>
-                    Contract Now
+                   class="contract-button">
+                    <i class="fas fa-file-contract mr-2"></i>
+                    Generate Contract
                 </a>
-                <div>
+                <div class="info-card">
                     <p class="info-label">Issued By</p>
-                    <p class="info-value"><i class="fas fa-building mr-2 text-blue-600"></i>@Model.Tender.IssuedBy</p>
+                    <p class="info-value flex items-center gap-2">
+                        <i class="fas fa-building text-blue-600"></i>
+                        <span>@Model.Tender.IssuedBy</span>
+                    </p>
                 </div>
-                <div>
+                <div class="info-card">
                     <p class="info-label">Budget Estimation</p>
-                    <p class="info-value"><i class="fas fa-money-bill mr-2 text-green-600"></i>@Model.Tender.BudgetEstimation.ToString("C")</p>
+                    <p class="info-value flex items-center gap-2">
+                        <i class="fas fa-rupee-sign text-green-600"></i>
+                        <span>₹ @Model.Tender.BudgetEstimation.ToString("N2")</span>
+                    </p>
                 </div>
-                <div>
+                <div class="info-card">
                     <p class="info-label">Project Duration</p>
-                    <p class="info-value"><i class="fas fa-clock mr-2 text-blue-600"></i>@Model.Tender.ProjectDuration</p>
+                    <p class="info-value flex items-center gap-2">
+                        <i class="fas fa-clock text-blue-600"></i>
+                        <span>@Model.Tender.ProjectDuration</span>
+                    </p>
                 </div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Company Profile -->
-            <div class="section-card p-6">
+            <div class="section-card">
                 <!-- Header Section -->
-                <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
-                    <div class="flex items-center space-x-4">
+                <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                    <div class="flex items-center gap-4">
                         <div class="bg-blue-100 p-3 rounded-lg">
                             <i class="fas fa-building text-2xl text-blue-600"></i>
                         </div>
@@ -182,141 +400,167 @@
                             <p class="text-gray-500 text-sm mt-1">Business Registration Details</p>
                         </div>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <span class="px-4 py-2 bg-blue-100 text-blue-800 rounded-full font-medium flex items-center">
+                    <div class="flex items-center gap-3">
+                        <span class="px-3 py-1.5 bg-blue-100 text-blue-800 rounded-full font-medium flex items-center text-sm">
                             <i class="fas fa-briefcase mr-2"></i>
                             @Model.Company.CompanyType
                         </span>
-                        @* <span class="px-4 py-2 bg-green-100 text-green-800 rounded-full font-medium flex items-center">
-                            <i class="fas fa-star mr-2"></i>
-                            Rating: @Model.Company.Rating
-                        </span> *@
+                        
+                        
+                        <div class="rating px-3 py-1.5 bg-yellow-100 text-yellow-800 rounded-full">
+                            <div class="rating-stars">
+                                @{
+                                    var rating = Model.Company.Rating ?? 0;
+                                    decimal halfStar = 0.5M; // Define as decimal
+                                    for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= rating)
+                                        {
+                                            <i class="fas fa-star"></i>
+                                        }
+                                        else if ((i - halfStar) <= rating)
+                                        {
+                                            <i class="fas fa-star-half-alt"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="far fa-star"></i>
+                                        }
+                                    }
+                                }
+                            </div>
+                            <span class="rating-value">@(Model.Company.Rating?.ToString("0.0") ?? "N/A")</span>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Company Information Grid -->
-                <div class="grid grid-cols-2 gap-8">
-                    <!-- Left Column -->
-                    <div class="space-y-6">
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <div class="flex items-start space-x-3">
-                                <div class="mt-1">
-                                    <i class="fas fa-building text-blue-600"></i>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <!-- Left Column -->
+                        <div class="space-y-4">
+                            <div class="info-card">
+                                <div class="flex items-start gap-3">
+                                    <i class="fas fa-building text-blue-600 mt-1"></i>
+                                    <div>
+                                        <p class="text-sm text-gray-600 mb-1">Company Name</p>
+                                        <p class="text-lg font-semibold text-gray-900">@Model.Company.CompanyName</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p class="text-sm text-gray-600 mb-1">Company Name</p>
-                                    <p class="text-lg font-semibold text-gray-900">@Model.Company.CompanyName</p>
+                            </div>
+
+                            <div class="info-card">
+                                <div class="flex items-start gap-3">
+                                    <i class="fas fa-fingerprint text-blue-600 mt-1"></i>
+                                    <div>
+                                        <p class="text-sm text-gray-600 mb-1">Registration Number</p>
+                                        <p class="font-mono text-lg font-semibold text-gray-900">@Model.Company.RegistrationNumber</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-card">
+                                <div class="flex items-start gap-3">
+                                    <i class="fas fa-map-marker-alt text-red-500 mt-1"></i>
+                                    <div>
+                                        <p class="text-sm text-gray-600 mb-1">Office Address</p>
+                                        <p class="text-gray-900">@Model.Company.FullAddress</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <div class="flex items-start space-x-3">
-                                <div class="mt-1">
-                                    <i class="fas fa-fingerprint text-blue-600"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-600 mb-1">Registration Number</p>
-                                    <p class="font-mono text-lg font-semibold text-gray-900">@Model.Company.RegistrationNumber</p>
+                        <!-- Right Column -->
+                        <div class="space-y-4">
+                            <div class="info-card">
+                                <div class="flex items-start gap-3">
+                                    <i class="fas fa-envelope text-blue-600 mt-1"></i>
+                                    <div>
+                                        <p class="text-sm text-gray-600 mb-1">Email Address</p>
+                                        <a href="mailto:@Model.Company.OfficeEmail"
+                                           class="text-blue-600 hover:text-blue-800 transition-colors">
+                                            @Model.Company.OfficeEmail
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <div class="flex items-start space-x-3">
-                                <div class="mt-1">
-                                    <i class="fas fa-map-marker-alt text-red-500"></i>
+                            <div class="info-card">
+                                <div class="flex items-start gap-3">
+                                    <i class="fas fa-globe text-blue-600 mt-1"></i>
+                                    <div>
+                                        <p class="text-sm text-gray-600 mb-1">Website</p>
+                                        <a href="@Model.Company.CompanyWebsiteUrl"
+                                           target="_blank"
+                                           class="text-blue-600 hover:text-blue-800 transition-colors flex items-center">
+                                            @Model.Company.CompanyWebsiteUrl
+                                            <i class="fas fa-external-link-alt text-xs ml-2"></i>
+                                        </a>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p class="text-sm text-gray-600 mb-1">Office Address</p>
-                                    <p class="text-gray-900">@Model.Company.FullAddress</p>
+                            </div>
+
+                            <div class="info-card">
+                                <div class="flex items-start gap-3">
+                                    <i class="fas fa-user-tie text-blue-600 mt-1"></i>
+                                    <div>
+                                        <p class="text-sm text-gray-600 mb-1">Position</p>
+                                        <p class="text-gray-900">@Model.Company.Position</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Right Column -->
-                    <div class="space-y-6">
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <div class="flex items-start space-x-3">
-                                <div class="mt-1">
-                                    <i class="fas fa-envelope text-blue-600"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-600 mb-1">Email Address</p>
-                                    <a href="mailto:@Model.Company.OfficeEmail"
-                                       class="text-blue-600 hover:text-blue-800 transition-colors">
-                                        @Model.Company.OfficeEmail
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <div class="flex items-start space-x-3">
-                                <div class="mt-1">
-                                    <i class="fas fa-globe text-blue-600"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-600 mb-1">Website</p>
-                                    <a href="@Model.Company.CompanyWebsiteUrl"
-                                       target="_blank"
-                                       class="text-blue-600 hover:text-blue-800 transition-colors flex items-center">
-                                        @Model.Company.CompanyWebsiteUrl
-                                        <i class="fas fa-external-link-alt text-xs ml-2"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <div class="flex items-start space-x-3">
-                                <div class="mt-1">
-                                    <i class="fas fa-file-write text-blue-600"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-600 mb-1">Position</p>
-                                    <p class="text-gray-900">@Model.Company.Position</p>
-                                </div>
-                            </div>
-                        </div>
+                    
+                    <!-- Added View Profile Button -->
+                    <div class="flex justify-center mt-4">
+                        <a href="#" class="action-button primary">
+                            <i class="fas fa-id-card"></i>
+                            <span>View Company Profile</span>
+                        </a>
                     </div>
                 </div>
-
-
-                
             </div>
 
             <!-- Application Details Section -->
-            <div class="section-card p-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-6">
-                    <i class="fas fa-file-alt mr-2 text-blue-600"></i>Application Details
-                </h2>
+            <div class="section-card">
+                <div class="p-6 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                        <i class="fas fa-file-alt text-blue-600"></i>
+                        Application Details
+                    </h2>
+                </div>
 
-                <div class="space-y-6">
-                    <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="p-6 space-y-6">
+                    <div class="info-card">
                         <div class="info-label">Proposed Budget</div>
-                        <div class="info-value text-green-600 text-2xl font-bold">
-                            $@Model.Application.ProposedBudget
+                        <div class="info-value text-green-600 text-2xl font-bold flex items-center">
+                            <i class="fas fa-rupee-sign mr-2"></i>
+                            ₹ @Model.Application.ProposedBudget.ToString("N2")
                         </div>
                     </div>
 
-                    <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="info-card">
                         <div class="info-label">Proposed Duration</div>
-                        <div class="info-value">@Model.Application.ProposedDuration</div>
+                        <div class="info-value flex items-center gap-2">
+                            <i class="fas fa-calendar-alt text-blue-600"></i>
+                            <span>@Model.Application.ProposedDuration</span>
+                        </div>
                     </div>
 
-                    <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="info-card">
                         <div class="info-label">Application Document</div>
-                        <div class="flex gap-4 mt-2">
+                        <div class="flex gap-4 mt-3">
                             <!-- Download Button -->
-                            <button class="action-button bg-blue-600 text-white hover:bg-blue-700" onclick="downloadDocument()">
-                                <i class="fas fa-download mr-2"></i>Download
+                            <button class="action-button primary" onclick="downloadDocument()">
+                                <i class="fas fa-download"></i>
+                                <span>Download</span>
                             </button>
 
                             <!-- Preview Button -->
-                            <button class="action-button bg-gray-600 text-white hover:bg-gray-700" onclick="previewDocument()">
-                                <i class="fas fa-eye mr-2"></i>Preview
+                            <button class="action-button secondary" onclick="previewDocument()">
+                                <i class="fas fa-eye"></i>
+                                <span>Preview</span>
                             </button>
                         </div>
                     </div>
@@ -327,9 +571,10 @@
             <div id="documentPreview" tabindex="-1" aria-hidden="true"
                  class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
                 <div class="relative w-full max-w-4xl max-h-full">
-                    <div class="relative bg-white rounded-lg shadow">
+                    <div class="relative bg-white rounded-lg shadow-xl">
                         <div class="flex items-center justify-between p-4 border-b">
-                            <h3 class="text-xl font-semibold text-gray-900">
+                            <h3 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                                <i class="fas fa-file-alt text-blue-600"></i>
                                 Document Preview
                             </h3>
                             <button type="button"
@@ -346,131 +591,163 @@
             </div>
 
             <!-- Bank Details Section -->
-            <div class="section-card p-6">
-                <h2 class="text-2xl font-semibold text-gray-900 flex items-center gap-2 border-b pb-4">
-                    <i class="fas fa-university text-blue-600 text-3xl"></i>Bank Details
-                </h2>
+            <div class="section-card">
+                <div class="p-6 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                        <i class="fas fa-university text-blue-600"></i>
+                        Bank Details
+                    </h2>
+                </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
-                    <!-- Bank Name -->
-                    <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                        <i class="fas fa-building text-blue-600 text-xl"></i>
-                        <div>
-                            <p class="text-sm text-gray-500">Bank Name</p>
-                            <p class="text-lg font-medium text-gray-900">@Model.Bank.BankName</p>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <!-- Bank Name -->
+                        <div class="info-card">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-building text-blue-600"></i>
+                                <div>
+                                    <p class="text-sm text-gray-500">Bank Name</p>
+                                    <p class="text-lg font-medium text-gray-900">@Model.Bank.BankName</p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Account Holder -->
-                    <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                        <i class="fas fa-user text-green-600 text-xl"></i>
-                        <div>
-                            <p class="text-sm text-gray-500">Account Holder</p>
-                            <p class="text-lg font-medium text-gray-900">@Model.Bank.AccountHolderName</p>
+                        <!-- Account Holder -->
+                        <div class="info-card">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-user text-green-600"></i>
+                                <div>
+                                    <p class="text-sm text-gray-500">Account Holder</p>
+                                    <p class="text-lg font-medium text-gray-900">@Model.Bank.AccountHolderName</p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Account Number -->
-                    <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                        <i class="fas fa-credit-card text-indigo-600 text-xl"></i>
-                        <div>
-                            <p class="text-sm text-gray-500">Account Number</p>
-                            <p class="text-lg font-medium text-gray-900">@Model.Bank.AccountNumber</p>
+                        <!-- Account Number -->
+                        <div class="info-card">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-credit-card text-indigo-600"></i>
+                                <div>
+                                    <p class="text-sm text-gray-500">Account Number</p>
+                                    <p class="text-lg font-medium text-gray-900">@Model.Bank.AccountNumber</p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Account Type -->
-                    <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                        <i class="fas fa-file-invoice-dollar text-red-600 text-xl"></i>
-                        <div>
-                            <p class="text-sm text-gray-500">Account Type</p>
-                            <p class="text-lg font-medium text-gray-900">@Model.Bank.AccountType</p>
+                        <!-- Account Type -->
+                        <div class="info-card">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-file-invoice-dollar text-red-600"></i>
+                                <div>
+                                    <p class="text-sm text-gray-500">Account Type</p>
+                                    <p class="text-lg font-medium text-gray-900">@Model.Bank.AccountType</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Bidder Details -->
-            <div class="section-card p-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-6">
-                    <i class="fas fa-user mr-2 text-blue-600"></i>Bidder Details
-                </h2>
-                <div class="flex gap-6">
-                    <!-- Profile Image Section -->
-                    <div class="flex-shrink-0">
-                        <div class="relative w-48 h-48 rounded-lg overflow-hidden shadow-lg border-4 border-white">
-                            @if (string.IsNullOrEmpty(Model.User.UserPhoto))
-                            {
-                                <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-                                    <i class="fas fa-user-circle text-gray-400 text-6xl"></i>
+            <div class="section-card">
+                <div class="p-6 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                        <i class="fas fa-user text-blue-600"></i>
+                        Bidder Details
+                    </h2>
+                </div>
+                
+                <div class="p-6">
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <!-- Profile Image Section -->
+                        <div class="flex-shrink-0">
+                            <div class="profile-image-container">
+                                @if (string.IsNullOrEmpty(Model.User.UserPhoto))
+                                {
+                                    <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                                        <i class="fas fa-user-circle text-gray-400 text-6xl"></i>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <img src="~/UserImage/@Model.User.UserPhoto"
+                                         alt="@Model.User.FirstName's photo"
+                                         class="w-full h-full object-cover"
+                                         onerror="this.onerror=null; this.src='path/to/default-image.jpg';">
+                                }
+                                <div class="profile-badge">
+                                    <span class="flex items-center">
+                                        <i class="fas fa-circle text-green-400 text-xs mr-1"></i>
+                                        Bidder
+                                    </span>
                                 </div>
-                            }
-                            else
-                            {
-                                <img src="~/UserImage/@Model.User.UserPhoto"
-                                     alt="@Model.User.FirstName's photo"
-                                     class="w-full h-full object-cover"
-                                     onerror="this.onerror=null; this.src='path/to/default-image.jpg';">
-                            }
-                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-2">
-                                <span class="text-white text-sm font-medium">
-                                    <i class="fas fa-circle text-green-400 text-xs mr-1"></i>Bidder
-                                </span>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Details Section -->
-                    <div class="flex-grow grid grid-cols-2 gap-6">
-                        <div class="space-y-4">
-                            <div>
-                                <p class="info-label">Name</p>
-                                <p class="info-value text-lg">
-                                    @Model.User.FirstName @Model.User.MiddleName @Model.User.LastName
-                                    <span class="styled-position">@Model.Company.Position</span>
-                                </p>
-                            </div>
-                            <div>
-                                <p class="info-label">Contact</p>
-                                <p class="info-value">
-                                    <i class="fas fa-envelope mr-2 text-blue-600"></i>@Model.User.EmailAddress<br>
-                                    <i class="fas fa-phone mr-2 text-blue-600"></i>@Model.User.Phone
-                                </p>
-                            </div>
-                            <div>
-                                <p class="info-label">Role</p>
-                                <p class="info-value">
-                                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                                        @Model.User.UserRole
-                                    </span>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="space-y-4">
-                            <div>
-                                <p class="info-label">Location</p>
-                                <div class="info-value">
-                                    <p class="flex items-center">
-                                        <i class="fas fa-map-marker-alt mr-2 text-red-500"></i>
-                                        @Model.User.Province
+                        <!-- Details Section -->
+                        <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <div class="info-card">
+                                    <p class="info-label">Name</p>
+                                    <p class="info-value text-lg flex items-center flex-wrap">
+                                        <span>@Model.User.FirstName @Model.User.MiddleName @Model.User.LastName</span>
+                                        <span class="styled-position">
+                                            <i class="fas fa-user-tie"></i>
+                                            @Model.Company.Position
+                                        </span>
                                     </p>
-                                    <p class="ml-5">@Model.User.District, @Model.User.City</p>
+                                </div>
+                                <div class="info-card">
+                                    <p class="info-label">Contact</p>
+                                    <p class="info-value">
+                                        <i class="fas fa-envelope mr-2 text-blue-600"></i>@Model.User.EmailAddress<br>
+                                        <i class="fas fa-phone mr-2 text-blue-600"></i>@Model.User.Phone
+                                    </p>
+                                </div>
+                                <div class="info-card">
+                                    <p class="info-label">Role</p>
+                                    <p class="info-value">
+                                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                                            @Model.User.UserRole
+                                        </span>
+                                    </p>
                                 </div>
                             </div>
-                            <div>
-                                <p class="info-label">Verification Status</p>
-                                <p class="info-value">
-                                    <span class="inline-flex items-center">
-                                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                        Verified Account
-                                    </span>
-                                </p>
+                            <div class="space-y-4">
+                                <div class="info-card">
+                                    <p class="info-label">Location</p>
+                                    <div class="info-value">
+                                        <p class="flex items-center">
+                                            <i class="fas fa-map-marker-alt mr-2 text-red-500"></i>
+                                            @Model.User.Province
+                                        </p>
+                                        <p class="ml-5">@Model.User.District, @Model.User.City</p>
+                                    </div>
+                                </div>
+                                <div class="info-card">
+                                    <p class="info-label">Verification Status</p>
+                                    <p class="info-value">
+                                        <span class="inline-flex items-center">
+                                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                            Verified Account
+                                        </span>
+                                    </p>
+                                </div>
                             </div>
-                           
+                            
+                            <div class="col-span-2 flex gap-4 mt-2">
+                                <a asp-action="UserMessage" asp-controller="Chat" asp-route-receiverId="@Model.User.UserId" 
+                                   class="action-button primary">
+                                    <i class="fas fa-paper-plane"></i>
+                                    Send Message
+                                </a>
+                                
+                                <a href="#" class="action-button secondary">
+                                    <i class="fas fa-user"></i>
+                                    View Profile
+                                </a>
+                            </div>
                         </div>
-                        <a asp-action="UserMessage" asp-controller="Chat" asp-route-receiverId="@Model.User.UserId" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                            <i class="fas fa-paper-plane mr-2"></i>Send Message
-                        </a>
                     </div>
                 </div>
             </div>
@@ -484,13 +761,20 @@
             document.querySelectorAll('.award-dropdown-btn').forEach(button => {
                 button.addEventListener('click', function (event) {
                     event.stopPropagation();
-                    let dropdown = this.nextElementSibling;
+                    const dropdown = this.nextElementSibling;
+                    
+                    // Close all other dropdowns first
+                    document.querySelectorAll('.award-dropdown').forEach(d => {
+                        if (d !== dropdown) d.classList.add('hidden');
+                    });
+                    
+                    // Toggle this dropdown
                     dropdown.classList.toggle('hidden');
                 });
             });
 
             // Close dropdown when clicking outside
-            document.addEventListener('click', function (event) {
+            document.addEventListener('click', function () {
                 document.querySelectorAll('.award-dropdown').forEach(dropdown => {
                     dropdown.classList.add('hidden');
                 });
@@ -499,13 +783,25 @@
             // Award Tender Status Update
             document.querySelectorAll('.award-btn').forEach(button => {
                 button.addEventListener('click', function () {
-                    let applicationId = this.getAttribute('data-id');
-                    let applicationStatus = this.getAttribute('data-status');
-                    let form = document.getElementById(`awardForm_${applicationId}`);
-                    let formData = new FormData(form);
+                    const applicationId = this.getAttribute('data-id');
+                    const applicationStatus = this.getAttribute('data-status');
+                    const form = document.getElementById(`awardForm_${applicationId}`);
+                    
+                    if (!form) return;
+                    
+                    const formData = new FormData(form);
                     formData.set('ApplicationStatus', applicationStatus);
+                    
+                    const statusText = applicationStatus === 'Won' ? 'award this tender to' : 'reject';
+                    const companyName = document.querySelector('.info-value:contains("Company Name")').textContent.trim();
 
-                    if (confirm(`Are you sure you want to mark this tender as '${applicationStatus}'?`)) {
+                    if (confirm(`Are you sure you want to ${statusText} ${companyName}?`)) {
+                        // Show loading state
+                        const button = this;
+                        const originalContent = button.innerHTML;
+                        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                        button.disabled = true;
+                        
                         fetch(form.action, {
                             method: form.method,
                             body: formData,
@@ -513,30 +809,34 @@
                                 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
                             }
                         })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                   let alertMessage = `Tender marked as '${applicationStatus}' successfully!`;
-                    
-                    // If the status is "Won", show the contract message
-                    if (applicationStatus === "Won") {
-                        alertMessage += "\nContract has been generated.";
-                    }
-
-                    alert(alertMessage); // Show the combined message
-                     location.reload();
-                                   
-                                    
-                                } else {
-                                    alert("Failed to update award status: " + data.message);
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                let alertMessage = `Tender marked as '${applicationStatus}' successfully!`;
+                                
+                                // If the status is "Won", show the contract message
+                                if (applicationStatus === "Won") {
+                                    alertMessage += "\nContract has been generated.";
                                 }
-                            })
-                            .catch(error => console.error("Error:", error));
+
+                                alert(alertMessage);
+                                location.reload();
+                            } else {
+                                button.innerHTML = originalContent;
+                                button.disabled = false;
+                                alert("Failed to update award status: " + (data.message || "Unknown error"));
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            button.innerHTML = originalContent;
+                            button.disabled = false;
+                            alert("An error occurred. Please try again.");
+                        });
                     }
                 });
             });
         });
-
 
         function downloadDocument() {
             const filePath = '@Url.Content("~/ProposalTender/")' + '@Model.Application.ApplicationDocument';
@@ -549,11 +849,9 @@
             document.body.removeChild(link);
         }
 
-
         // Function to preview the document
         function previewDocument() {
             const filePath = '@Url.Content("~/ProposalTender/")' + '@Model.Application.ApplicationDocument';
-
             const iframe = document.getElementById('docViewer');
 
             // If the file is a PDF or image, directly set it
@@ -572,7 +870,6 @@
         function closePreview() {
             document.getElementById('documentPreview').classList.add('hidden');
         }
-
     </script>
 </body>
 </html>

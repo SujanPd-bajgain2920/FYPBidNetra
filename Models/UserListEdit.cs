@@ -22,8 +22,15 @@ namespace FYPBidNetra.Models
 
         public string Gender { get; set; } = null!;
 
+        [Required(ErrorMessage = "Phone number is required")]
+        [RegularExpression(@"^\+977[0-9]{10}$",
+        ErrorMessage = "Phone number must start with +977 followed by 10 digits")]
         public string Phone { get; set; } = null!;
 
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+        ErrorMessage = "Please enter a valid email address")]
         public string EmailAddress { get; set; } = null!;
 
         public string? UserPhoto { get; set; }

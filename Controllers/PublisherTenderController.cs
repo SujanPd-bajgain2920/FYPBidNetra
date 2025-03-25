@@ -168,6 +168,35 @@ namespace FYPBidNetra.Controllers
             return PartialView("_CloseTender", tenders);
         }
 
+        public IActionResult AwardedTender()
+        {
+            UpdateTenderStatuses();
+            int currentUserID = Convert.ToInt16(User.Identity!.Name);
+            var tenders = _context.TenderDetails
+                .Where(t => t.PublishedByUserId == currentUserID &&
+                            t.TenderStatus == "Closed" &&
+                            t.IsVerified == "Verified" &&
+                            t.AwardStatus == "Awarded")
+                .OrderByDescending(t => t.IssuedDate).Select(t => new TenderEdit
+                {
+                    TenderId = t.TenderId,
+                    Title = t.Title,
+                    IssuedBy = t.IssuedBy,
+                    IssuedDate = t.IssuedDate,
+                    TenderType = t.TenderType,
+                    TenderStatus = t.TenderStatus,
+                    OpeningDate = t.OpeningDate,
+                    ClosingDate = t.ClosingDate,
+                    IsVerified = t.IsVerified,
+                    EncId = _protector.Protect(t.TenderId.ToString())
+                })
+                  .ToList();
+            //return Json(tenders);
+            return PartialView("_AwardedTender", tenders);
+        }
+
+
+
         public IActionResult PublishTender()
         {
             return View("_PublishTender");
@@ -181,6 +210,35 @@ namespace FYPBidNetra.Controllers
             //return Json(t);
             try
             {
+                // Validate closing date is not before opening date
+                if (t.ClosingDate <= t.OpeningDate)
+                {
+                    ModelState.AddModelError("ClosingDate", "Closing date must be after the opening date.");
+                    return View("_PublishTender", t);
+                }
+
+                // Validate budget estimation
+                if (t.BudgetEstimation <= 0)
+                {
+                    ModelState.AddModelError("BudgetEstimation", "Budget estimation must be greater than 0.");
+                    return View("_PublishTender", t);
+                }
+
+                // Validate file upload
+                if (t.TenderFile == null)
+                {
+                    ModelState.AddModelError("TenderFile", "Please upload a tender document.");
+                    return View("_PublishTender", t);
+                }
+
+                // Validate file type
+                string fileExtension = Path.GetExtension(t.TenderFile.FileName).ToLower();
+                if (fileExtension != ".pdf")
+                {
+                    ModelState.AddModelError("TenderFile", "Only PDF files are allowed.");
+                    return View("_PublishTender", t);
+                }
+
                 // Generate Tender ID
                 short maxid;
                 if (_context.TenderDetails.Any())
@@ -391,7 +449,7 @@ namespace FYPBidNetra.Controllers
         }
 
         // view the whole details of tenders
-        public IActionResult TenderDetails(string id)
+        /*public IActionResult TenderDetails(string id)
         {
 
             int tenderid = Convert.ToInt32(_protector.Unprotect(id));
@@ -421,8 +479,55 @@ namespace FYPBidNetra.Controllers
             .FirstOrDefault();
 
             return View(tender);
-        }
+        }*/
 
+
+        public IActionResult TenderDetails(string id)
+        {
+            int tenderid = Convert.ToInt32(_protector.Unprotect(id));
+
+            var tender = _context.TenderDetails
+                .Include(t => t.AwardCompany)
+                    .ThenInclude(c => c.Userbid)
+                .Where(t => t.TenderId == tenderid)
+                .Select(t => new TenderEdit
+                {
+                    TenderId = t.TenderId,
+                    Title = t.Title,
+                    IssuedBy = t.IssuedBy,
+                    TenderType = t.TenderType,
+                    ProjectDuration = t.ProjectDuration,
+                    BudgetEstimation = t.BudgetEstimation,
+                    TenderStatus = t.TenderStatus,
+                    IsVerified = t.IsVerified,
+                    IssuedDate = t.IssuedDate,
+                    OpeningDate = t.OpeningDate,
+                    ClosingDate = t.ClosingDate,
+                    AwardDate = t.AwardDate,
+                    AwardCompanyId = t.AwardCompanyId,
+                    TenderDescription = t.TenderDescription,
+                    TenderDocument = t.TenderDocument,
+                    AwardStatus = t.AwardStatus,
+                    EncId = _protector.Protect(t.TenderId.ToString()),
+                    // Add awarded company details
+                    AwardedCompany = t.AwardCompanyId != null ? new CompanyEdit
+                    {
+                        CompanyId = t.AwardCompany.CompanyId,
+                        CompanyName = t.AwardCompany.CompanyName,
+                        FullAddress = t.AwardCompany.FullAddress,
+                        OfficeEmail = t.AwardCompany.OfficeEmail,
+                        CompanyWebsiteUrl = t.AwardCompany.CompanyWebsiteUrl,
+                        CompanyType = t.AwardCompany.CompanyType,
+                        Position = t.AwardCompany.Position,
+                        Rating = t.AwardCompany.Rating,
+                        UserbidId = t.AwardCompany.UserbidId,
+                        
+                    } : null
+                })
+                .FirstOrDefault();
+
+            return View(tender);
+        }
 
         public IActionResult MonitorTender(string id)
         {
@@ -549,6 +654,7 @@ namespace FYPBidNetra.Controllers
                     ProposedDuration = ta.ProposedDuration,
                     TenderAppllyId = ta.TenderAppllyId,
                     CompanyApplyId = ta.CompanyApplyId,
+                    
                     EncId = _protector.Protect(ta.ApplicationId.ToString())
 
                 })
@@ -594,7 +700,7 @@ namespace FYPBidNetra.Controllers
                     RegistrationNumber = c.RegistrationNumber,
                     CompanyType = c.CompanyType,
                     Position = c.Position,
-                    
+                    Rating = c.Rating,
                     PanDocument = c.PanDocument,
                     PanNumber = c.PanNumber,
                     RegistrationDocument = c.RegistrationDocument,
