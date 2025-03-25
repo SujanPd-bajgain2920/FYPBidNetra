@@ -73,15 +73,19 @@
 
         <!-- Enhanced Filter Section -->
         <div class="flex justify-between items-center mb-6">
+           
             <div class="flex gap-4">
-                <select id="statusFilter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5">
-                    <option value="">All Status</option>
+                <select id="typeFilter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                        onchange="filterByType()">
+                    <option value="">All Types</option>
                     <option value="Won">Won</option>
                     <option value="Lost">Lost</option>
                     <option value="Pending">Pending</option>
                 </select>
+
                 <input type="text" id="searchInput" placeholder="Search tenders..."
-                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5">
+                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                       onkeyup="searchTable()">
             </div>
             <div class="text-sm text-gray-600" id="resultCount"></div>
         </div>
@@ -115,7 +119,9 @@
                     <tbody>
                         @foreach (var tender in Model)
                         {
-                            <tr class="tender-card border-b hover:bg-gray-50" data-status="@tender.IsVerified" data-search="@(tender.TenderId + " " + tender.Title + " " + tender.IsVerified)">
+                            <tr class="tender-card border-b hover:bg-gray-50"
+                                data-type="@tender.Application.ApplicationStatus.ToLower()"
+                                data-title="@tender.Title.ToLower()">
                                 <td class="px-6 py-4 text-center font-medium text-gray-900">
                                     #@tender.TenderId
                                 </td>
@@ -155,42 +161,45 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const statusFilter = document.getElementById('statusFilter');
-            const searchInput = document.getElementById('searchInput');
-            const tenderRows = document.querySelectorAll('.tender-card');
-            const resultCount = document.getElementById('resultCount');
+        // Function to search the table by tender title
+        function searchTable() {
+            const searchValue = document.getElementById("searchInput").value.toLowerCase();
+            const rows = document.querySelectorAll("#tenderTable tbody tr");
 
-            function filterTenders() {
-                const selectedStatus = statusFilter.value;
-                const searchTerm = searchInput.value.toLowerCase();
-                let visibleCount = 0;
+            rows.forEach(row => {
+                const title = row.cells[1].textContent.toLowerCase();
+                if (title.includes(searchValue)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
 
-                tenderRows.forEach(row => {
-                    const status = row.getAttribute('data-status');
-                    const searchData = row.getAttribute('data-search').toLowerCase();
+        function filterByType() {
+            const selectedType = document.getElementById("typeFilter").value;
+            const rows = document.querySelectorAll("#tenderTable tbody tr");
+            const noResults = document.getElementById("noResults");
+            let visibleCount = 0;
 
-                    const matchesStatus = !selectedStatus || status === selectedStatus;
-                    const matchesSearch = !searchTerm || searchData.includes(searchTerm);
+            rows.forEach(row => {
+                const type = row.getAttribute("data-type");
+                if (!selectedType || type === selectedType.toLowerCase()) {
+                    row.style.display = "";
+                    visibleCount++;
+                } else {
+                    row.style.display = "none";
+                }
+            });
 
-                    if (matchesStatus && matchesSearch) {
-                        row.style.display = '';
-                        visibleCount++;
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
+            // Show/hide no results message
+            noResults.classList.toggle("hidden", visibleCount > 0);
 
-                // Update result count
-                resultCount.textContent = `Showing ${visibleCount} of ${tenderRows.length} tenders`;
+            // Update result count if the element exists
+            const resultCount = document.getElementById("resultCount");
+            if (resultCount) {
+                resultCount.textContent = `Showing ${visibleCount} result${visibleCount !== 1 ? 's' : ''}`;
             }
-
-            // Add event listeners
-            statusFilter.addEventListener('change', filterTenders);
-            searchInput.addEventListener('input', filterTenders);
-
-            // Initial filter to show count
-            filterTenders();
-        });
+        }
     </script>
 </body>

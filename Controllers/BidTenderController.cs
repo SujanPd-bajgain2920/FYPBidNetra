@@ -243,7 +243,8 @@ namespace FYPBidNetra.Controllers
                     ApplicationDocument = ta.ApplicationDocument,
                     ProposedBudget = ta.ProposedBudget,
                     ApplicationStatus = ta.ApplicationStatus,
-                    ProposedDuration = ta.ProposedDuration
+                    ProposedDuration = ta.ProposedDuration,
+                    
                 })
                 .FirstOrDefault()
                  })
