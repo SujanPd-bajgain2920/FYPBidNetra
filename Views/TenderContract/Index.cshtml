@@ -9,74 +9,101 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #1a56db;
-            --border-color: #e5e7eb;
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --border-color: #e2e8f0;
+            --light-bg: #f8fafc;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
         body {
-            background: #f9fafb;
-            font-family: 'Inter', sans-serif;
+            background: #f1f5f9;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             line-height: 1.6;
+            color: #334155;
         }
 
         .contract-container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 2rem auto;
             background: white;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            border-radius: 12px;
+            padding: 2.5rem;
         }
 
         .contract-header {
             text-align: center;
             border-bottom: 2px solid var(--border-color);
-            padding-bottom: 2rem;
-            margin-bottom: 2rem;
+            padding-bottom: 2.5rem;
+            margin-bottom: 2.5rem;
+            position: relative;
         }
 
         .logo-area {
             margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: center;
         }
 
-        .logo-area img {
-            height: 80px;
-            width: auto;
-        }
+            .logo-area img {
+                height: 90px;
+                width: auto;
+                filter: drop-shadow(0 4px 3px rgb(0 0 0 / 0.07));
+            }
 
         .contract-number {
-            color: #6b7280;
-            font-size: 0.875rem;
+            color: var(--secondary-color);
+            font-size: 0.95rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-weight: 500;
         }
 
         .contract-title {
-            color: #111827;
-            font-size: 1.875rem;
-            font-weight: 700;
+            color: #0f172a;
+            font-size: 2.25rem;
+            font-weight: 800;
             margin: 1rem 0;
+            line-height: 1.2;
         }
 
         .contract-section {
-            margin-bottom: 2rem;
-            padding: 1.5rem;
+            margin-bottom: 2.5rem;
+            padding: 2rem;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 12px;
             background: #ffffff;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
+            .contract-section:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            }
+
         .section-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #111827;
-            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border-color);
         }
+
+            .section-title i {
+                color: var(--primary-color);
+                font-size: 1.25rem;
+            }
 
         .info-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
         }
 
@@ -84,89 +111,133 @@
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
+            transition: transform 0.2s;
         }
 
+            .info-item:hover {
+                transform: translateY(-2px);
+            }
+
         .info-label {
-            font-weight: 500;
-            color: #4b5563;
+            font-weight: 600;
+            color: var(--secondary-color);
             font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
+
+            .info-label i {
+                color: var(--primary-color);
+            }
 
         .info-value {
             font-weight: 600;
-            color: #111827;
-            padding: 0.5rem;
-            background: #f9fafb;
-            border-radius: 4px;
+            color: #0f172a;
+            padding: 0.75rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-color);
         }
-
-
 
         .signature-section {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
             margin-top: 2rem;
         }
 
         .signature-box {
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 1rem;
+            border-radius: 12px;
+            padding: 1.5rem;
+            background: white;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        #issuerSignatureCanvas {
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
+            .signature-box:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            }
+
+        #issuerSignatureCanvas, #contractorSignatureCanvas {
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
             cursor: crosshair;
             background: #fff;
+            transition: border-color 0.2s;
         }
 
-        #contractorSignatureCanvas {
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            cursor: crosshair;
-            background: #fff;
-        }
+            #issuerSignatureCanvas:hover, #contractorSignatureCanvas:hover {
+                border-color: var(--primary-color);
+            }
 
         .signature-meta {
-            font-size: 0.875rem;
-            color: #6b7280;
+            font-size: 0.95rem;
+            color: var(--secondary-color);
             text-align: center;
-            margin-top: 0.5rem;
+            margin-top: 1rem;
         }
 
         .action-buttons {
             display: flex;
             justify-content: flex-end;
             gap: 1rem;
-            margin-top: 2rem;
+            margin-top: 2.5rem;
             padding-top: 2rem;
             border-top: 1px solid var(--border-color);
         }
 
+            .action-buttons a {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0.75rem 1.5rem;
+                border-radius: 8px;
+                font-weight: 600;
+                transition: all 0.2s;
+                text-decoration: none;
+            }
+
+                .action-buttons a:hover {
+                    transform: translateY(-2px);
+                }
+
+                .action-buttons a i {
+                    margin-right: 0.5rem;
+                }
+
         .status-badge {
             display: inline-flex;
             align-items: center;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 1.25rem;
             border-radius: 9999px;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 0.875rem;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
         }
 
-        .status-badge.pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
+            .status-badge.pending {
+                background: #fef3c7;
+                color: #92400e;
+            }
 
-        .status-badge.approved {
-            background: #d1fae5;
-            color: #065f46;
-        }
+            .status-badge.approved {
+                background: #d1fae5;
+                color: #065f46;
+            }
+
+            .status-badge i {
+                margin-right: 0.5rem;
+            }
 
         .terms-section {
             white-space: pre-line;
-            color: #374151;
+            color: #334155;
         }
 
         .term-content {
@@ -174,13 +245,15 @@
         }
 
         .term-item {
-
             margin-bottom: 1.5rem;
             transition: all 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
         }
 
             .term-item:hover {
-                transform: translateY(-2px);
+                transform: translateY(-3px);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             }
 
         .term-number {
@@ -188,45 +261,46 @@
             font-weight: bold;
         }
 
-
-
-
-
         .parties-info {
             font-size: 1rem;
-            line-height: 1.5;
-            margin-bottom: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
         }
 
         .party-section {
-            padding: 0.5rem;
-            background: white;
-            border-radius: 0.5rem;
+            padding: 1.25rem;
+            background: var(--light-bg);
+            border-radius: 10px;
             border: 1px solid #e5e7eb;
-            margin-bottom: 0rem;
+            margin-bottom: 1rem;
             white-space: normal;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
+            .party-section:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            }
+
             .party-section strong {
-                color: #1a56db;
+                color: var(--primary-color);
+                font-weight: 600;
             }
 
             .party-section i {
-                font-size: 1.25rem;
+                font-size: 1.5rem;
                 flex-shrink: 0;
                 margin-top: 0.1rem;
+                color: var(--primary-color);
             }
-
-
-
-
 
         .terms-container {
             max-height: 800px;
             overflow-y: auto;
             padding-right: 1rem;
             margin: 2rem auto;
-
+            scrollbar-width: thin;
+            scrollbar-color: var(--secondary-color) #f1f1f1;
         }
 
             .terms-container::-webkit-scrollbar {
@@ -235,34 +309,141 @@
 
             .terms-container::-webkit-scrollbar-track {
                 background: #f1f1f1;
-                border-radius: 4px;
+                border-radius: 8px;
             }
 
             .terms-container::-webkit-scrollbar-thumb {
-                background: #888;
-                border-radius: 4px;
+                background: var(--secondary-color);
+                border-radius: 8px;
             }
 
                 .terms-container::-webkit-scrollbar-thumb:hover {
-                    background: #555;
+                    background: #475569;
                 }
 
+        /* Button styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
 
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+            .btn-primary:hover {
+                background-color: var(--primary-hover);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+
+        .btn-secondary {
+            background-color: white;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+        }
+
+            .btn-secondary:hover {
+                background-color: #f8fafc;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+
+        .btn-success {
+            background-color: #10b981;
+            color: white;
+            border: none;
+        }
+
+            .btn-success:hover {
+                background-color: #059669;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        /* Signature area styling */
+        .signature-area {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+            .signature-area:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            }
+
+        .signature-header {
+            margin-bottom: 1.5rem;
+        }
+
+            .signature-header i {
+                font-size: 2rem;
+                color: var(--primary-color);
+                margin-bottom: 0.5rem;
+            }
+
+            .signature-header h3 {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #0f172a;
+            }
+
+        .signature-image {
+            max-width: 300px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.5rem;
+            margin: 0 auto 1.5rem;
+        }
+
+        .signature-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .signature-info {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+            .signature-info p {
+                margin-bottom: 0.5rem;
+            }
+
+            .signature-info .font-semibold {
+                color: #0f172a;
+            }
     </style>
 </head>
 <body>
-
-
     <div class="contract-container">
         <!-- Contract Header -->
         <div class="contract-header">
             <div class="logo-area">
-                <img src="" alt="Company Logo">
+                <img src="~/Images/Logo.png" alt="Company Logo">
             </div>
             <div class="contract-number">Contract Reference: TEN-2024-${@Model.Tender.TenderId}</div>
             <h1 class="contract-title">@Model.Tender.Title</h1>
             <span class="status-badge @Model.Application.ApplicationStatus">
-                <i class="fas fa-circle-check mr-2"></i>
+                <i class="fas fa-circle-check"></i>
                 @Model.Application.ApplicationStatus
             </span>
         </div>
@@ -275,19 +456,19 @@
             </h2>
             <div class="info-grid">
                 <div class="info-item">
-                    <span class="info-label">Issuing Organization</span>
+                    <span class="info-label"><i class="fas fa-building"></i> Issuing Organization</span>
                     <span class="info-value">@Model.Tender.IssuedBy</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">Publishing Authority</span>
+                    <span class="info-label"><i class="fas fa-user-tie"></i> Publishing Authority</span>
                     <span class="info-value">@Model.Publisher.FirstName @Model.Publisher.MiddleName @Model.Publisher.LastName</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">Bidder Name</span>
+                    <span class="info-label"><i class="fas fa-user"></i> Bidder Name</span>
                     <span class="info-value">@Model.Bidder.FirstName @Model.Bidder.LastName</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">Bidder Contact</span>
+                    <span class="info-label"><i class="fas fa-address-card"></i> Bidder Contact</span>
                     <span class="info-value">@Model.Bidder.EmailAddress | @Model.Bidder.Phone</span>
                 </div>
             </div>
@@ -301,27 +482,27 @@
             </h2>
             <div class="info-grid">
                 <div class="info-item">
-                    <span class="info-label">Issued Date</span>
+                    <span class="info-label"><i class="fas fa-calendar-plus"></i> Issued Date</span>
                     <span class="info-value">@Model.Tender.IssuedDate</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">Closing Date</span>
+                    <span class="info-label"><i class="fas fa-calendar-times"></i> Closing Date</span>
                     <span class="info-value">@Model.Tender.ClosingDate</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">Budget Estimation</span>
+                    <span class="info-label"><i class="fas fa-money-bill-wave"></i> Budget Estimation</span>
                     <span class="info-value">@Model.Tender.BudgetEstimation</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">Project Duration</span>
+                    <span class="info-label"><i class="fas fa-hourglass-half"></i> Project Duration</span>
                     <span class="info-value">@Model.Tender.ProjectDuration</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">Proposed Budget</span>
+                    <span class="info-label"><i class="fas fa-coins"></i> Proposed Budget</span>
                     <span class="info-value">@Model.Application.ProposedBudget</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">Proposed Duration</span>
+                    <span class="info-label"><i class="fas fa-clock"></i> Proposed Duration</span>
                     <span class="info-value">@Model.Application.ProposedDuration</span>
                 </div>
             </div>
@@ -333,12 +514,15 @@
                 Contract Terms and Conditions
             </h2>
 
-            <div class="parties-info p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">Agreement of Parties</h3>
+            <div class="parties-info p-6 bg-gray-50 rounded-xl border border-gray-200">
+                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-handshake text-primary-color"></i>
+                    Agreement of Parties
+                </h3>
                 <!-- First Party -->
                 <div class="party-section mb-6">
-                    <div class="flex items-start gap-3">
-                        <i class="fas fa-building text-blue-600 mt-1"></i>
+                    <div class="flex items-start gap-4">
+                        <i class="fas fa-building"></i>
                         <p class="text-gray-700 leading-relaxed">
                             The first party to this agreement is <strong>@Model.Publisher.FirstName @Model.Publisher.MiddleName @Model.Publisher.LastName</strong>,
                             a procurement officer duly registered and existing under the laws of Nepal, having its registered office at
@@ -351,8 +535,8 @@
 
                 <!-- Second Party -->
                 <div class="party-section">
-                    <div class="flex items-start gap-3">
-                        <i class="fas fa-user-tie text-blue-600 mt-1"></i>
+                    <div class="flex items-start gap-4">
+                        <i class="fas fa-user-tie"></i>
                         <p class="text-gray-700 leading-relaxed">
                             The second party to this agreement is <strong>@Model.Bidder.FirstName @Model.Bidder.MiddleName @Model.Bidder.LastName</strong>,
                             representing <strong>@Model.Company.CompanyName</strong>, a company duly registered and existing under the laws of Nepal,
@@ -366,36 +550,36 @@
 
             <div class="terms-container space-y-6">
                 <!-- Scope of Work -->
-                <div class="term-item bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
-                    <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
-                        <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center">1</span>
+                <div class="term-item bg-white p-6 rounded-xl border border-gray-200 hover:shadow-lg transition-all">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-3">
+                        <span class="bg-primary-color text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">1</span>
                         Scope of Work
                     </h3>
-                    <div class="space-y-2 pl-10">
+                    <div class="space-y-3 pl-12">
                         <p>The Contractor agrees to execute the work as specified in the tender document, including but not limited to:</p>
-                        <ul class="list-disc pl-5 space-y-1 text-gray-700">
+                        <ul class="list-disc pl-6 space-y-2 text-gray-700">
                             <li>All works specified in the technical specifications</li>
                             <li>Implementation according to approved designs and drawings</li>
                             <li>Quality assurance and testing as per industry standards</li>
                             <li>Project documentation and reporting</li>
                             <li>Compliance with all relevant regulations and standards</li>
                         </ul>
-                        <p class="text-sm text-gray-600 mt-2">Reference: Tender Document @Model.Tender.TenderId</p>
+                        <p class="text-sm text-gray-500 mt-3 italic">Reference: Tender Document @Model.Tender.TenderId</p>
                     </div>
                 </div>
 
                 <!-- Contract Value -->
-                <div class="term-item bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
-                    <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
-                        <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center">2</span>
+                <div class="term-item bg-white p-6 rounded-xl border border-gray-200 hover:shadow-lg transition-all">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-3">
+                        <span class="bg-primary-color text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">2</span>
                         Contract Value
                     </h3>
-                    <div class="space-y-2 pl-10">
-                        <div class="bg-gray-50 p-3 rounded-md">
-                            <p class="font-medium">Total Contract Value: <span class="text-blue-600">@Model.Application.ProposedBudget</span></p>
+                    <div class="space-y-3 pl-12">
+                        <div class="bg-light-bg p-4 rounded-lg border-l-4 border-primary-color">
+                            <p class="font-medium">Total Contract Value: <span class="text-primary-color font-bold">@Model.Application.ProposedBudget</span></p>
                         </div>
-                        <p class="text-gray-700">Payment Schedule:</p>
-                        <ul class="list-disc pl-5 space-y-1 text-gray-700">
+                        <p class="text-gray-700 font-medium mt-3">Payment Schedule:</p>
+                        <ul class="list-disc pl-6 space-y-2 text-gray-700">
                             <li>20% - Advance Payment upon contract signing</li>
                             <li>30% - Upon completion of 40% work</li>
                             <li>30% - Upon completion of 80% work</li>
@@ -405,16 +589,15 @@
                 </div>
 
                 <!-- Duration -->
-                <div class="term-item bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
-                    <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
-                        <span class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center">3</span>
+                <div class="term-item bg-white p-6 rounded-xl border border-gray-200 hover:shadow-lg transition-all">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-3">
+                        <span class="bg-primary-color text-white w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">3</span>
                         Duration and Timeline
                     </h3>
-                    <div class="space-y-2 pl-10">
-                        <div class="bg-gray-50 p-3 rounded-md">
-                            <p class="font-medium">Project Duration: <span class="text-blue-600">@Model.Application.ProposedDuration</span></p>
+                    <div class="space-y-3 pl-12">
+                        <div class="bg-light-bg p-4 rounded-lg border-l-4 border-primary-color">
+                            <p class="font-medium">Project Duration: <span class="text-primary-color font-bold">@Model.Application.ProposedDuration</span></p>
                         </div>
-
                     </div>
                 </div>
 
@@ -425,9 +608,9 @@
                     {
                         @foreach (var term in Model.Terms)
                         {
-                            <div class="term-item bg-white p-6 rounded-lg shadow-sm hover:shadow-md border border-gray-200">
-                                <h3 class="flex items-center gap-3 text-xl font-semibold text-gray-800 mb-4">
-                                    <span class="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center term-number">
+                            <div class="term-item bg-white p-6 rounded-xl shadow-sm hover:shadow-lg border border-gray-200 transition-all">
+                                <h3 class="flex items-center gap-3 text-xl font-bold text-gray-800 mb-4">
+                                    <span class="bg-primary-color text-white w-12 h-12 rounded-full flex items-center justify-center term-number flex-shrink-0">
                                         <i class="fas fa-file-contract"></i>
                                     </span>
                                     Additional Terms and Conditions
@@ -436,13 +619,13 @@
                                 <div class="term-content">
                                     <p class="text-gray-700 leading-relaxed">@term.TermDescription</p>
 
-                                    <div class="term-metadata grid grid-cols-2 gap-4">
-                                        <div class="flex items-center gap-2">
-                                            <i class="fas fa-user text-blue-600"></i>
+                                    <div class="term-metadata grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-100">
+                                        <div class="flex items-center gap-3">
+                                            <i class="fas fa-user text-primary-color"></i>
                                             <span><strong>Created By:</strong> @term.CreatedBy</span>
                                         </div>
-                                        <div class="flex items-center gap-2">
-                                            <i class="fas fa-calendar text-blue-600"></i>
+                                        <div class="flex items-center gap-3">
+                                            <i class="fas fa-calendar text-primary-color"></i>
                                             <span><strong>Created Date:</strong> @term.CreatedDate.ToString("MMMM dd, yyyy")</span>
                                         </div>
                                     </div>
@@ -452,16 +635,16 @@
                     }
                     else
                     {
-                        <div class="term-item bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                            <h3 class="flex items-center gap-3 text-xl font-semibold text-gray-800 mb-4">
-                                <span class="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center term-number">
+                        <div class="term-item bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                            <h3 class="flex items-center gap-3 text-xl font-bold text-gray-800 mb-4">
+                                <span class="bg-primary-color text-white w-12 h-12 rounded-full flex items-center justify-center term-number flex-shrink-0">
                                     <i class="fas fa-file-contract"></i>
                                 </span>
                                 Additional Terms and Conditions
                             </h3>
 
                             <div class="term-content">
-                                <p class="text-gray-500 italic flex items-center gap-2">
+                                <p class="text-gray-500 italic flex items-center gap-3">
                                     <i class="fas fa-info-circle"></i>
                                     No terms available.
                                 </p>
@@ -469,117 +652,104 @@
                         </div>
                     }
 
-
-
                     @if (!(Model.Contract.SignedBySeller == true && Model.Contract.SignedByBuyer == true))
                     {
                         <a asp-action="AddTerm" asp-controller="TenderContract" asp-route-id="@Model.Contract.EncId"
-                           class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none">
+                           class="btn btn-primary mt-6">
                             <i class="fas fa-plus"></i>
                             Add Terms
                         </a>
                     }
-
-
                 </div>
-
             </div>
         </div>
 
         <div class="container mx-auto p-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- Issuer Signature Section -->
-                <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="signature-area">
                     @if (Model?.Contract?.SignedBySeller == true)
                     {
-                        <div class="text-center">
-                            <div class="mb-4">
-                                <i class="fas fa-file-signature text-2xl text-blue-600"></i>
-                                <h3 class="text-xl font-bold text-gray-900 mt-2">Issuing Authority</h3>
-                            </div>
-                            <img src="~/uploads/signatures/@Model.Contract.SellerSignature"
-                                 alt="Seller Signature"
-                                 class="mx-auto border rounded-lg p-2 mb-4 max-w-[300px]" />
-                            <div class="space-y-2 text-gray-600">
-                                <p class="font-semibold">@Model.Publisher.FirstName @Model.Publisher.LastName</p>
-                                <p>@Model.Company.CompanyName</p>
-                                <p>Date: <span id="issuerDate" class="font-medium"></span></p>
-                            </div>
+                        <div class="signature-header">
+                            <i class="fas fa-file-signature"></i>
+                            <h3>Issuing Authority</h3>
+                        </div>
+                        <img src="~/uploads/signatures/@Model.Contract.SellerSignature"
+                             alt="Seller Signature"
+                             class="signature-image" />
+                        <div class="signature-info">
+                            <p class="font-semibold">@Model.Publisher.FirstName @Model.Publisher.LastName</p>
+                            <p>@Model.Company.CompanyName</p>
+                            <p>Date: <span id="issuerDate" class="font-medium"></span></p>
                         </div>
                     }
                     else if (User.FindFirst("Role")?.Value == "Publisher")
                     {
-                        <div class="text-center">
-                            <div class="mb-4">
-                                <i class="fas fa-pen-fancy text-2xl text-blue-600"></i>
-                                <h3 class="text-xl font-bold text-gray-900 mt-2">Issuing Authority</h3>
-                            </div>
-                            <canvas id="issuerSignatureCanvas"
-                                    class="mx-auto border-2 border-gray-200 rounded-lg mb-4"
-                                    width="300"
-                                    height="150"></canvas>
-                            <div class="flex justify-center gap-4 mb-4">
-                                <button onclick="clearSignature('issuer')"
-                                        class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-                                    <i class="fas fa-eraser mr-2"></i> Clear
-                                </button>
-                                <button onclick="saveSignature('seller')"
-                                        class="flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
-                                    <i class="fas fa-save mr-2"></i> Save
-                                </button>
-                            </div>
-                            <div class="space-y-2 text-gray-600">
-                                <p class="font-semibold">@Model.Publisher.FirstName @Model.Publisher.LastName</p>
-                                <p>@Model.Company.CompanyName</p>
-                                <p>Date: <span id="issuerDate" class="font-medium"></span></p>
-                            </div>
+                        <div class="signature-header">
+                            <i class="fas fa-pen-fancy"></i>
+                            <h3>Issuing Authority</h3>
+                        </div>
+                        <canvas id="issuerSignatureCanvas"
+                                class="mx-auto border-2 border-dashed border-gray-200 rounded-lg mb-4"
+                                width="300"
+                                height="150"></canvas>
+                        <div class="signature-buttons">
+                            <button onclick="clearSignature('issuer')"
+                                    class="btn btn-secondary">
+                                <i class="fas fa-eraser"></i> Clear
+                            </button>
+                            <button onclick="saveSignature('seller')"
+                                    class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                        </div>
+                        <div class="signature-info">
+                            <p class="font-semibold">@Model.Publisher.FirstName @Model.Publisher.LastName</p>
+                            <p>@Model.Company.CompanyName</p>
+                            <p>Date: <span id="issuerDate" class="font-medium"></span></p>
                         </div>
                     }
                 </div>
 
                 <!-- Contractor Signature Section -->
-                <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="signature-area">
                     @if (Model?.Contract?.SignedByBuyer == true)
                     {
-                        <div class="text-center">
-                            <div class="mb-4">
-                                <i class="fas fa-file-signature text-2xl text-green-600"></i>
-                                <h3 class="text-xl font-bold text-gray-900 mt-2">Contractor</h3>
-                            </div>
-                            <img src="~/uploads/signatures/@Model.Contract.BuyerSignature"
-                                 alt="Buyer Signature"
-                                 class="mx-auto border rounded-lg p-2 mb-4 max-w-[300px]" />
-                            <div class="space-y-2 text-gray-600">
-                                <p class="font-semibold">@Model.Bidder.FirstName @Model.Bidder.MiddleName @Model.Bidder.LastName</p>
-                                <p>Date: <span id="contractorDate" class="font-medium"></span></p>
-                            </div>
+                        <div class="signature-header">
+                            <i class="fas fa-file-signature" style="color: #10b981;"></i>
+                            <h3>Contractor</h3>
+                        </div>
+                        <img src="~/uploads/signatures/@Model.Contract.BuyerSignature"
+                             alt="Buyer Signature"
+                             class="signature-image" />
+                        <div class="signature-info">
+                            <p class="font-semibold">@Model.Bidder.FirstName @Model.Bidder.MiddleName @Model.Bidder.LastName</p>
+                            <p>Date: <span id="contractorDate" class="font-medium"></span></p>
                         </div>
                     }
                     else if (User.FindFirst("Role")?.Value == "Bidder")
                     {
-                        <div class="text-center">
-                            <div class="mb-4">
-                                <i class="fas fa-pen-fancy text-2xl text-green-600"></i>
-                                <h3 class="text-xl font-bold text-gray-900 mt-2">Contractor</h3>
-                            </div>
-                            <canvas id="contractorSignatureCanvas"
-                                    class="mx-auto border-2 border-gray-200 rounded-lg mb-4"
-                                    width="300"
-                                    height="150"></canvas>
-                            <div class="flex justify-center gap-4 mb-4">
-                                <button onclick="clearSignature('contractor')"
-                                        class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-                                    <i class="fas fa-eraser mr-2"></i> Clear
-                                </button>
-                                <button onclick="saveSignature('buyer')"
-                                        class="flex items-center px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">
-                                    <i class="fas fa-save mr-2"></i> Save
-                                </button>
-                            </div>
-                            <div class="space-y-2 text-gray-600">
-                                <p class="font-semibold">@Model.Bidder.FirstName @Model.Bidder.MiddleName @Model.Bidder.LastName</p>
-                                <p>Date: <span id="contractorDate" class="font-medium"></span></p>
-                            </div>
+                        <div class="signature-header">
+                            <i class="fas fa-pen-fancy" style="color: #10b981;"></i>
+                            <h3>Contractor</h3>
+                        </div>
+                        <canvas id="contractorSignatureCanvas"
+                                class="mx-auto border-2 border-dashed border-gray-200 rounded-lg mb-4"
+                                width="300"
+                                height="150"></canvas>
+                        <div class="signature-buttons">
+                            <button onclick="clearSignature('contractor')"
+                                    class="btn btn-secondary">
+                                <i class="fas fa-eraser"></i> Clear
+                            </button>
+                            <button onclick="saveSignature('buyer')"
+                                    class="btn btn-success">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                        </div>
+                        <div class="signature-info">
+                            <p class="font-semibold">@Model.Bidder.FirstName @Model.Bidder.MiddleName @Model.Bidder.LastName</p>
+                            <p>Date: <span id="contractorDate" class="font-medium"></span></p>
                         </div>
                     }
                 </div>
@@ -587,28 +757,22 @@
             <input type="hidden" id="contractId" value="@Model.Contract.ContractId" />
         </div>
 
-
-
-
-
-
         <!-- Action Buttons -->
         <div class="action-buttons">
-            <a asp-action="DownloadPdf" asp-controller="PDF" asp-route-id="@Model.Application.EncId" class=" px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                <i class="fas fa-download mr-2"></i>Download PDF
+            <a asp-action="DownloadPdf" asp-controller="PDF" asp-route-id="@Model.Application.EncId" class="btn btn-secondary">
+                <i class="fas fa-download"></i>Download PDF
             </a>
             @if (User.FindFirst("Role")?.Value == "Bidder")
             {
-                <a asp-action="UserMessage" asp-controller="Chat" asp-route-receiverId="@Model.Publisher.UserId" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                    <i class="fas fa-paper-plane mr-2"></i>Send Message
+                <a asp-action="UserMessage" asp-controller="Chat" asp-route-receiverId="@Model.Publisher.UserId" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i>Send Message
                 </a>
             }
             else if (User.FindFirst("Role")?.Value == "Publisher")
             {
-                <a asp-action="UserMessage" asp-controller="Chat" asp-route-receiverId="@Model.Bidder.UserId" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                    <i class="fas fa-paper-plane mr-2"></i>Send Message
+                <a asp-action="UserMessage" asp-controller="Chat" asp-route-receiverId="@Model.Bidder.UserId" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i>Send Message
                 </a>
-
             }
         </div>
     </div>
@@ -616,7 +780,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
-
         // Wait for the DOM to be fully loaded
         document.addEventListener("DOMContentLoaded", function () {
             // Check if the canvas exists for Issuer and Contractor
@@ -628,7 +791,6 @@
                 initializeSignatureCanvas('contractorSignatureCanvas');
             }
         });
-
 
         // Set up signature pad for multiple canvases
         function initializeSignatureCanvas(canvasId) {
@@ -713,14 +875,10 @@
             }
         }
 
-
-
-
         // Set current date dynamically
         const currentDate = new Date().toLocaleDateString();
         document.getElementById('issuerDate').textContent = currentDate;
         document.getElementById('contractorDate').textContent = currentDate;
-
 
         function saveSignature(role) {
             // Get the contractId from the hidden input
@@ -748,10 +906,6 @@
                 })
                 .catch(error => console.error('Error:', error));
         }
-
     </script>
 </body>
 </html>
-
-
-

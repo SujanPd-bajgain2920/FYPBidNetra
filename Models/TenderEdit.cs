@@ -47,5 +47,9 @@ namespace FYPBidNetra.Models
          public TenderApplicationEdit Application { get; set; }
 
         public CompanyEdit? AwardedCompany { get; set; }
+
+        public string? PaymentStatus { get; set; }
+
+        public short? PaymentId { get; set; }
     }
 }

@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\BlogImage\" />
+    <Folder Include="wwwroot\SlipImage\" />
   </ItemGroup>
 
 </Project>

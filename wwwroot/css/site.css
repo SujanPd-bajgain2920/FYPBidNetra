@@ -325,3 +325,30 @@ body {
         padding: 1rem;
     }
 }
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .tabs-container {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .tab-button {
+        padding: 1rem;
+    }
+
+    .timeline-container {
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .timeline-item::before {
+        display: none;
+    }
+}

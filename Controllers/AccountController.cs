@@ -71,7 +71,7 @@ namespace FYPBidNetra.Controllers
                     {
                         string fileName = "UserImage" + Guid.NewGuid() + Path.GetExtension(u.UserFile.FileName);
                         string filePath = Path.Combine(_env.WebRootPath, "UserImage", fileName);
-                        // Ensure the EmpImage directory exists
+                        
                         if (!Directory.Exists(Path.Combine(_env.WebRootPath, "UserImage")))
                         {
                             Directory.CreateDirectory(Path.Combine(_env.WebRootPath, "UserImage"));

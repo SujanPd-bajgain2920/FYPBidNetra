@@ -111,7 +111,10 @@
                                 <i class="fas fa-calendar-alt mr-2"></i>Award Date
                             </th>
                             <th class="px-6 py-4 text-center font-semibold">
-                                <i class="fas fa-calendar-alt mr-2"></i>Company Name
+                                <i class="fas fa-building mr-2"></i>Company Name
+                            </th>
+                            <th class="px-6 py-4 text-center font-semibold">
+                                <i class="fas fa-money-bill mr-2"></i>Payment Status
                             </th>
                             <th class="px-6 py-4 text-center font-semibold">
                                 <i class="fas fa-cogs mr-2"></i>Actions
@@ -150,11 +153,33 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <a asp-action="TenderDetails" asp-controller="PublisherTender" asp-route-id="@tender.EncId"
-                                       class="action-button inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md">
-                                        <i class="fas fa-eye mr-2"></i>
-                                        View Details
-                                    </a>
+                                    <span class="@(tender.PaymentStatus == "Verified" ? "text-green-600" :
+                                  tender.PaymentStatus == "Pending" ? "text-yellow-600" :
+                                  tender.PaymentStatus == "Failed" ? "text-red-600" : "text-gray-600")">
+                                        @tender.PaymentStatus
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <a asp-action="TenderDetails" asp-controller="PublisherTender" asp-route-id="@tender.EncId"
+                                           class="text-blue-600 hover:text-blue-800" title="View Details">
+                                            <i class="fas fa-eye text-xl"></i>
+                                        </a>
+                                        @if (tender.PaymentStatus == "Not Paid")
+                                        {
+                                            <a asp-action="TenderPayment" asp-controller="TenderSlip" asp-route-tenderId="@tender.EncId"
+                                               class="text-green-600 hover:text-green-800" title="Make Payment">
+                                                <i class="fas fa-money-bill-wave text-xl"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a asp-action="PaymentDetails" asp-controller="Payment" asp-route-id="@tender.PaymentId"
+                                               class="text-green-600 hover:text-green-800" title="View Payment Details">
+                                                <i class="fas fa-receipt text-xl"></i>
+                                            </a>
+                                        }
+                                    </div>
                                 </td>
                             </tr>
                         }

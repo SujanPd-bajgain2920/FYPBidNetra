@@ -203,9 +203,24 @@ namespace FYPBidNetra.Controllers
                         Rating = t.AwardCompany.Rating,
                         UserbidId = t.AwardCompany.UserbidId,
 
-                    } : null
+                    } : null,
+
+                    // Add payment status
+                    PaymentStatus = _context.Payments
+                        .Where(p => p.PayTenderId == t.TenderId &&
+                                   p.PayByUser == currentUserID &&
+                                   p.PaymentMethod == "Deposit")
+                        .OrderByDescending(p => p.PaymentDate)
+                        .Select(p => p.PaymentStatus)
+                        .FirstOrDefault() ?? "Not Paid",
+                            PaymentId = _context.Payments
+                        .Where(p => p.PayTenderId == t.TenderId &&
+                                   p.PayByUser == currentUserID &&
+                                   p.PaymentMethod == "Deposit")
+                        .Select(p => p.PaymentId)
+                        .FirstOrDefault()
                 })
-                  .ToList();
+                      .ToList();
             //return Json(tenders);
             return PartialView("_AwardedTender", tenders);
         }

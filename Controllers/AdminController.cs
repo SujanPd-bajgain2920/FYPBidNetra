@@ -118,21 +118,7 @@ namespace BidNetra.Controllers
             return View(tenders);
         }
 
-        /*[HttpPost]
-        public IActionResult UpdateVerifiedStatus(long TenderId, string IsVerified)
-        {
-            var tender = _context.TenderDetails.FirstOrDefault(d => d.TenderId == TenderId);
-            if (tender != null)
-            {
-                tender.IsVerified = IsVerified;
-                _context.SaveChanges();
-
-                // Return a JSON response indicating success
-                return Json(new { success = true });
-            }
-
-            return Json(new { success = false });
-        }*/
+   
 
         [HttpPost]
         public async Task<IActionResult> UpdateVerifiedStatus(long TenderId, string IsVerified)
