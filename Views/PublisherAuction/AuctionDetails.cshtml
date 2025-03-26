@@ -1,36 +1,71 @@
 ﻿@model AuctionEdit
 
+<!-- Flowbite CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+<!-- FontAwesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- PDF.js for document viewing -->
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 
 <style>
-    .tender-card {
-        animation: fadeInUp 0.6s ease-out;
+   
+    body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background: #f8fafc;
     }
 
+    .page-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 2rem;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Auction header */
+    .auction-header {
+        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+        border-radius: 1rem 1rem 0 0;
+        padding: 2.5rem 2rem;
+        position: relative;
+        overflow: hidden;
+        animation: slideInUp 0.6s ease-out;
+    }
+
+    .auction-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    /* Status badges */
     .status-badge {
-        padding: 0.6rem 1.2rem;
-        border-radius: 12px;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.875rem;
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
         transition: all 0.3s ease;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
     .status-badge:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
-    /* Status Styles */
-    .status-open {
+    .status-active {
         background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         color: white;
     }
 
-    .status-closed {
+    .status-completed {
         background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
         color: white;
     }
@@ -40,7 +75,6 @@
         color: white;
     }
 
-    /* Verification Styles */
     .verified {
         background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
         color: white;
@@ -56,37 +90,65 @@
         color: white;
     }
 
-    .info-card {
+    /* Tabs */
+    .tabs-container {
         background: white;
-        border-radius: 16px;
-        padding: 1.5rem;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(229, 231, 235, 0.5);
-        position: relative;
-        overflow: hidden;
+        padding: 0 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
     }
 
-    .info-card::before {
+    .tab-button {
+        padding: 1.25rem 1.5rem;
+        color: #64748b;
+        font-weight: 600;
+        position: relative;
+        transition: all 0.3s ease;
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .tab-button:hover {
+        color: #3b82f6;
+    }
+
+    .tab-button.active {
+        color: #3b82f6;
+    }
+
+    .tab-button.active::after {
         content: '';
         position: absolute;
-        top: 0;
+        bottom: 0;
         left: 0;
         width: 100%;
-        height: 4px;
-        background: linear-gradient(90deg, #3b82f6, #2563eb);
-        opacity: 0;
-        transition: opacity 0.3s ease;
+        height: 3px;
+        background: #3b82f6;
+        border-radius: 3px 3px 0 0;
+    }
+
+    /* Info cards */
+    .info-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+        animation: slideInUp 0.6s ease-out;
+        border: 1px solid rgba(229, 231, 235, 0.5);
     }
 
     .info-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 12px 20px -10px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
 
-    .info-card:hover::before {
-        opacity: 1;
-    }
-
+    /* Timeline */
     .timeline-container {
         position: relative;
         padding-left: 2rem;
@@ -99,6 +161,7 @@
         border-radius: 12px;
         margin-bottom: 1.5rem;
         transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
 
     .timeline-item::before {
@@ -123,300 +186,295 @@
         transform: scaleX(1);
     }
 
-    .tab-btn {
-        position: relative;
-        padding: 0.75rem 1.5rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-
-    .tab-btn::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background: #3b82f6;
-        transform: scaleX(0);
-        transition: transform 0.3s ease;
-    }
-
-    .tab-btn.active::after {
-        transform: scaleX(1);
-    }
-
-    .download-btn {
+    .apply-button {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
         background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
         color: white;
-        padding: 1rem 2rem;
-        border-radius: 12px;
+        border-radius: 0.5rem;
         font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+    }
+
+        .apply-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
+        }
+
+    /* Back button */
+    .back-button {
+        color: #4b5563;
+        transition: all 0.3s ease;
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+        padding: 0.5rem;
+        border-radius: 0.5rem;
     }
 
-    .download-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 8px rgba(59, 130, 246, 0.3);
+    .back-button:hover {
+        color: #1f2937;
+        background: rgba(243, 244, 246, 0.8);
+        transform: translateX(-5px);
     }
 
-    .tender-header {
-        background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
-        padding: 2rem;
-        border-radius: 16px 16px 0 0;
-        position: relative;
-        overflow: hidden;
+    /* Tab content */
+    .tab-content {
+        animation: fadeIn 0.5s ease-out;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
     }
 
-    .tender-header::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 300px;
-        height: 300px;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-        transform: translate(30%, -30%);
+    .tab-content.active {
+        display: block;
+        opacity: 1;
     }
 
-    .status-icon {
-        width: 24px;
-        height: 24px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
-        margin-right: 0.5rem;
-    }
-
-    [data-status="open"] .info-card { border-left: 4px solid #10b981; }
-    [data-status="closed"] .info-card { border-left: 4px solid #ef4444; }
-    [data-status="pending"] .info-card { border-left: 4px solid #f59e0b; }
-
-    /* Progress indicator for verification */
-    .verification-progress {
-        height: 4px;
-        background: #e5e7eb;
-        border-radius: 2px;
-        overflow: hidden;
-        margin-top: 1rem;
-    }
-
-    .verification-progress-bar {
-        height: 100%;
-        transition: width 0.3s ease;
-    }
-
-    [data-verified="yes"] .verification-progress-bar {
-        width: 100%;
-        background: #3b82f6;
-    }
-
-    [data-verified="no"] .verification-progress-bar {
-        width: 33%;
-        background: #6b7280;
-    }
-
-    [data-verified="pending"] .verification-progress-bar {
-        width: 66%;
-        background: #f59e0b;
-    }
-
-    /* Image Gallery Styles */
+    /* Image gallery */
     .image-gallery {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 1rem;
-        margin-top: 1rem;
     }
 
-    .image-gallery img {
+    .gallery-item {
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .gallery-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .gallery-item img {
         width: 100%;
-        height: auto;
-        border-radius: 12px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 200px;
+        object-fit: cover;
+        transition: all 0.3s ease;
     }
 
-    .image-gallery img:hover {
+    .gallery-item:hover img {
         transform: scale(1.05);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
+
+   
 </style>
 
-<body class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-7xl">
-        <div class="tender-card" data-status="@Model.AuctionStatus.ToLower()" data-verified="@Model.IsVerified.ToLower()">
-            <div class="flex items-center justify-between mb-6">
-                <button onclick="history.back()"
-                        class="text-gray-600 hover:text-gray-800 transition-all duration-300 hover:scale-110">
-                    <i class="fas fa-arrow-left text-xl"></i>
-                </button>
-                <div class="flex gap-4">
-                    <span class="status-badge @(Model.AuctionStatus.ToLower() == "active" ? "status-open" :
-                                              Model.AuctionStatus.ToLower() == "completed" ? "status-closed" : "status-pending")">
-                        <div class="status-icon">
-                            <i class="fas @(Model.AuctionStatus.ToLower() == "active" ? "fa-door-open" :
-                                          Model.AuctionStatus.ToLower() == "completed" ? "fa-lock" : "fa-clock") text-xs"></i>
+<div class="page-container">
+    <div class="flex items-center justify-between mb-6">
+        <button onclick="history.back()" class="back-button">
+            <i class="fas fa-arrow-left text-xl"></i>
+            <span class="hidden sm:inline ml-2">Back</span>
+        </button>
+        <div class="flex gap-4">
+            <span class="status-badge status-@Model.AuctionStatus.ToLower()">
+                <i class="fas @(Model.AuctionStatus.ToLower() == "active" ? "fa-door-open" :
+                              Model.AuctionStatus.ToLower() == "completed" ? "fa-lock" : "fa-clock")"></i>
+                @Model.AuctionStatus
+            </span>
+            <span class="status-badge @(Model.IsVerified == "Verified" ? "verified" :
+                                      Model.IsVerified == "Not Verified" ? "not-verified" : "verification-pending")">
+                <i class="fas @(Model.IsVerified == "Verified" ? "fa-check-circle" :
+                              Model.IsVerified == "Not Verified" ? "fa-times-circle" : "fa-spinner fa-spin")"></i>
+                @Model.IsVerified
+            </span>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div class="auction-header">
+            <h1 class="text-3xl font-bold text-white mb-4">@Model.Title</h1>
+            <div class="flex flex-wrap items-center gap-6 text-white/90">
+                <span class="flex items-center gap-2">
+                    <i class="fas fa-hashtag"></i>
+                    <span>Auction ID: @Model.AuctionId</span>
+                </span>
+                <span class="flex items-center gap-2">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Start Date: @Model.StartDate.ToString("MMM dd, yyyy")</span>
+                </span>
+            </div>
+        </div>
+
+        <div class="border-b border-gray-200 bg-white">
+            <div class="flex justify-between items-center px-6">
+                <nav class="flex space-x-8" aria-label="Tabs">
+                    <button onclick="showTab('details')" class="tab-btn py-4 px-1 text-sm font-medium text-blue-600 active">
+                        <i class="fas fa-info-circle mr-2"></i>Details
+                    </button>
+                    <button onclick="showTab('auction')" class="tab-btn py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-file-alt mr-2"></i>Image
+                    </button>
+                </nav>
+
+                 @if (Model.AuctionStatus == "Completed")
+                 {
+                     <a asp-action="MonitorAuction" asp-controller="PublisherAuction" asp-route-id="@Model.EncId"
+                               class="apply-button">
+                                <i class="fas fa-bell mr-2"></i>
+                                Monitor Now
+                     </a>
+                 }
+
+                
+            </div>
+        </div>
+
+        
+
+        <div class="p-6">
+            <!-- Details Tab -->
+            <div id="details-tab" class="tab-content active">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Basic Information -->
+                    <div class="info-card p-6">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-building text-blue-600 mr-2"></i>Basic Information
+                        </h2>
+                        <div class="space-y-4">
+                            <div class="flex items-center text-gray-600 border-b border-gray-100 pb-3">
+                                <i class="fas fa-tags w-8 text-blue-500"></i>
+                                <span class="font-medium mr-2">Type:</span>
+                                <span class="text-gray-800">@Model.AuctionType</span>
+                            </div>
                         </div>
-                        @Model.AuctionStatus
-                    </span>
-                    <span class="status-badge @(Model.IsVerified == "Verified" ? "verified" :
-                           Model.IsVerified == "Not Verified" ? "not-verified" : "verification-pending")">
-                        <div class="status-icon">
-                            <i class="fas @(Model.IsVerified == "Verified" ? "fa-shield-check" :
-                      Model.IsVerified == "Not Verified" ? "fa-times-circle" : "fa-spinner fa-spin") text-xs"></i>
+                    </div>
+
+                    <!-- Financial Details -->
+                    <div class="info-card p-6">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-coins text-yellow-600 mr-2"></i>Financial Details
+                        </h2>
+                        <div class="space-y-4">
+                            <div class="flex items-center text-gray-600 border-b border-gray-100 pb-3">
+                                <i class="fas fa-rupee-sign w-8 text-green-500"></i>
+                                <span class="font-medium mr-2">Starting Price:</span>
+                                <span class="text-gray-800">@Model.StartingPrice.ToString("N2")</span>
+                            </div>
                         </div>
-                        @Model.IsVerified
-                    </span>
+                    </div>
+                </div>
+
+
+
+                <!-- Winner Details (if awarded) -->
+                @if (Model.AwardStatus == "Awarded" && Model.WinnerDetails != null)
+                {
+                    <div class="info-card p-6">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-trophy text-yellow-600 mr-2"></i>Winner Details
+                        </h2>
+                        <div class="space-y-4">
+                            <div class="flex items-center text-gray-600 border-b border-gray-100 pb-3">
+                                <i class="fas fa-user w-8 text-blue-500"></i>
+                                <span class="font-medium mr-2">Winner:</span>
+                                <span class="text-gray-800">
+                                    @($"{Model.WinnerDetails.FirstName} {Model.WinnerDetails.MiddleName} {Model.WinnerDetails.LastName}".Trim())
+                                </span>
+                            </div>
+                            <div class="flex items-center text-gray-600 border-b border-gray-100 pb-3">
+                                <i class="fas fa-hand-holding-usd w-8 text-green-500"></i>
+                                <span class="font-medium mr-2">Winning Bid:</span>
+                                <span class="text-gray-800">@Model.WinningBidAmount?.ToString("N2")</span>
+                            </div>
+                       </div>
+                    </div>
+                }
+                
+
+                <!-- Timeline -->
+                <div class="info-card p-6 mb-8">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
+                        <i class="fas fa-clock text-purple-600 mr-2"></i>Timeline
+                    </h2>
+                    <div class="timeline-container">
+                        <div class="timeline-item">
+                            <div class="font-medium text-gray-800 flex items-center">
+                                <i class="fas fa-calendar-day text-green-500 mr-2"></i>
+                                Opening Date & Time
+                            </div>
+                            <div class="text-gray-600 mt-2">
+                                @Model.StartDate.ToString("MMMM dd, yyyy") at @Model.StartTime.ToString("hh:mm tt")
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="font-medium text-gray-800 flex items-center">
+                                <i class="fas fa-calendar-times text-red-500 mr-2"></i>
+                                Closing Date & Time
+                            </div>
+                            <div class="text-gray-600 mt-2">
+                                @Model.EndDate.ToString("MMMM dd, yyyy") at @Model.EndTime.ToString("hh:mm tt")
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                <div class="tender-header">
-                    <h1 class="text-3xl font-bold text-white mb-3">@Model.Title</h1>
-                    <div class="flex items-center text-blue-100 space-x-6">
-                        <span class="flex items-center">
-                            <i class="fas fa-hashtag mr-2"></i>
-                            <span class="opacity-90">Auction ID:</span>
-                            <span class="font-semibold ml-2">@Model.AuctionId</span>
-                        </span>
-                        <span class="flex items-center">
-                            <i class="fas fa-calendar-alt mr-2"></i>
-                            <span class="opacity-90">Start:</span>
-                            <span class="font-semibold ml-2">@Model.StartDate.ToString("MMM dd, yyyy")</span>
-                        </span>
-                    </div>
+            <!-- Auction Images Tab -->
+            <div id="auction-tab" class="tab-content">
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 flex items-center">
+                        <i class="fas fa-image text-blue-600 mr-2"></i>Auction Images
+                    </h2>
+                    <p class="text-gray-600 mt-2">
+                        View images of the auction item below.
+                    </p>
                 </div>
-
-                <div class="border-b border-gray-200">
-                    <nav class="flex space-x-4 px-6" aria-label="Tabs">
-                        <button onclick="showTab('details')" class="tab-btn px-4 py-3 text-sm font-medium text-blue-600 border-b-2 border-blue-600">
-                            <i class="fas fa-info-circle mr-2"></i>Details
-                        </button>
-                        <button onclick="showTab('auction')" class="tab-btn px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700">
-                            <i class="fas fa-image mr-2"></i>Auction Images
-                        </button>
-                        @Model.AuctionId
-                        <a asp-action="MonitorAuction" asp-controller="PublisherAuction" asp-route-id="@Model.EncId"
-                           class="apply-button">
-                            <i class="fas fa-paper-plane mr-2"></i>
-                            Monitor Now
-                        </a>
-                    </nav>
-                </div>
-
-                <div class="p-6">
-                    <!-- Details Tab -->
-                    <div id="details-tab" class="tab-content active">
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                            <!-- Basic Information -->
-                            <div class="info-card bg-white rounded-xl p-6">
-                                <h2 class="text-xl font-semibold text-gray-800 mb-4">
-                                    <i class="fas fa-building text-blue-600 mr-2"></i>Basic Information
-                                </h2>
-                                <div class="space-y-4">
-                                    
-                                    <div class="flex items-center text-gray-600">
-                                        <i class="fas fa-tags w-8"></i>
-                                        <span class="font-medium mr-2">Type:</span>
-                                        @Model.AuctionType
-                                    </div>
-                                    
-                                </div>
-                            </div>
-
-                            <!-- Financial Details -->
-                            <div class="info-card bg-white rounded-xl p-6">
-                                <h2 class="text-xl font-semibold text-gray-800 mb-4">
-                                    <i class="fas fa-coins text-yellow-600 mr-2"></i>Financial Details
-                                </h2>
-                                <div class="space-y-4">
-                                    <div class="flex items-center text-gray-600">
-                                        <i class="fas fa-dollar-sign w-8"></i>
-                                        <span class="font-medium mr-2">Budget:</span>
-                                        @Model.StartingPrice.ToString("C")
-                                    </div>
-                                    
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Timeline -->
-                        <div class="info-card bg-white rounded-xl p-6 mb-8">
-                            <h2 class="text-xl font-semibold text-gray-800 mb-6">
-                                <i class="fas fa-timeline text-purple-600 mr-2"></i>Timeline
-                            </h2>
-                            <div class="space-y-6">
-                                <div class="timeline-item">
-                                    <div class="font-medium text-gray-800">Opening Date & Time</div>
-                                    <div class="text-gray-600">
-                                        @Model.StartDate.ToString("MMMM dd, yyyy")  at @Model.StartTime.ToString("hh:mm tt")
-                                    </div>
-                                </div>
-                                <div class="timeline-item">
-                                    <div class="font-medium text-gray-800">Closing Date & Time</div>
-                                    <div class="text-gray-600">
-                                        @Model.EndDate.ToString("MMMM dd, yyyy")  at @Model.EndTime.ToString("hh:mm tt")
-                                    </div>
-                                </div>
-
-
-                            </div>
-                        </div>
+                <div class="image-gallery">
+                    <div class="gallery-item">
+                        <img src="~/AuctionImage/@Model.ItemImage" alt="Auction Image 1">
                     </div>
-
-                    <!-- Auction Images Tab -->
-                    <div id="auction-tab" class="tab-content">
-                        <div class="mb-6">
-                            <h2 class="text-xl font-semibold text-gray-800">
-                                <i class="fas fa-image text-blue-600 mr-2"></i>Auction Images
-                            </h2>
-                        </div>
-                        <div class="image-gallery">
-                            
-                           
-
-                            <img src="~/AuctionImage/@Model.ItemImage" alt="Auction Image 1">
-                            <img src="~/AuctionImage/@Model.ItemImage" alt="Auction Image 2">
-                            <img src="~/AuctionImage/@Model.ItemImage" alt="Auction Image 3">
-                           
-                        </div>
+                    <div class="gallery-item">
+                        <img src="~/AuctionImage/@Model.ItemImage" alt="Auction Image 2">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="~/AuctionImage/@Model.ItemImage" alt="Auction Image 3">
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        function showTab(tabName) {
-            const tabs = document.querySelectorAll('.tab-content');
-            const buttons = document.querySelectorAll('.tab-btn');
+<!-- Flowbite JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show details tab by default
+        showTab('details');
+    });
 
-            tabs.forEach(tab => {
-                tab.style.opacity = '0';
-                setTimeout(() => {
-                    tab.style.display = 'none';
-                }, 300);
-            });
+    function showTab(tabName) {
+        const tabs = document.querySelectorAll('.tab-content');
+        const buttons = document.querySelectorAll('.tab-button');
 
-            buttons.forEach(btn => {
-                btn.classList.remove('active');
-            });
-
+        tabs.forEach(tab => {
+            tab.style.opacity = '0';
             setTimeout(() => {
-                const selectedTab = document.getElementById(`${tabName}-tab`);
-                selectedTab.style.display = 'block';
-                setTimeout(() => {
-                    selectedTab.style.opacity = '1';
-                }, 50);
+                tab.style.display = 'none';
+                tab.classList.remove('active');
             }, 300);
+        });
 
-            document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
-        }
-    </script>
-</body>
+        buttons.forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        setTimeout(() => {
+            const selectedTab = document.getElementById(`${tabName}-tab`);
+            selectedTab.style.display = 'block';
+            selectedTab.classList.add('active');
+            setTimeout(() => {
+                selectedTab.style.opacity = '1';
+            }, 50);
+        }, 300);
+
+        document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
+    }
+</script>

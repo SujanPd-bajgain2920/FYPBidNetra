@@ -5,9 +5,9 @@
         transition: all 0.3s ease;
     }
 
-    .tender-card:hover {
-        transform: translateY(-2px);
-    }
+        .tender-card:hover {
+            transform: translateY(-2px);
+        }
 
     .status-badge {
         padding: 0.5rem 1rem;
@@ -36,9 +36,9 @@
         transition: all 0.3s ease;
     }
 
-    .action-button:hover {
-        transform: scale(1.05);
-    }
+        .action-button:hover {
+            transform: scale(1.05);
+        }
 
     .filter-dropdown {
         backface-visibility: visible;
@@ -67,19 +67,20 @@
                 <span class="text-lg">Back</span>
             </button>
             <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">
-                Published Auction
+                Closed Auction
             </h2>
         </div>
 
         <!-- Enhanced Filter Section -->
         <div class="flex justify-between items-center mb-6">
             <div class="flex gap-4">
-                <select id="statusFilter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
-                        onchange="filterTable()">
-                    <option value="">All Status</option>
-                    <option value="Verified">Verified</option>
-                    <option value="Not Verified">Not Verified</option>
-                    <option value="Pending">Pending</option>
+                <select id="typeFilter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                        onchange="filterByType()">
+                    <option value="">All Types</option>
+                    @foreach (var type in Model.Select(t => t.AuctionType).Distinct())
+                    {
+                        <option value="@type">@type</option>
+                    }
                 </select>
                 <input type="text" id="searchInput" placeholder="Search auctions..."
                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
@@ -98,13 +99,16 @@
                                 <i class="fas fa-hashtag mr-2"></i>Auction ID
                             </th>
                             <th class="px-6 py-4 text-center font-semibold">
-                                <i class="fas fa-file-alt mr-2"></i>Title
+                                <i class="fas fa-heading mr-2"></i>Title
                             </th>
                             <th class="px-6 py-4 text-center font-semibold">
-                                <i class="fas fa-chart-pie mr-2"></i>Status
+                                <i class="fas fa-tag mr-2"></i>Type
                             </th>
                             <th class="px-6 py-4 text-center font-semibold">
-                                <i class="fas fa-calendar-alt mr-2"></i>Starting Price
+                                <i class="fas fa-calendar-alt mr-2"></i>Closed Date
+                            </th>
+                            <th class="px-6 py-4 text-center font-semibold">
+                                <i class="fas fa-circle-info mr-2"></i>Status
                             </th>
                             <th class="px-6 py-4 text-center font-semibold">
                                 <i class="fas fa-cogs mr-2"></i>Actions
@@ -123,6 +127,19 @@
                                         <span class="line-clamp-1">@auction.Title</span>
                                     </div>
                                 </td>
+                                <td class="px-6 py-4 text-center text-gray-800">
+                                    <div class="flex items-center justify-center">
+                                        <span class="line-clamp-1">@auction.AuctionType</span>
+                                    </div>
+                                </td>
+
+                                <td class="px-6 py-4 text-center text-gray-800">
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <i class="far fa-calendar-alt text-blue-500"></i>
+                                        <span>@auction.EndDate</span>
+                                    </div>
+                                </td>
+
                                 <td class="px-6 py-4 text-center">
                                     <span class="px-4 py-1 min-w-[100px] inline-block text-xs font-semibold text-center
                                         @(auction.IsVerified == "Verified" ? "bg-green-100 text-green-800" :
@@ -133,12 +150,7 @@
                                 </td>
 
 
-                                <td class="px-6 py-4 text-center text-gray-800">
-                                    <div class="flex items-center justify-center space-x-2">
-                                        <i class="far fa-calendar-alt text-blue-500"></i>
-                                        <span>@auction.StartingPrice</span>
-                                    </div>
-                                </td>
+                                
                                 <td class="px-6 py-4 text-center space-x-2">
                                     <a asp-action="AuctionDetails" asp-controller="PublisherAuction" asp-route-id="@auction.EncId"
                                        class="action-button inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md">

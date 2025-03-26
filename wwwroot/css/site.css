@@ -352,3 +352,61 @@ body {
         display: none;
     }
 }
+
+/* Custom animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes highlight {
+    0% {
+        background-color: rgba(59, 130, 246, 0.2);
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
+/* Toast animation */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .chat-container {
+        margin: 1rem;
+        border-radius: 0.75rem;
+    }
+
+    .message-bubble-right, .message-bubble-left {
+        max-width: 90%;
+    }
+}

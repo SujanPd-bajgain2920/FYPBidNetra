@@ -42,5 +42,14 @@ namespace FYPBidNetra.Models
         public IFormFile? AuctionFile { get; set; } = null!;
 
         public AuctionBidEdit Bid { get; set; }
+
+        public UserListEdit? WinnerDetails { get; set; }
+
+       
+
+        public string? PaymentStatus { get; set; }
+
+        public short? PaymentId { get; set; }
+
     }
 }

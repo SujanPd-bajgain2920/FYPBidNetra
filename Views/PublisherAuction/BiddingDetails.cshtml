@@ -187,7 +187,7 @@
 
                 @if (Model.AuctionBidEdit.BidStatus == "Accepted")
                 {
-                    <a asp-action="AuctionIndex" asp-controller="Contract" asp-route-id="@Model.AuctionBidEdit.EncId"
+                    <a asp-action="Index" asp-controller="AuctionContract" asp-route-id="@Model.AuctionBidEdit.EncId"
                        class="action-button bg-purple-600 text-white hover:bg-purple-700 flex items-center justify-center">
                         <i class="fas fa-file-contract mr-2"></i>
                          Contract now

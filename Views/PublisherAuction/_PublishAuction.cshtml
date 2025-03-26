@@ -140,9 +140,21 @@
                                     <i class="fas fa-tags input-icon"></i>
                                     <select asp-for="AuctionType" required
                                             class="icon-input block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
-                                        <option value="Live">Live Auction</option>
-                                        <option value="Silent">Silent Auction</option>
-                                        <option value="Sealed">Sealed Bid</option>
+                                        <option value="">-- Select Category --</option>
+                                        <option value="House">House</option>
+                                        <option value="Land">Land</option>
+                                        <option value="Car">Car</option>
+                                        <option value="Bike">Bike</option>
+                                        <option value="Electronics">Electronics</option>
+                                        <option value="Furniture">Furniture</option>
+                                        <option value="Jewelry">Jewelry</option>
+                                        <option value="Art">Art & Collectibles</option>
+                                        <option value="Antiques">Antiques</option>
+                                        <option value="Books">Books & Literature</option>
+                                        <option value="Sports">Sports Equipment</option>
+                                        <option value="Musical">Musical Instruments</option>
+                                        <option value="Fashion">Fashion & Accessories</option>
+                                        <option value="Others">Others</option>
                                     </select>
                                 </div>
                                 <span asp-validation-for="AuctionType" class="text-sm text-red-600 mt-1"></span>
@@ -252,15 +264,54 @@
             }
         }
 
-        // Form validation for dates
-        document.getElementById('auctionForm').addEventListener('submit', function(event) {
-            const startDate = new Date(document.getElementById('StartDate').value + 'T' + document.getElementById('StartTime').value);
-            const endDate = new Date(document.getElementById('EndDate').value + 'T' + document.getElementById('EndTime').value);
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const startDate = new Date(document.querySelector('[name="StartDate"]').value + 'T' + document.querySelector('[name="StartTime"]').value);
+            const endDate = new Date(document.querySelector('[name="EndDate"]').value + 'T' + document.querySelector('[name="EndTime"]').value);
+            const startingPrice = parseFloat(document.querySelector('[name="StartingPrice"]').value);
+            const fileInput = document.querySelector('[name="AuctionFile"]');
 
+            let isValid = true;
+
+            // Clear previous error messages
+            document.querySelectorAll('.validation-error').forEach(el => el.remove());
+
+            // Validate end date and time
             if (endDate <= startDate) {
-                event.preventDefault();
-                alert('End date and time must be after start date and time');
+                e.preventDefault();
+                const endDateInput = document.querySelector('[name="EndDate"]');
+                addErrorMessage(endDateInput, 'End date and time must be after the start date and time');
+                isValid = false;
             }
+
+            // Validate starting price
+            if (startingPrice <= 0 || isNaN(startingPrice)) {
+                e.preventDefault();
+                const priceInput = document.querySelector('[name="StartingPrice"]');
+                addErrorMessage(priceInput, 'Starting price must be greater than 0');
+                isValid = false;
+            }
+
+            // Validate file
+            if (fileInput.files.length > 0) {
+                const fileName = fileInput.files[0].name.toLowerCase();
+                const validExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
+                const hasValidExtension = validExtensions.some(ext => fileName.endsWith(ext));
+
+                if (!hasValidExtension) {
+                    e.preventDefault();
+                    addErrorMessage(fileInput, 'Only image files (JPG, JPEG, PNG, GIF) are allowed');
+                    isValid = false;
+                }
+            }
+
+            return isValid;
         });
+
+        function addErrorMessage(element, message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'validation-error text-sm text-red-600 mt-1';
+            errorDiv.textContent = message;
+            element.parentNode.appendChild(errorDiv);
+        }
     </script>
 </body>

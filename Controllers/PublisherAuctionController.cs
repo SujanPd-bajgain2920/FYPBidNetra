@@ -221,7 +221,22 @@ namespace FYPBidNetra.Controllers
                 ItemImage = t.ItemImage,
                 AuctionStatus = t.AuctionStatus,
                 IsVerified = t.IsVerified,
+                AwardStatus = t.AwardStatus,
+                WinningBidAmount = t.WinningBidAmount,
+                BuyerId = t.BuyerId,
+                WinnerDetails = t.BuyerId != null ? _context.UserLists
+                .Where(u => u.UserId == t.BuyerId)
+                .Select(u => new UserListEdit
+                {
+                    UserId = u.UserId,
+                    FirstName = u.FirstName,
+                    MiddleName = u.MiddleName,
+                    LastName = u.LastName,
+                    EncId = _protector.Protect(u.UserId.ToString())
+                })
+                .FirstOrDefault() : null,
                 EncId = _protector.Protect(t.AuctionId.ToString())
+
             })
             .FirstOrDefault();
             //return Json(auction);
@@ -245,6 +260,8 @@ namespace FYPBidNetra.Controllers
                     StartingPrice = t.StartingPrice,
                     AuctionStatus = t.AuctionStatus,
                     IsVerified = t.IsVerified,
+                    StartDate = t.StartDate,
+                    EndDate = t.EndDate,
                     EncId = _protector.Protect(t.AuctionId.ToString())
                 })
                   .ToList();
@@ -252,7 +269,7 @@ namespace FYPBidNetra.Controllers
             return PartialView("_ActiveAuction", auctions);
         }
 
-        public IActionResult CompleteAuction()
+        public IActionResult ClosedAuction()
         {
             UpdateAuctionStatuses();
             int currentUserID = Convert.ToInt16(User.Identity!.Name);
@@ -267,12 +284,69 @@ namespace FYPBidNetra.Controllers
                     AuctionType = t.AuctionType,
                     StartingPrice = t.StartingPrice,
                     AuctionStatus = t.AuctionStatus,
+
+                    EndDate = t.EndDate,
                     IsVerified = t.IsVerified,
                     EncId = _protector.Protect(t.AuctionId.ToString())
                 })
                   .ToList();
             //return Json(tenders);
-            return PartialView("_ActiveAuction", auctions);
+            return PartialView("_ClosedAuction", auctions);
+        }
+
+
+        public IActionResult AwardedAuction()
+        {
+            UpdateAuctionStatuses();
+            int currentUserID = Convert.ToInt16(User.Identity!.Name);
+            var auctions = _context.AuctionDetails
+               .Where(t => t.PublishedByUserId == currentUserID &&
+                           t.AuctionStatus == "Completed" &&
+                           t.IsVerified == "Verified")
+               .Select(t => new AuctionEdit
+               {
+                   AuctionId = t.AuctionId,
+                   Title = t.Title,
+                   AuctionType = t.AuctionType,
+                   StartingPrice = t.StartingPrice,
+                   AuctionStatus = t.AuctionStatus,
+                   EndDate = t.EndDate,
+                   IsVerified = t.IsVerified,
+                   EncId = _protector.Protect(t.AuctionId.ToString()),
+                   WinnerDetails = t.BuyerId != null ? new UserListEdit
+                   {
+                       UserId = (short)t.BuyerId,
+                       FirstName = _context.UserLists
+                            .Where(u => u.UserId == t.BuyerId)
+                            .Select(u => u.FirstName)
+                            .FirstOrDefault(),
+                       MiddleName = _context.UserLists
+                       .Where(u => u.UserId == t.BuyerId)
+                            .Select(u => u.MiddleName)
+                            .FirstOrDefault(),
+                       LastName = _context.UserLists
+                       .Where(u => u.UserId == t.BuyerId)
+                            .Select(u => u.LastName)
+                            .FirstOrDefault(),
+                   } : null,
+                   // Add payment status
+                   PaymentStatus = _context.Payments
+                        .Where(p => p.PayAuctionId == t.AuctionId &&
+                                   p.PayByUser == currentUserID &&
+                                   p.PaymentMethod == "Deposit")
+                        .OrderByDescending(p => p.PaymentDate)
+                        .Select(p => p.PaymentStatus)
+                        .FirstOrDefault() ?? "Not Paid",
+                    PaymentId = _context.Payments
+                        .Where(p => p.PayAuctionId == t.AuctionId &&
+                                   p.PayByUser == currentUserID &&
+                                   p.PaymentMethod == "Deposit")
+                        .Select(p => p.PaymentId)
+                        .FirstOrDefault()
+                })
+                      .ToList();
+            //return Json(tenders);
+            return PartialView("_AwardedAuction", auctions);
         }
 
 
@@ -391,13 +465,14 @@ namespace FYPBidNetra.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> UserBid(short id)
+        public async Task<IActionResult> UserBid(string id)
         {
+            int auctionId = Convert.ToInt32(_protector.Unprotect(id));
             var currentUserId = Convert.ToInt16(User.Identity!.Name);
 
             // Get Auction Details
             var auctionDetails = await _context.AuctionDetails
-                .Where(a => a.AuctionId == id)
+                .Where(a => a.AuctionId == auctionId)
                 .FirstOrDefaultAsync();
 
             if (auctionDetails == null)
@@ -407,7 +482,7 @@ namespace FYPBidNetra.Controllers
 
             // Get Distinct Bidders for the Auction
             var bidders = await _context.AuctionBids
-                .Where(b => b.AuctionBidId == id)
+                .Where(b => b.AuctionBidId == auctionId)
                 .Select(b => b.BidderId)
                 .Distinct()
                 .Join(
@@ -427,7 +502,7 @@ namespace FYPBidNetra.Controllers
 
             // Get Bid History for the Auction
             var bidHistory = await _context.AuctionBids
-                .Where(b => b.AuctionBidId == id)
+                .Where(b => b.AuctionBidId == auctionId)
                 .OrderByDescending(b => b.BidAmount)
                 .Select(b => new AuctionBidEdit
                 {
