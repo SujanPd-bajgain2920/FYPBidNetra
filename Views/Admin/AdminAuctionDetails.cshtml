@@ -1,36 +1,72 @@
 ﻿@model AuctionDetailsViewModel
 
+<!-- Flowbite CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+<!-- FontAwesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- PDF.js for document viewing -->
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 
 <style>
-    .tender-card {
-        animation: fadeInUp 0.6s ease-out;
+    
+   
+    body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background: #f8fafc;
     }
 
+    .page-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 2rem;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Auction header */
+    .auction-header {
+        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+        border-radius: 1rem 1rem 0 0;
+        padding: 2.5rem 2rem;
+        position: relative;
+        overflow: hidden;
+        animation: slideInUp 0.6s ease-out;
+    }
+
+    .auction-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    /* Status badges */
     .status-badge {
-        padding: 0.6rem 1.2rem;
-        border-radius: 12px;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.875rem;
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
         transition: all 0.3s ease;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
     .status-badge:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
-    /* Status Styles */
-    .status-open {
+    .status-active {
         background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         color: white;
     }
 
-    .status-closed {
+    .status-completed {
         background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
         color: white;
     }
@@ -40,7 +76,6 @@
         color: white;
     }
 
-    /* Verification Styles */
     .verified {
         background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
         color: white;
@@ -56,464 +91,522 @@
         color: white;
     }
 
-    .info-card {
+    /* Tabs */
+    .tabs-container {
         background: white;
-        border-radius: 16px;
-        padding: 1.5rem;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(229, 231, 235, 0.5);
-        position: relative;
-        overflow: hidden;
+        padding: 0 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
     }
 
-    .info-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: linear-gradient(90deg, #3b82f6, #2563eb);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .info-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 20px -10px rgba(0, 0, 0, 0.1);
-    }
-
-    .info-card:hover::before {
-        opacity: 1;
-    }
-
-    .timeline-container {
-        position: relative;
-        padding-left: 2rem;
-    }
-
-    .timeline-item {
-        position: relative;
-        padding: 1.5rem;
-        background: white;
-        border-radius: 12px;
-        margin-bottom: 1.5rem;
-        transition: all 0.3s ease;
-    }
-
-    .timeline-item::before {
-        content: '';
-        position: absolute;
-        left: -1rem;
-        top: 50%;
-        width: 2rem;
-        height: 2px;
-        background: #3b82f6;
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: transform 0.3s ease;
-    }
-
-    .timeline-item:hover {
-        transform: translateX(10px);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .timeline-item:hover::before {
-        transform: scaleX(1);
-    }
-
-    .tab-btn {
-        position: relative;
-        padding: 0.75rem 1.5rem;
+    .tab-button {
+        padding: 1.25rem 1.5rem;
+        color: #64748b;
         font-weight: 600;
+        position: relative;
         transition: all 0.3s ease;
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
-    .tab-btn::after {
+    .tab-button:hover {
+        color: #3b82f6;
+    }
+
+    .tab-button.active {
+        color: #3b82f6;
+    }
+
+    .tab-button.active::after {
         content: '';
         position: absolute;
         bottom: 0;
         left: 0;
         width: 100%;
-        height: 2px;
+        height: 3px;
         background: #3b82f6;
-        transform: scaleX(0);
-        transition: transform 0.3s ease;
+        border-radius: 3px 3px 0 0;
     }
 
-    .tab-btn.active::after {
-        transform: scaleX(1);
+    /* Info cards */
+    .info-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+        animation: slideInUp 0.6s ease-out;
+        border: 1px solid rgba(229, 231, 235, 0.5);
     }
 
-    .download-btn {
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-        color: white;
-        padding: 1rem 2rem;
-        border-radius: 12px;
-        font-weight: 600;
+    .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Publisher card */
+    .publisher-card {
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .publisher-photo {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        margin: 0 auto 1rem;
+        border: 4px solid #e2e8f0;
+        object-fit: cover;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Timeline */
+    .timeline-container {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        padding: 2rem 0;
+    }
+
+    .timeline-item {
+        flex: 1;
+        text-align: center;
+        position: relative;
+    }
+
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: #e2e8f0;
+        z-index: 0;
+    }
+
+    .timeline-point {
+        width: 40px;
+        height: 40px;
+        background: white;
+        border: 2px solid #3b82f6;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+        margin: 0 auto 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .timeline-item:hover .timeline-point {
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+        background: #eff6ff;
+    }
+
+    /* Action buttons */
+    .action-button {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+        cursor: pointer;
     }
 
-    .download-btn:hover {
+    .verify-button {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        box-shadow: 0 4px 6px rgba(5, 150, 105, 0.25);
+    }
+
+    .verify-button:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
         transform: translateY(-2px);
-        box-shadow: 0 6px 8px rgba(59, 130, 246, 0.3);
+        box-shadow: 0 6px 10px rgba(5, 150, 105, 0.3);
     }
 
-    .tender-header {
-        background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
-        padding: 2rem;
-        border-radius: 16px 16px 0 0;
-        position: relative;
-        overflow: hidden;
+    .reject-button {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        box-shadow: 0 4px 6px rgba(220, 38, 38, 0.25);
     }
 
-    .tender-header::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 300px;
-        height: 300px;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-        transform: translate(30%, -30%);
+    .reject-button:hover {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 10px rgba(220, 38, 38, 0.3);
     }
 
-    .status-icon {
-        width: 24px;
-        height: 24px;
+    /* Back button */
+    .back-button {
+        color: rgba(255, 255, 255, 0.8);
+        transition: all 0.3s ease;
         display: inline-flex;
         align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
-        margin-right: 0.5rem;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
     }
 
-    [data-status="open"] .info-card { border-left: 4px solid #10b981; }
-    [data-status="closed"] .info-card { border-left: 4px solid #ef4444; }
-    [data-status="pending"] .info-card { border-left: 4px solid #f59e0b; }
-
-    /* Progress indicator for verification */
-    .verification-progress {
-        height: 4px;
-        background: #e5e7eb;
-        border-radius: 2px;
-        overflow: hidden;
-        margin-top: 1rem;
+    .back-button:hover {
+        color: white;
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateX(-5px);
     }
 
-    .verification-progress-bar {
-        height: 100%;
-        transition: width 0.3s ease;
+    /* Tab content */
+    .tab-content {
+        animation: fadeIn 0.5s ease-out;
+        display: none;
     }
 
-    [data-verified="yes"] .verification-progress-bar {
-        width: 100%;
-        background: #3b82f6;
+    .tab-content.active {
+        display: block;
     }
 
-    [data-verified="no"] .verification-progress-bar {
-        width: 33%;
-        background: #6b7280;
-    }
-
-    [data-verified="pending"] .verification-progress-bar {
-        width: 66%;
-        background: #f59e0b;
-    }
-
-    /* Image Gallery Styles */
+    /* Image gallery */
     .image-gallery {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 1rem;
-        margin-top: 1rem;
     }
 
-    .image-gallery img {
+    .gallery-item {
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .gallery-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .gallery-item img {
         width: 100%;
-        height: auto;
-        border-radius: 12px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 200px;
+        object-fit: cover;
+        transition: all 0.3s ease;
     }
 
-    .image-gallery img:hover {
+    .gallery-item:hover img {
         transform: scale(1.05);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
+
+    
 </style>
 
-<body class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-7xl">
-        <div class="tender-card" data-status="@Model.Auction.AuctionStatus.ToLower()" data-verified="@Model.Auction.IsVerified.ToLower()">
-            <div class="flex items-center justify-between mb-6">
-                <button onclick="history.back()"
-                        class="text-gray-600 hover:text-gray-800 transition-all duration-300 hover:scale-110">
-                    <i class="fas fa-arrow-left text-xl"></i>
-                </button>
-                <!-- Verification Buttons -->
-                <div class="flex gap-4">
-                    <a href="javascript:void(0);"
-                       class="btn text-green-600 hover:text-green-900 verify-btn flex items-center space-x-1"
-                       data-id="@Model.Auction.AuctionId"
-                       data-status="Verified"
-                       title="Verify">
-                        <i class="fas fa-check-circle text-lg"></i>
-                        <span class="text-sm">Verify</span>
-                    </a>
-                    <a href="javascript:void(0);"
-                       class="btn text-red-600 hover:text-red-900 verify-btn flex items-center space-x-1"
-                       data-id="@Model.Auction.AuctionId"
-                       data-status="Not Verified"
-                       title="Not Verify">
-                        <i class="fas fa-times-circle text-lg"></i>
-                        <span class="text-sm">Not Verify</span>
-                    </a>
-                </div>
-
-                <!-- Hidden Form for AJAX Submit -->
-                <form id="verifyForm_@Model.Auction.AuctionId" class="hidden" method="POST"
-                      asp-action="UpdateAVerifiedStatus" asp-controller="Admin">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="AuctionId" value="@Model.Auction.AuctionId" />
-                    <input type="hidden" name="IsVerified" />
-                </form>
-                <div class="flex gap-4">
-                    <span class="status-badge @(Model.Auction.AuctionStatus.ToLower() == "active" ? "status-open" :
-                                              Model.Auction.AuctionStatus.ToLower() == "completed" ? "status-closed" : "status-pending")">
-                        <div class="status-icon">
-                            <i class="fas @(Model.Auction.AuctionStatus.ToLower() == "active" ? "fa-door-open" :
-                                          Model.Auction.AuctionStatus.ToLower() == "completed" ? "fa-lock" : "fa-clock") text-xs"></i>
-                        </div>
-                        @Model.Auction.AuctionStatus
-                    </span>
-                    <span class="status-badge @(Model.Auction.IsVerified == "Verified" ? "verified" :
-                           Model.Auction.IsVerified == "Not Verified" ? "not-verified" : "verification-pending")">
-                        <div class="status-icon">
-                            <i class="fas @(Model.Auction.IsVerified == "Verified" ? "fa-shield-check" :
-                      Model.Auction.IsVerified == "Not Verified" ? "fa-times-circle" : "fa-spinner fa-spin") text-xs"></i>
-                        </div>
-                        @Model.Auction.IsVerified
-                    </span>
-                </div>
+<div class="page-container">
+    <!-- Auction Header -->
+    <div class="auction-header">
+        <div class="flex justify-between items-center mb-6">
+            <button onclick="history.back()" class="back-button">
+                <i class="fas fa-arrow-left text-xl"></i>
+                <span class="hidden sm:inline">Back</span>
+            </button>
+            <div class="flex gap-4">
+                <span class="status-badge status-@Model.Auction.AuctionStatus.ToLower()">
+                    <i class="fas @(Model.Auction.AuctionStatus.ToLower() == "active" ? "fa-door-open" :
+                                  Model.Auction.AuctionStatus.ToLower() == "completed" ? "fa-lock" : "fa-clock")"></i>
+                    @Model.Auction.AuctionStatus
+                </span>
+                <span class="status-badge @(Model.Auction.IsVerified == "Verified" ? "verified" :
+                                          Model.Auction.IsVerified == "Not Verified" ? "not-verified" : "verification-pending")">
+                    <i class="fas @(Model.Auction.IsVerified == "Verified" ? "fa-check-circle" :
+                                  Model.Auction.IsVerified == "Not Verified" ? "fa-times-circle" : "fa-spinner fa-spin")"></i>
+                    @Model.Auction.IsVerified
+                </span>
             </div>
+        </div>
 
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                <div class="tender-header">
-                    <h1 class="text-3xl font-bold text-white mb-3">@Model.Auction.Title</h1>
-                    <div class="flex items-center text-blue-100 space-x-6">
-                        <span class="flex items-center">
-                            <i class="fas fa-hashtag mr-2"></i>
-                            <span class="opacity-90">Tender ID:</span>
-                            <span class="font-semibold ml-2">@Model.Auction.AuctionId</span>
-                        </span>
-                        <span class="flex items-center">
-                            <i class="fas fa-calendar-alt mr-2"></i>
-                            <span class="opacity-90">Start:</span>
-                            <span class="font-semibold ml-2">@Model.Auction.StartDate.ToString("MMM dd, yyyy")</span>
-                        </span>
+        <h1 class="text-3xl font-bold text-white mb-4">@Model.Auction.Title</h1>
+        <div class="flex flex-wrap items-center gap-6 text-white/90">
+            <span class="flex items-center gap-2">
+                <i class="fas fa-hashtag"></i>
+                <span>Auction ID: @Model.Auction.AuctionId</span>
+            </span>
+            <span class="flex items-center gap-2">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Posted: @Model.Auction.StartDate.ToString("MMM dd, yyyy")</span>
+            </span>
+            <span class="flex items-center gap-2">
+                <i class="fas fa-user-tie"></i>
+                <span>Issued By: @Model.User.FirstName @Model.User.LastName</span>
+            </span>
+        </div>
+    </div>
+
+    <!-- Verification Actions -->
+    <div class="bg-white p-4 border-b border-gray-200 flex justify-end gap-3">
+        <a href="javascript:void(0);" 
+           class="action-button verify-button verify-btn" 
+           data-id="@Model.Auction.AuctionId" 
+           data-status="Verified">
+            <i class="fas fa-check-circle"></i>
+            Verify Auction
+        </a>
+        <a href="javascript:void(0);" 
+           class="action-button reject-button verify-btn" 
+           data-id="@Model.Auction.AuctionId" 
+           data-status="Not Verified">
+            <i class="fas fa-times-circle"></i>
+            Reject Auction
+        </a>
+        
+        <!-- Hidden Form for AJAX Submit -->
+        <form id="verifyForm_@Model.Auction.AuctionId" class="hidden" method="POST" 
+              asp-action="UpdateAVerifiedStatus" asp-controller="Admin">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="AuctionId" value="@Model.Auction.AuctionId" />
+            <input type="hidden" name="IsVerified" />
+        </form>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="tabs-container">
+        <button onclick="showTab('details')" class="tab-button active" id="details-tab-btn">
+            <i class="fas fa-info-circle"></i>
+            Details
+        </button>
+        <button onclick="showTab('images')" class="tab-button" id="images-tab-btn">
+            <i class="fas fa-images"></i>
+            Auction Images
+        </button>
+    </div>
+
+    <!-- Content Area -->
+    <div class="bg-white rounded-b-lg shadow-sm">
+        <!-- Details Tab -->
+        <div id="details-tab" class="tab-content active p-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Publisher Card -->
+                <div class="info-card publisher-card">
+                    @if (!string.IsNullOrEmpty(Model.User.UserPhoto))
+                    {
+                        <img src="@Url.Content("~/UserImage/" + Model.User.UserPhoto)"
+                             alt="Publisher"
+                             class="publisher-photo">
+                    }
+                    else
+                    {
+                        <div class="publisher-photo bg-blue-100 flex items-center justify-center">
+                            <i class="fas fa-user text-4xl text-blue-500"></i>
+                        </div>
+                    }
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">
+                        @Model.User.FirstName @Model.User.MiddleName @Model.User.LastName
+                    </h3>
+                    <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
+                        @Model.User.UserRole
+                    </span>
+                    <div class="space-y-3 text-left">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                                <i class="fas fa-envelope text-blue-500"></i>
+                            </div>
+                            <span class="text-gray-700">@Model.User.EmailAddress</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                                <i class="fas fa-phone text-blue-500"></i>
+                            </div>
+                            <span class="text-gray-700">@Model.User.Phone</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                                <i class="fas fa-map-marker-alt text-blue-500"></i>
+                            </div>
+                            <span class="text-gray-700">@Model.User.City, @Model.User.District</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                                <i class="fas fa-flag text-blue-500"></i>
+                            </div>
+                            <span class="text-gray-700">@Model.User.Province</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="border-b border-gray-200">
-                    <nav class="flex space-x-4 px-6" aria-label="Tabs">
-                        <button onclick="showTab('details')" class="tab-btn px-4 py-3 text-sm font-medium text-blue-600 border-b-2 border-blue-600">
-                            <i class="fas fa-info-circle mr-2"></i>Details
-                        </button>
-                        <button onclick="showTab('auction')" class="tab-btn px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700">
-                            <i class="fas fa-image mr-2"></i>Auction Images
-                        </button>
-                    </nav>
-                </div>
-
-                <div class="p-6">
-                    <!-- Details Tab -->
-                    <div id="details-tab" class="tab-content active">
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                            <!-- Publisher Details Card -->
-                            <div class="info-card lg:col-span-1">
-                                <h2 class="text-xl font-semibold text-gray-800 mb-4">
-                                    <i class="fas fa-user-shield text-indigo-600 mr-2"></i>Publisher Details
-                                </h2>
-                                <div class="flex flex-col items-center mb-4">
-                                    @if (!string.IsNullOrEmpty(Model.User.UserPhoto))
-                                    {
-                                        <img src="@Url.Content("~/UserImage/" + Model.User.UserPhoto)"
-                                             alt="Publisher Photo"
-                                             class="publisher-photo w-24 h-24 rounded-full object-cover border-4 border-blue-100 shadow-lg mb-3">
-                                    }
-                                    else
-                                    {
-                                        <div class="publisher-photo w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center">
-                                            <i class="fas fa-user text-4xl text-blue-500"></i>
-                                        </div>
-                                    }
-                                    <h3 class="text-lg font-semibold text-gray-800">
-                                        @Model.User.FirstName @Model.User.MiddleName @Model.User.LastName
-                                    </h3>
-                                    <span class="text-sm text-blue-600 bg-blue-100 px-3 py-1 rounded-full mt-2">
-                                        @Model.User.UserRole
-                                    </span>
-                                </div>
-                                <div class="space-y-3">
-                                    <div class="contact-info flex items-center text-gray-600">
-                                        <i class="fas fa-envelope w-6 text-blue-500"></i>
-                                        <span class="ml-2">@Model.User.EmailAddress</span>
+                <!-- Auction Details -->
+                <div class="lg:col-span-2">
+                    <!-- Basic Information -->
+                    <div class="info-card mb-6">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                                <i class="fas fa-info-circle text-blue-600 mr-2"></i>Auction Information
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <div class="flex justify-between py-3 border-b border-gray-100">
+                                        <span class="text-gray-600">Type</span>
+                                        <span class="font-medium text-gray-800">@Model.Auction.AuctionType</span>
                                     </div>
-                                    <div class="contact-info flex items-center text-gray-600">
-                                        <i class="fas fa-phone w-6 text-blue-500"></i>
-                                        <span class="ml-2">@Model.User.Phone</span>
+                                    <div class="flex justify-between py-3 border-b border-gray-100">
+                                        <span class="text-gray-600">Status</span>
+                                        <span class="font-medium text-gray-800">@Model.Auction.AuctionStatus</span>
                                     </div>
-                                    <div class="contact-info flex items-center text-gray-600">
-                                        <i class="fas fa-map-marker-alt w-6 text-blue-500"></i>
-                                        <span class="ml-2">@Model.User.City, @Model.User.District</span>
-                                    </div>
-                                    <div class="contact-info flex items-center text-gray-600">
-                                        <i class="fas fa-flag w-6 text-blue-500"></i>
-                                        <span class="ml-2">@Model.User.Province</span>
+                                    <div class="flex justify-between py-3 border-b border-gray-100">
+                                        <span class="text-gray-600">Starting Price</span>
+                                        <span class="font-medium text-green-600">
+                                            <i class="fas fa-rupee-sign mr-1"></i>
+                                            @Model.Auction.StartingPrice.ToString("N2")
+                                        </span>
                                     </div>
                                 </div>
-                            </div>
-                            <!-- Basic Information -->
-                            <div class="info-card bg-white rounded-xl p-6">
-                                <h2 class="text-xl font-semibold text-gray-800 mb-4">
-                                    <i class="fas fa-building text-blue-600 mr-2"></i>Basic Information
-                                </h2>
-                                <div class="space-y-4">
-
-                                    <div class="flex items-center text-gray-600">
-                                        <i class="fas fa-tags w-8"></i>
-                                        <span class="font-medium mr-2">Type:</span>
-                                        @Model.Auction.AuctionType
+                                <div>
+                                    <div class="flex justify-between py-3 border-b border-gray-100">
+                                        <span class="text-gray-600">Start Date</span>
+                                        <span class="font-medium text-gray-800">@Model.Auction.StartDate.ToString("MMM dd, yyyy")</span>
                                     </div>
-
-                                </div>
-                            </div>
-
-                            <!-- Financial Details -->
-                            <div class="info-card bg-white rounded-xl p-6">
-                                <h2 class="text-xl font-semibold text-gray-800 mb-4">
-                                    <i class="fas fa-coins text-yellow-600 mr-2"></i>Financial Details
-                                </h2>
-                                <div class="space-y-4">
-                                    <div class="flex items-center text-gray-600">
-                                        <i class="fas fa-dollar-sign w-8"></i>
-                                        <span class="font-medium mr-2">Budget:</span>
-                                        @Model.Auction.StartingPrice.ToString("C")
+                                    <div class="flex justify-between py-3 border-b border-gray-100">
+                                        <span class="text-gray-600">Start Time</span>
+                                        <span class="font-medium text-gray-800">@Model.Auction.StartTime.ToString("hh:mm tt")</span>
                                     </div>
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Timeline -->
-                        <div class="info-card bg-white rounded-xl p-6 mb-8">
-                            <h2 class="text-xl font-semibold text-gray-800 mb-6">
-                                <i class="fas fa-timeline text-purple-600 mr-2"></i>Timeline
-                            </h2>
-                            <div class="space-y-6">
-                                <div class="timeline-item">
-                                    <div class="font-medium text-gray-800">Opening Date & Time</div>
-                                    <div class="text-gray-600">
-                                        @Model.Auction.StartDate.ToString("MMMM dd, yyyy")  at @Model.Auction.StartTime.ToString("hh:mm tt")
+                                    <div class="flex justify-between py-3 border-b border-gray-100">
+                                        <span class="text-gray-600">End Date</span>
+                                        <span class="font-medium text-gray-800">@Model.Auction.EndDate.ToString("MMM dd, yyyy")</span>
+                                    </div>
+                                    <div class="flex justify-between py-3">
+                                        <span class="text-gray-600">End Time</span>
+                                        <span class="font-medium text-gray-800">@Model.Auction.EndTime.ToString("hh:mm tt")</span>
                                     </div>
                                 </div>
-                                <div class="timeline-item">
-                                    <div class="font-medium text-gray-800">Closing Date & Time</div>
-                                    <div class="text-gray-600">
-                                        @Model.Auction.EndDate.ToString("MMMM dd, yyyy")  at @Model.Auction.EndTime.ToString("hh:mm tt")
-                                    </div>
-                                </div>
-
-
                             </div>
                         </div>
                     </div>
 
-                    <!-- Auction Images Tab -->
-                    <div id="auction-tab" class="tab-content">
-                        <div class="mb-6">
-                            <h2 class="text-xl font-semibold text-gray-800">
-                                <i class="fas fa-image text-blue-600 mr-2"></i>Auction Images
-                            </h2>
-                        </div>
-                        <div class="image-gallery">
-
-
-
-                            <img src="~/AuctionImage/@Model.Auction.ItemImage" alt="Auction Image 1">
-                            <img src="~/AuctionImage/@Model.Auction.ItemImage" alt="Auction Image 2">
-                            <img src="~/AuctionImage/@Model.Auction.ItemImage" alt="Auction Image 3">
-
+                    <!-- Timeline -->
+                    <div class="info-card">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
+                                <i class="fas fa-clock text-blue-600 mr-2"></i>Timeline
+                            </h3>
+                            <div class="timeline-container">
+                                <div class="timeline-item">
+                                    <div class="timeline-point">
+                                        <i class="fas fa-flag text-blue-600"></i>
+                                    </div>
+                                    <div class="font-medium">Start Date</div>
+                                    <div class="text-sm text-gray-600">
+                                        @Model.Auction.StartDate.ToString("MMM dd, yyyy")
+                                    </div>
+                                    <div class="text-xs text-gray-500">
+                                        @Model.Auction.StartTime.ToString("hh:mm tt")
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-point">
+                                        <i class="fas fa-lock text-blue-600"></i>
+                                    </div>
+                                    <div class="font-medium">End Date</div>
+                                    <div class="text-sm text-gray-600">
+                                        @Model.Auction.EndDate.ToString("MMM dd, yyyy")
+                                    </div>
+                                    <div class="text-xs text-gray-500">
+                                        @Model.Auction.EndTime.ToString("hh:mm tt")
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Images Tab -->
+        <div id="images-tab" class="tab-content p-6">
+            <div class="mb-6">
+                <h3 class="text-xl font-semibold text-gray-800 flex items-center">
+                    <i class="fas fa-images text-blue-600 mr-2"></i>Auction Images
+                </h3>
+                <p class="text-gray-600 mt-2">
+                    View images of the auction item below.
+                </p>
+            </div>
+            
+            <div class="image-gallery">
+                <div class="gallery-item">
+                    <img src="~/AuctionImage/@Model.Auction.ItemImage" alt="Auction Image 1" class="w-full h-auto">
+                </div>
+                <div class="gallery-item">
+                    <img src="~/AuctionImage/@Model.Auction.ItemImage" alt="Auction Image 2" class="w-full h-auto">
+                </div>
+                <div class="gallery-item">
+                    <img src="~/AuctionImage/@Model.Auction.ItemImage" alt="Auction Image 3" class="w-full h-auto">
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.verify-btn').forEach(button => {
-                button.addEventListener('click', function () {
-                    let auctionId = this.getAttribute('data-id');
-                    let status = this.getAttribute('data-status'); // Get the current status (Verified or Not Verified)
-                    let form = document.getElementById(`verifyForm_${auctionId}`);
-                    form.querySelector('input[name="IsVerified"]').value = status; // Set the correct status in the form
 
-                    if (confirm(`Are you sure you want to mark this auction as ${status}?`)) {
-                        // Submit the hidden form via AJAX
-                        fetch(form.action, {
-                            method: form.method,
-                            body: new FormData(form),
-                            headers: {
-                                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                            }
-                        })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    alert(`Auction ${status} successfully!`);
-                                    location.reload(); // Reload page to update status
-                                } else {
-                                    alert("Failed to update auction status.");
+            <!-- Flowbite JS -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+            <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Show details tab by default
+                showTab('details');
+    
+                // Verify/Reject buttons - keeping the original AJAX logic intact
+                document.querySelectorAll('.verify-btn').forEach(button => {
+                    button.addEventListener('click', function () {
+                        let auctionId = this.getAttribute('data-id');
+                        let status = this.getAttribute('data-status'); // Get the current status (Verified or Not Verified)
+                        let form = document.getElementById(`verifyForm_${auctionId}`);
+                        form.querySelector('input[name="IsVerified"]').value = status; // Set the correct status in the form
+
+                        if (confirm(`Are you sure you want to mark this auction as ${status}?`)) {
+                            // Submit the hidden form via AJAX
+                            fetch(form.action, {
+                                method: form.method,
+                                body: new FormData(form),
+                                headers: {
+                                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
                                 }
                             })
-                            .catch(error => console.error("Error:", error));
-                    }
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        alert(`Auction ${status} successfully!`);
+                                        location.reload(); // Reload page to update status
+                                    } else {
+                                        alert("Failed to update auction status.");
+                                    }
+                                })
+                                .catch(error => console.error("Error:", error));
+                        }
+                    });
                 });
             });
-        });
 
-        function showTab(tabName) {
-            const tabs = document.querySelectorAll('.tab-content');
-            const buttons = document.querySelectorAll('.tab-btn');
+            function showTab(tabName) {
+                const tabs = document.querySelectorAll('.tab-content');
+                const buttons = document.querySelectorAll('.tab-button');
 
-            tabs.forEach(tab => {
-                tab.style.opacity = '0';
-                setTimeout(() => {
+                tabs.forEach(tab => {
+                    tab.classList.remove('active');
                     tab.style.display = 'none';
-                }, 300);
-            });
+                });
 
-            buttons.forEach(btn => {
-                btn.classList.remove('active');
-            });
+                buttons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
 
-            setTimeout(() => {
-                const selectedTab = document.getElementById(`${tabName}-tab`);
-                selectedTab.style.display = 'block';
-                setTimeout(() => {
-                    selectedTab.style.opacity = '1';
-                }, 50);
-            }, 300);
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+                document.getElementById(`${tabName}-tab`).style.display = 'block';
+                document.getElementById(`${tabName}-tab-btn`).classList.add('active');
+            }
+            </script>
 
-            document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
-        }
-    </script>
-</body>
+</div>
