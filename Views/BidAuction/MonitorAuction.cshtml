@@ -1,6 +1,5 @@
 ﻿@model AuctionDetailsViewModel
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,184 +7,272 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitor Auction - @Model.Auction.Title</title>
     <!-- Flowbite CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- SignalR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
     <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --purple: #7e22ce;
+        }
+        
+        body {
+            background-color: #f9fafb;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        
         .bid-card {
             transition: all 0.3s ease;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
+        
         .bid-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
+        
         .auction-timer {
             font-family: 'Courier New', monospace;
             font-weight: bold;
         }
+        
         .new-bid-highlight {
             animation: highlight 3s ease;
         }
         
+        
+        
         .bid-amount {
             font-weight: bold;
-            color: #1e40af;
+            color: var(--primary-dark);
         }
+        
         .auction-image {
             max-height: 300px;
             object-fit: contain;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
+        
         .status-badge-pending {
-            background-color: #f59e0b;
+            background-color: var(--warning);
         }
+        
         .status-badge-accepted {
-            background-color: #10b981;
+            background-color: var(--success);
         }
+        
         .status-badge-rejected {
-            background-color: #ef4444;
+            background-color: var(--danger);
         }
-
+        
+        .countdown-item {
+            background: rgba(37, 99, 235, 0.1);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .countdown-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+        
+        .countdown-label {
+            font-size: 0.75rem;
+            color: var(--primary);
+        }
+        
+        .auction-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            color: white;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(229, 231, 235, 0.5);
+        }
+        
+        .info-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
     </style>
 </head>
-<body class="bg-gray-50">
+<body>
     <div class="container mx-auto px-4 py-8 max-w-7xl">
-  
-
         <!-- Auction Header -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="auction-header mb-6">
+            <!-- Back Button -->
+            <a asp-action="BidderAuctionDetails" asp-controller="BidAuction" asp-route-id="@Model.Auction.EncId" class="back-button">
+                <i class="fas fa-arrow-left mr-2"></i> 
+            </a>
+
+
+            
             <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-4">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">@Model.Auction.Title</h1>
-                    <p class="text-gray-600 mt-2">@Model.Auction.AuctionDescription</p>
+                    <h1 class="text-3xl font-bold text-white">@Model.Auction.Title</h1>
+                    <p class="text-white/80 mt-2">@Model.Auction.AuctionDescription</p>
+
                 </div>
                 
                 <div class="mt-4 md:mt-0 flex flex-col items-end">
-                    <div class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mb-2">
-                        <i class="fas fa-gavel mr-1"></i> @Model.Auction.AuctionType
+                    <div class="bg-white/20 text-white text-sm font-medium px-3 py-1 rounded-full mb-2 backdrop-blur-sm">
+                        <i class="fas fa-tag mr-1"></i> @Model.Auction.AuctionType
                     </div>
-                    <div class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
-                        <i class="fas fa-tag mr-1"></i> Status: @Model.Auction.AuctionStatus
-                    </div>
-                </div>
-            </div>
-            
-            <div class="flex flex-col md:flex-row">
-                <!-- Auction Image -->
-                <div class="w-full md:w-1/3 mb-4 md:mb-0 md:pr-6">
-                    @if (!string.IsNullOrEmpty(Model.Auction.ItemImage))
-                    {
-                        <img src="~/AuctionImage/@Model.Auction.ItemImage" alt="@Model.Auction.Title" class="auction-image rounded-lg shadow-sm w-full">
-                    }
-                    else
-                    {
-                        <div class="bg-gray-200 rounded-lg flex items-center justify-center h-64 w-full">
-                            <i class="fas fa-image text-gray-400 text-6xl"></i>
-                        </div>
-                    }
-                </div>
-                
-                <!-- Auction Details -->
-                <div class="w-full md:w-2/3">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-gray-50 rounded-lg p-4">
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">
-                                <i class="fas fa-calendar-alt mr-2 text-blue-600"></i> Auction Schedule
-                            </h3>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-gray-600">Start:</span>
-                                <span class="font-medium">@Model.Auction.StartDate.ToString("MMM d, yyyy") at @Model.Auction.StartTime</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">End:</span>
-                                <span class="font-medium">@Model.Auction.EndDate.ToString("MMM d, yyyy") at @Model.Auction.EndTime</span>
-                            </div>
-                            
-                            <div class="mt-4 text-center">
-                                <div class="text-sm text-gray-500 mb-1">Time Remaining</div>
-                                <div id="auctionTimer" class="auction-timer text-xl bg-gray-800 text-white py-1 px-3 rounded flex space-x-2">
-                                    <div class="countdown-item text-center">
-                                        <div class="countdown-value text-2xl font-bold" id="days">--</div>
-                                        <div class="countdown-label text-sm">Days</div>
-                                    </div>
-                                    <div class="countdown-item text-center">
-                                        <div class="countdown-value text-2xl font-bold" id="hours">--</div>
-                                        <div class="countdown-label text-sm">Hours</div>
-                                    </div>
-                                    <div class="countdown-item text-center">
-                                        <div class="countdown-value text-2xl font-bold" id="minutes">--</div>
-                                        <div class="countdown-label text-sm">Mins</div>
-                                    </div>
-                                    <div class="countdown-item text-center">
-                                        <div class="countdown-value text-2xl font-bold" id="seconds">--</div>
-                                        <div class="countdown-label text-sm">Secs</div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                        
-                        <div class="bg-gray-50 rounded-lg p-4">
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">
-                                <i class="fas fa-dollar-sign mr-2 text-green-600"></i> Bid Information
-                            </h3>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-gray-600">Starting Price:</span>
-                                <span class="font-medium">$@Model.Auction.StartingPrice.ToString("N2")</span>
-                            </div>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-gray-600">Current Highest:</span>
-                                <span id="highestBid" class="font-bold text-blue-600">
-                                    @if (Model.AuctionBid != null && Model.AuctionBid.Any())
-                                    {
-
-                                        <text>Rs.@Model.HighestBidAmount.ToString("N2")</text>
-                                    }
-                                    else
-                                    {
-                                        <text>Starting Price: Rs.@Model.Auction.StartingPrice.ToString("N2")</text>
-                                    }
-                                </span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Total Bids:</span>
-                                <span id="totalBids" class="font-medium">@(Model.AuctionBid != null ? Model.AuctionBid.Count : 0)</span>
-                            </div>
-
-                            <div class="mt-4">
-                                <form asp-action="PlaceBid" method="post" class="flex">
-                                    <input type="hidden" name="auctionId" value="@Model.Auction.AuctionId" />
-                                    <input type="number" name="bidAmount" class="block w-full rounded-l-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-                                           min="@Model.MinBidAmount"  
-                                    placeholder="Enter your bid" required />
-                                    <button type="submit" class="inline-flex items-center rounded-r-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300">
-                                        <i class="fas fa-gavel mr-2"></i> Bid Now
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
+                    <div class="bg-white/20 text-white text-sm font-medium px-3 py-1 rounded-full backdrop-blur-sm">
+                        <i class="fas fa-gavel mr-1"></i> Status: @Model.Auction.AuctionStatus
                     </div>
                 </div>
             </div>
         </div>
         
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <!-- Auction Image -->
+            <div class="info-card">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">
+                    <i class="fas fa-image mr-2 text-blue-600"></i> Item Image
+                </h3>
+                @if (!string.IsNullOrEmpty(Model.Auction.ItemImage))
+                {
+                    <img src="~/AuctionImage/@Model.Auction.ItemImage" alt="@Model.Auction.Title" class="auction-image w-full">
+                }
+                else
+                {
+                    <div class="bg-gray-200 rounded-lg flex items-center justify-center h-64 w-full">
+                        <i class="fas fa-image text-gray-400 text-6xl"></i>
+                    </div>
+                }
+            </div>
+            
+            <!-- Auction Schedule -->
+            <div class="info-card">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">
+                    <i class="fas fa-calendar-alt mr-2 text-blue-600"></i> Auction Schedule
+                </h3>
+                <div class="flex justify-between mb-3 border-b pb-2">
+                    <span class="text-gray-600">Start:</span>
+                    <span class="font-medium">@Model.Auction.StartDate.ToString("MMM d, yyyy") at @Model.Auction.StartTime</span>
+                </div>
+                <div class="flex justify-between mb-4 border-b pb-2">
+                    <span class="text-gray-600">End:</span>
+                    <span class="font-medium">@Model.Auction.EndDate.ToString("MMM d, yyyy") at @Model.Auction.EndTime</span>
+                </div>
+                
+                <div class="mt-4">
+                    <div class="text-sm text-gray-500 mb-2 text-center">Time Remaining</div>
+                    <div id="auctionTimer" class="auction-timer flex justify-center space-x-2">
+                        <div class="countdown-item">
+                            <div class="countdown-value" id="days">--</div>
+                            <div class="countdown-label">Days</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div class="countdown-value" id="hours">--</div>
+                            <div class="countdown-label">Hours</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div class="countdown-value" id="minutes">--</div>
+                            <div class="countdown-label">Mins</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div class="countdown-value" id="seconds">--</div>
+                            <div class="countdown-label">Secs</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bid Information -->
+            <div class="info-card">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">
+                    <i class="fas fa-rupee-sign mr-2 text-green-600"></i> Bid Information
+                </h3>
+                <div class="flex justify-between mb-3 border-b pb-2">
+                    <span class="text-gray-600">Starting Price:</span>
+                    <span class="font-medium">₹@Model.Auction.StartingPrice.ToString("N2")</span>
+                </div>
+                <div class="flex justify-between mb-3 border-b pb-2">
+                    <span class="text-gray-600">Current Highest:</span>
+                    <span id="highestBid" class="font-bold text-blue-600">
+                        @if (Model.AuctionBid != null && Model.AuctionBid.Any())
+                        {
+                            <text>₹@Model.HighestBidAmount.ToString("N2")</text>
+                        }
+                        else
+                        {
+                            <text>Starting Price: ₹@Model.Auction.StartingPrice.ToString("N2")</text>
+                        }
+                    </span>
+                </div>
+                <div class="flex justify-between mb-4 border-b pb-2">
+                    <span class="text-gray-600">Total Bids:</span>
+                    <span id="totalBids" class="font-medium">@(Model.AuctionBid != null ? Model.AuctionBid.Count : 0)</span>
+                </div>
+
+                <div class="mt-4">
+                    <form asp-action="PlaceBid" method="post" class="flex">
+                        <input type="hidden" name="auctionId" value="@Model.Auction.AuctionId" />
+                        <input type="number" name="bidAmount" class="block w-full rounded-l-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                               min="@Model.MinBidAmount" 
+                               placeholder="Enter your bid" required />
+                        <button type="submit" class="inline-flex items-center rounded-r-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                            <i class="fas fa-gavel mr-2"></i> Bid Now
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
         <!-- Bid History -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex justify-between items-center mb-4">
+        <div class="info-card">
+            <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-900">
                     <i class="fas fa-history mr-2 text-blue-600"></i> Bid History
                 </h2>
-                <div>
-                    <button id="refreshBids" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 inline-flex items-center">
-                        <i class="fas fa-sync-alt mr-2"></i> Refresh
-                    </button>
-                </div>
+               
             </div>
             
             <div class="overflow-x-auto relative">
                 <table class="w-full text-sm text-left text-gray-500">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100 rounded-t-lg">
                         <tr>
                             <th scope="col" class="py-3 px-6">Bidder</th>
                             <th scope="col" class="py-3 px-6">Bid Amount</th>
@@ -197,7 +284,7 @@
                     <tbody id="bidHistory">
                         @foreach (var bid in Model.AuctionBid)
                         {
-                            <tr class="bg-white border-b hover:bg-gray-50">
+                            <tr class="bg-white border-b hover:bg-gray-50 transition-colors duration-200">
                                 <td class="py-4 px-6 font-medium text-gray-900">
                                     @if (bid.BidderName != null && bid.BidderName.Any())
                                     {
@@ -226,7 +313,7 @@
                                         </div>
                                     }
                                 </td>
-                                <td class="py-4 px-6 bid-amount">Rs.@bid.BidAmount.ToString("N2")</td>
+                                <td class="py-4 px-6 bid-amount">₹@bid.BidAmount.ToString("N2")</td>
                                 <td class="py-4 px-6">
                                     <div class="text-gray-900">@bid.BidDate.ToString("MMM d, yyyy")</div>
                                     <div class="text-xs text-gray-500">@bid.BidTime</div>
@@ -257,7 +344,7 @@
                                                     <li class="py-2 px-4 hover:bg-gray-100">
                                                         <div class="flex justify-between">
                                                             <span>Bid ID: @bidding.BiddingId</span>
-                                                            <span class="font-medium text-blue-600">Rs.@bidding.BiddingAmount.ToString("N2")</span>
+                                                            <span class="font-medium text-blue-600">₹@bidding.BiddingAmount.ToString("N2")</span>
                                                         </div>
                                                     </li>
                                                 }
@@ -288,8 +375,7 @@
         </div>
     </div>
     
-   
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
     <script>
         var connection = new signalR.HubConnectionBuilder().withUrl("/auctionHub").build();
 
@@ -307,7 +393,7 @@
 
             // If the row exists, just update the bid amount
             if (existingRow) {
-                existingRow.querySelector(".bid-amount").textContent = `Rs.${parseFloat(bidAmount).toFixed(2)}`;
+                existingRow.querySelector(".bid-amount").textContent = `₹${parseFloat(bidAmount).toFixed(2)}`;
             } else {
                 // If the row doesn't exist, create a new row
                 var newRow = `
@@ -323,7 +409,7 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="py-4 px-6 bid-amount">Rs.${parseFloat(bidAmount).toFixed(2)}</td>
+                        <td class="py-4 px-6 bid-amount">₹${parseFloat(bidAmount).toFixed(2)}</td>
                         <td class="py-4 px-6">
                             <div class="text-gray-900">${new Date(bidTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
                             <div class="text-xs text-gray-500">${new Date(bidTime).toLocaleTimeString()}</div>
@@ -345,10 +431,8 @@
             // Update the highest bid amount in the UI for the current auction
             var highestBidElement = document.getElementById("highestBid");
             if (highestBidElement) {
-                highestBidElement.textContent = `Rs.${parseFloat(bidAmount).toFixed(2)}`;
+                highestBidElement.textContent = `₹${parseFloat(bidAmount).toFixed(2)}`;
             }
-       
-
             
             // Update total bids count
             var totalBidsElement = document.getElementById("totalBids");
@@ -361,14 +445,23 @@
 
         function updateCountdown() {
             const endDateStr = '@Model.Auction.EndDate.ToString("yyyy-MM-dd")' + 'T' + '@Model.Auction.EndTime.ToString("HH:mm:ss")';
-            const endDate = new Date(endDateStr + 'Z'); // Ensure UTC format
-            const now = new Date();
+            const endDate = new Date(endDateStr);
 
-            const timeRemaining = endDate.getTime() - now.getTime();
+            // Get current time in Nepal timezone (UTC+5:45)
+            const now = new Date();
+            const nepalOffset = 345; // 5 hours and 45 minutes in minutes
+            const localOffset = now.getTimezoneOffset();
+            const totalOffset = nepalOffset + localOffset;
+
+            // Adjust current time to Nepal time
+            const nepalNow = new Date(now.getTime() + totalOffset * 60 * 1000);
+
+            const timeRemaining = endDate - nepalNow;
 
             if (timeRemaining <= 0) {
                 ['days', 'hours', 'minutes', 'seconds'].forEach(id => {
-                    document.getElementById(id).textContent = '00';
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = '00';
                 });
 
                 // Reload after auction ends
@@ -381,50 +474,27 @@
             const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
 
-            document.getElementById('days').textContent = String(days).padStart(2, '0');
-            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+            // Ensure elements exist before updating
+            const updateElement = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = value.toString().padStart(2, '0');
+            };
+
+            updateElement('days', days);
+            updateElement('hours', hours);
+            updateElement('minutes', minutes);
+            updateElement('seconds', seconds);
         }
 
-        // Run the function every second
-        setInterval(updateCountdown, 1000);
-
-        // Run once immediately to avoid delay
-        updateCountdown();
-        
-        
-        // Handle refresh button
-        document.getElementById('refreshBids').addEventListener('click', function() {
-            // Add rotation animation to refresh icon
-            this.querySelector('i').classList.add('fa-spin');
-            
-            // Simulate refresh delay (in real app, this would be an actual data refresh)
-            setTimeout(() => {
-                this.querySelector('i').classList.remove('fa-spin');
-                
-                // Show toast notification
-                const toast = document.createElement('div');
-                toast.innerHTML = `
-                    <div id="toast-success" class="flex items-center p-4 mb-4 w-full max-w-xs text-gray-500 bg-white rounded-lg shadow fixed top-5 right-5 animate-fade-in-down" role="alert">
-                        <div class="inline-flex flex-shrink-0 justify-center items-center w-8 h-8 text-green-500 bg-green-100 rounded-lg">
-                            <i class="fas fa-check"></i>
-                        </div>
-                        <div class="ml-3 text-sm font-normal">Bid list refreshed successfully.</div>
-                        <button type="button" class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8" data-dismiss-target="#toast-success" aria-label="Close">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                `;
-                document.body.appendChild(toast);
-
-                
-                // Remove toast after 3 seconds
-                setTimeout(() => {
-                    toast.remove();
-                }, 3000);
-            }, 700);
+        // Ensure countdown starts only if auction is active
+        document.addEventListener('DOMContentLoaded', function () {
+            if ('@Model.Auction.AuctionStatus.ToLower()' === 'active') {
+                updateCountdown();
+                setInterval(updateCountdown, 1000);
+            }
         });
+        
+       
     </script>
 </body>
 </html>

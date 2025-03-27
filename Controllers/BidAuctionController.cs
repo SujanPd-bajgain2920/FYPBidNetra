@@ -176,6 +176,7 @@ namespace FYPBidNetra.Controllers
         {
             UpdateAuctionStatuses();
             int auctionid = Convert.ToInt32(_protector.Unprotect(id));
+            int currentUserId = Convert.ToInt16(User.Identity!.Name);
 
             var auction = _context.AuctionDetails
                 .Where(t => t.AuctionId == auctionid)
@@ -225,10 +226,38 @@ namespace FYPBidNetra.Controllers
                 })
                 .FirstOrDefault();
 
+            // Get bid history for current user if auction is completed
+            var userBidHistory = auction.AuctionStatus == "Completed"
+                ? _context.AuctionBids
+                    .Where(b => b.AuctionBidId == auctionid && b.BidderId == currentUserId)
+                    .OrderByDescending(b => b.BidDate)
+                    .ThenByDescending(b => b.BidTime)
+                    .Select(b => new AuctionBidEdit
+                    {
+                        BidId = b.BidId,
+                        BidAmount = b.BidAmount,
+                        BidDate = b.BidDate,
+                        BidTime = b.BidTime,
+                        BidStatus = b.BidStatus,
+                        Bids = _context.Bids
+                            .Where(bid => bid.AucBidId == b.BidId)
+                            .OrderByDescending(bid => bid.BiddingAmount)
+                            .Select(bid => new BidEdit
+                            {
+                                BiddingId = bid.BiddingId,
+                                BidAmount = bid.BiddingAmount,
+                                
+                            })
+                            .ToList()
+                    })
+                    .ToList()
+                : null;
+
             var viewModel = new AuctionDetailsViewModel
             {
                 Auction = auction,
                 User = user,
+                UserBidHistory = userBidHistory
 
             };
 
@@ -262,7 +291,8 @@ namespace FYPBidNetra.Controllers
                         EndTime = a.EndTime,
                         AuctionType = a.AuctionType,
                         AuctionStatus = a.AuctionStatus,
-                        WinningBidAmount = a.WinningBidAmount
+                        WinningBidAmount = a.WinningBidAmount,
+                        EncId = _protector.Protect(a.AuctionId.ToString())
                     })
                     .FirstOrDefault();
 
@@ -422,14 +452,63 @@ namespace FYPBidNetra.Controllers
             var currentUserId = Convert.ToInt16(User.Identity!.Name);
 
             // Get Auction Details
-            var auctionDetails = await _context.AuctionDetails
+            /* var auctionDetails = await _context.AuctionDetails
+                 .Where(a => a.AuctionId == id)
+                 .FirstOrDefaultAsync();*/
+
+            var encryptId = await _context.AuctionDetails
                 .Where(a => a.AuctionId == id)
-                .FirstOrDefaultAsync();
+                .Select(a => new AuctionEdit
+                {
+                    AuctionId = a.AuctionId,
+                    EncId = _protector.Protect(a.AuctionId.ToString())
+                }).FirstOrDefaultAsync();
+
+            var auctionDetails = await _context.AuctionDetails
+               .Where(a => a.AuctionId == id)
+               .Select(a => new AuctionDetail  // Map to AuctionEdit
+               {
+                   AuctionId = a.AuctionId,
+                   Title = a.Title,
+                   AuctionDescription = a.AuctionDescription,
+                   ItemImage = a.ItemImage,
+                   StartingPrice = a.StartingPrice,
+                   StartDate = a.StartDate,
+                   EndDate = a.EndDate,
+                   StartTime = a.StartTime,
+                   EndTime = a.EndTime,
+                   AuctionType = a.AuctionType,
+                   AuctionStatus = a.AuctionStatus,
+                   PublishedByUserId = a.PublishedByUserId,
+                   
+
+               })
+               .FirstOrDefaultAsync();
+
+
 
             if (auctionDetails == null)
             {
                 return NotFound();
             }
+
+            var publisher = await _context.UserLists
+               .Where(u => u.UserId == auctionDetails.PublishedByUserId)
+               .Select(u => new UserListEdit
+               {
+                   UserId = u.UserId,
+                   FirstName = u.FirstName,
+                   MiddleName = u.MiddleName,
+                   LastName = u.LastName,
+                   Province = u.Province,
+                   District = u.District,
+                   City = u.City,
+                   EmailAddress = u.EmailAddress,
+                   Phone = u.Phone,
+                   UserRole = u.UserRole,
+                   UserPhoto = u.UserPhoto
+               })
+               .FirstOrDefaultAsync();
 
             // Get Bid History for the Auction
             var bidHistory = await _context.AuctionBids
@@ -468,10 +547,12 @@ namespace FYPBidNetra.Controllers
 
             var model = new AuctionDetailsViewModel
             {
+                Auction = encryptId,
                 AuctionDetails = auctionDetails,
                 BidHistoryy = bidHistory,
                 HighestBidAmount = highestBidAmount,
-                MinBidAmount = minBidAmount
+                MinBidAmount = minBidAmount,
+                Publisher = publisher
             };
 
             return View(model);

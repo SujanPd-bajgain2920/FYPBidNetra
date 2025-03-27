@@ -16,6 +16,8 @@
         public BidHistory BidHistory { get; set; }
 
         public UserListEdit User { get; set; }
+
+        public UserListEdit Publisher { get; set; }
         public List <UserListEdit> Bidders { get; set; }
 
         public decimal HighestBidAmount { get; set; }
@@ -23,5 +25,7 @@
         public decimal? HighestBidsAmount { get; set; }
 
         public decimal MinBidAmount { get; set; }
+
+        public List<AuctionBidEdit>? UserBidHistory { get; set; }
     }
 }

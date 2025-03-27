@@ -410,3 +410,71 @@ body {
         max-width: 90%;
     }
 }
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .tabs-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    .tabs-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .tab-button {
+        padding: 1rem;
+    }
+
+    .timeline-container {
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+        .timeline-container::before {
+            width: 2px;
+            height: 100%;
+            left: 20px;
+            top: 0;
+        }
+
+    .timeline-item {
+        text-align: left;
+        padding-left: 50px;
+    }
+
+    .timeline-point {
+        position: absolute;
+        left: 0;
+        margin: 0;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}

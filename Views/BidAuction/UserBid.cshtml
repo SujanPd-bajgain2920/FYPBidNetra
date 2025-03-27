@@ -1,87 +1,322 @@
 ﻿@model AuctionDetailsViewModel
 <!-- Flowbite CSS -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet">
 <!-- Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <!-- SignalR -->
 
-<button onclick="history.back()"
-        class="text-gray-600 hover:text-gray-800 transition-all duration-300 hover:scale-110">
-    <i class="fas fa-arrow-left text-xl"></i>
-</button>
-<h2>Auction: @Model.AuctionDetails.Title</h2>
-
-<div id="bidHistory" class="max-h-80 overflow-y-auto border rounded-lg p-4 bg-gray-100">
-    @foreach (var bid in Model.BidHistoryy)
-    {
-        @if (bid.BidderId == Convert.ToInt16(User.Identity.Name))
-        {
-            <!-- Display current user's bids on the right side (Chat style) -->
-            <div class="mb-2 p-2 bg-blue-100 rounded-lg shadow text-right">
-                <strong>You</strong>
-                placed a bid of Rs. <strong>@bid.BidAmount.ToString("F2")</strong>
-            </div>
-
-            <!-- Show Multiple Bids by the Same User -->
-            @if (bid.Bids != null && bid.Bids.Any())
-            {
-                @foreach (var previousBid in bid.Bids.Take(5))
-                {
-                    <div class="ml-4 text-sm text-gray-600 text-right">
-                        (Earlier, <strong>You</strong> had placed a bid of Rs. <strong>@previousBid.BidAmount.ToString("F2")</strong>)
-                    </div>
-                }
-            }
-        }
-        else
-        {
-            <!-- Display other users' bids on the left side (Chat style) -->
-            <div class="mb-2 p-2 bg-white rounded-lg shadow">
-                <strong>@(!string.IsNullOrEmpty(bid.Biddername) ? bid.Biddername : "Unknown Bidder")</strong>
-                placed a bid of Rs. <strong>@bid.BidAmount.ToString("F2")</strong>
-            </div>
-
-            <!-- Show Multiple Bids by Other Bidder -->
-            @if (bid.Bids != null && bid.Bids.Any())
-            {
-                @foreach (var previousBid in bid.Bids.Take(5))
-                {
-                    <div class="ml-4 text-sm text-gray-600">
-                        Earlier, <strong>@previousBid.Biddername</strong> had placed a bid of Rs. <strong>@previousBid.BidAmount.ToString("F2")</strong>)
-                    </div>
-                }
-            }
-        }
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-light: #3b82f6;
+        --primary-dark: #1d4ed8;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
     }
+    
+    body {
+        background-color: #f9fafb;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    
+    .auction-header {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        color: white;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    .bid-container {
+        background: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(229, 231, 235, 0.5);
+        margin-bottom: 1.5rem;
+    }
+    
+    .bid-history {
+        max-height: 400px;
+        overflow-y: auto;
+        padding: 1rem;
+        background-color: #f9fafb;
+        border-radius: 0.5rem;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .my-bid {
+        background-color: #dbeafe;
+        border-left: 4px solid var(--primary);
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.75rem;
+        text-align: right;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        position: relative;
+        animation: slideInRight 0.3s ease-out;
+    }
+    
+    .other-bid {
+        background-color: white;
+        border-left: 4px solid #9ca3af;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.75rem;
+        text-align: left;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        position: relative;
+        animation: slideInLeft 0.3s ease-out;
+    }
+    
+    .previous-bid {
+        font-size: 0.875rem;
+        color: #6b7280;
+        padding: 0.25rem 0.5rem;
+        margin-top: 0.25rem;
+        border-radius: 0.25rem;
+        background-color: rgba(243, 244, 246, 0.7);
+    }
+    
+    .bid-form {
+        display: flex;
+        margin-top: 1rem;
+    }
+    
+    .bid-input {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem 0 0 0.5rem;
+        font-size: 1rem;
+    }
+    
+    .bid-button {
+        background-color: var(--primary);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0 0.5rem 0.5rem 0;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .bid-button:hover {
+        background-color: var(--primary-dark);
+    }
+    
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background-color: white;
+        color: #4b5563;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        margin-bottom: 1rem;
+        border: 1px solid #e5e7eb;
+        text-decoration: none;
+    }
+    
+    .back-button:hover {
+        background-color: #f3f4f6;
+        transform: translateX(-5px);
+    }
+    
+    .chat-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background-color: #10b981;
+        color: white;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: none;
+        text-decoration: none;
+        box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+    }
+
+        .chat-button:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+        }
+   
+</style>
+
+<div class="container mx-auto px-4 py-6 max-w-4xl">
+   
+    <div class="flex justify-between items-center mb-4">
+        <a asp-action="MonitorAuction" asp-controller="BidAuction" asp-route-id="@Model.Auction.EncId" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back to Auctions</span>
+        </a>
+
+        
+        <a asp-action="UserMessage" asp-controller="Chat" asp-route-receiverId="@Model.Publisher.UserId" class="chat-button">
+            <i class="fas fa-comments"></i>
+            <span>Chat with Publisher</span>
+        </a>
+    </div>
+    
+    <!-- Auction Header -->
+    <div class="auction-header">
+        <h2 class="text-2xl font-bold mb-2">@Model.AuctionDetails.Title</h2>
+        <div class="flex items-center gap-2 text-white/80">
+            <i class="fas fa-gavel"></i>
+            <span>Auction ID: @Model.AuctionDetails.AuctionId</span>
+        </div>
+    </div>
+    
+    <!-- Bid Container -->
+    <div class="bid-container">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold text-gray-800">
+                <i class="fas fa-comments text-blue-600 mr-2"></i> Live Bidding
+            </h3>
+            <div class="text-sm text-gray-500">
+                <i class="fas fa-info-circle mr-1"></i> Minimum Bid: ₹@Model.MinBidAmount.ToString("N2")
+            </div>
+        </div>
+        
+        <!-- Bid History -->
+        <div id="bidHistory" class="bid-history">
+            @foreach (var bid in Model.BidHistoryy)
+            {
+                @if (bid.BidderId == Convert.ToInt16(User.Identity.Name))
+                {
+                    <!-- Display current user's bids on the right side (Chat style) -->
+                    <div class="my-bid">
+                        <div class="flex justify-end items-center gap-2">
+                            <span class="font-medium">You</span>
+                            <div class="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
+                                Y
+                            </div>
+                        </div>
+                        <div class="mt-1">
+                            placed a bid of <span class="font-bold text-blue-700">₹@bid.BidAmount.ToString("N2")</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">@bid.BidTime</div>
+
+                        <!-- Show Multiple Bids by the Same User -->
+                        @if (bid.Bids != null && bid.Bids.Any())
+                        {
+                            <div class="mt-2">
+                                @foreach (var previousBid in bid.Bids.Take(5))
+                                {
+                                    <div class="previous-bid text-right">
+                                        Earlier, you bid <span class="font-medium">₹@previousBid.BidAmount.ToString("N2")</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <!-- Display other users' bids on the left side (Chat style) -->
+                    <div class="other-bid">
+                        <div class="flex items-center gap-2">
+                            <div class="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 font-bold">
+                                @(!string.IsNullOrEmpty(bid.Biddername) ? bid.Biddername[0].ToString().ToUpper() : "?")
+                            </div>
+                            <span class="font-medium">@(!string.IsNullOrEmpty(bid.Biddername) ? bid.Biddername : "Unknown Bidder")</span>
+                        </div>
+                        <div class="mt-1">
+                            placed a bid of <span class="font-bold text-gray-700">₹@bid.BidAmount.ToString("N2")</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">@bid.BidTime</div>
+
+                        <!-- Show Multiple Bids by Other Bidder -->
+                        @if (bid.Bids != null && bid.Bids.Any())
+                        {
+                            <div class="mt-2">
+                                @foreach (var previousBid in bid.Bids.Take(5))
+                                {
+                                    <div class="previous-bid">
+                                        Earlier, bid <span class="font-medium">₹@previousBid.BidAmount.ToString("N2")</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            }
+        </div>
+        
+        <!-- Bid Form -->
+        <form id="bidForm" asp-action="PlaceBid" method="post" class="mt-4">
+            <input type="hidden" name="auctionId" value="@Model.AuctionDetails.AuctionId" />
+            <div class="flex">
+                <input type="number" name="bidAmount" class="block w-full rounded-l-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-500 focus:ring-blue-500" 
+                       min="@Model.MinBidAmount" placeholder="Enter your bid (min ₹@Model.MinBidAmount)" required />
+                <button type="submit" class="inline-flex items-center rounded-r-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                    <i class="fas fa-gavel mr-2"></i> Bid Now
+                </button>
+            </div>
+        </form>
+    </div>
+
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.9/signalr.min.js"></script>
+        <script>
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/auctionHub")
+                .build();
+
+            connection.on("ReceiveBidUpdate", function (auctionId, bidderName, bidAmount, bidTime) {
+                const bidHistoryDiv = document.getElementById("bidHistory");
+                const currentUserId = '@User.Identity.Name';
+        
+                const bidMessage = document.createElement("div");
+                const isCurrentUser = bidderName === currentUserId;
+        
+                if (isCurrentUser) {
+                    bidMessage.className = "my-bid";
+                    bidMessage.innerHTML = `
+                        <div class="flex justify-end items-center gap-2">
+                            <span class="font-medium">You</span>
+                            <div class="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
+                                Y
+                            </div>
+                        </div>
+                        <div class="mt-1">
+                            placed a bid of <span class="font-bold text-blue-700">₹${parseFloat(bidAmount).toFixed(2)}</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">${new Date().toLocaleTimeString()}</div>
+                    `;
+                } else {
+                    bidMessage.className = "other-bid";
+                    const firstLetter = bidderName ? bidderName[0].toUpperCase() : "?";
+                    bidMessage.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <div class="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 font-bold">
+                                ${firstLetter}
+                            </div>
+                            <span class="font-medium">${bidderName || "Unknown Bidder"}</span>
+                        </div>
+                        <div class="mt-1">
+                            placed a bid of <span class="font-bold text-gray-700">₹${parseFloat(bidAmount).toFixed(2)}</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">${new Date().toLocaleTimeString()}</div>
+                    `;
+                }
+
+                bidHistoryDiv.prepend(bidMessage);
+            });
+
+            connection.start().catch(err => console.error("SignalR Connection Error: ", err));
+        </script>
+
 </div>
-
-
-<form id="bidForm" asp-action="PlaceBid" method="post" class="flex mt-4">
-    <input type="hidden" name="auctionId" value="@Model.AuctionDetails.AuctionId" />
-    <input type="number" name="bidAmount" class="w-full p-2 rounded-l-lg border bg-gray-50" min="@Model.MinBidAmount"
-           placeholder="Enter your bid" required />
-    <button type="submit" class="bg-blue-700 px-5 py-2 rounded-r-lg text-white hover:bg-blue-800">
-        <i class="fas fa-gavel mr-2"></i> Bid Now
-    </button>
-</form>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.9/signalr.min.js"></script>
-<script>
-    const connection = new signalR.HubConnectionBuilder()
-        .withUrl("/auctionHub")
-        .build();
-
-    connection.on("ReceiveBidUpdate", function (auctionId, bidderName, bidAmount, bidTime) {
-        const bidHistoryDiv = document.getElementById("bidHistory");
-
-        const bidMessage = document.createElement("div");
-        bidMessage.classList.add("mb-2", "p-2", "bg-white", "rounded-lg", "shadow");
-
-        const currentUserId = '@User.Identity.Name';
-        bidMessage.innerHTML = `<strong>${bidderName === currentUserId ? "You" : bidderName}</strong> placed a bid of Rs. <strong>${bidAmount.toFixed(2)}</strong>`;
-
-        bidHistoryDiv.prepend(bidMessage);
-    });
-
-    connection.start().catch(err => console.error("SignalR Connection Error: ", err));
-</script>

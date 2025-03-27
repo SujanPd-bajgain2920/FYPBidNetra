@@ -46,4 +46,6 @@ public partial class AuctionDetail
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
     public virtual UserList PublishedByUser { get; set; } = null!;
+
+
 }
