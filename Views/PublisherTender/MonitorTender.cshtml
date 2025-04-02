@@ -453,18 +453,12 @@
                                                 {
                                                     <!-- Award Tender Dropdown -->
                                                     <div class="relative inline-block">
-                                                        <button class="action-button award award-dropdown-btn" title="Award Tender">
+                                                        <button class="btn text-blue-600 hover:text-blue-900 award-dropdown-btn" title="Award Tender">
                                                             <i class="fas fa-trophy"></i>
                                                         </button>
-                                                        <div class="hidden absolute award-dropdown">
-                                                            <button class="award-btn won" data-id="@app.Application.ApplicationId" data-status="Won">
-                                                                <i class="fas fa-trophy text-green-600"></i>
-                                                                <span>Award</span>
-                                                            </button>
-                                                            <button class="award-btn lost" data-id="@app.Application.ApplicationId" data-status="Lost">
-                                                                <i class="fas fa-times-circle text-red-600"></i>
-                                                                <span>Reject</span>
-                                                            </button>
+                                                        <div class="hidden absolute bg-white shadow-md border rounded-md p-2 mt-2 w-32 award-dropdown">
+                                                            <button class="block w-full text-left px-3 py-1 text-green-600 hover:bg-gray-200 award-btn" data-id="@app.Application.ApplicationId" data-status="Won">🏆 Won</button>
+                                                            <button class="block w-full text-left px-3 py-1 text-red-600 hover:bg-gray-200 award-btn" data-id="@app.Application.ApplicationId" data-status="Lost">❌ Lost</button>
                                                         </div>
                                                     </div>
 
@@ -474,6 +468,7 @@
                                                         <input type="hidden" name="ApplicationId" value="@app.Application.ApplicationId" />
                                                         <input type="hidden" name="ApplicationStatus" />
                                                     </form>
+
                                                 }
                                             </div>
                                         </td>
@@ -494,20 +489,13 @@
             document.querySelectorAll('.award-dropdown-btn').forEach(button => {
                 button.addEventListener('click', function (event) {
                     event.stopPropagation();
-                    const dropdown = this.nextElementSibling;
-                    
-                    // Close all other dropdowns first
-                    document.querySelectorAll('.award-dropdown').forEach(d => {
-                        if (d !== dropdown) d.classList.add('hidden');
-                    });
-                    
-                    // Toggle this dropdown
+                    let dropdown = this.nextElementSibling;
                     dropdown.classList.toggle('hidden');
                 });
             });
 
             // Close dropdown when clicking outside
-            document.addEventListener('click', function () {
+            document.addEventListener('click', function (event) {
                 document.querySelectorAll('.award-dropdown').forEach(dropdown => {
                     dropdown.classList.add('hidden');
                 });
@@ -516,24 +504,13 @@
             // Award Tender Status Update
             document.querySelectorAll('.award-btn').forEach(button => {
                 button.addEventListener('click', function () {
-                    const applicationId = this.getAttribute('data-id');
-                    const applicationStatus = this.getAttribute('data-status');
-                    const form = document.getElementById(`awardForm_${applicationId}`);
-                    
-                    if (!form) return;
-                    
-                    const formData = new FormData(form);
+                    let applicationId = this.getAttribute('data-id');
+                    let applicationStatus = this.getAttribute('data-status');
+                    let form = document.getElementById(`awardForm_${applicationId}`);
+                    let formData = new FormData(form);
                     formData.set('ApplicationStatus', applicationStatus);
-                    
-                    const statusText = applicationStatus === 'Won' ? 'award this tender to' : 'reject';
-                    const companyName = this.closest('tr').querySelector('td:nth-child(2)').textContent.trim();
 
-                    if (confirm(`Are you sure you want to ${statusText} ${companyName}?`)) {
-                        // Show loading state
-                        const actionCell = this.closest('td');
-                        const originalContent = actionCell.innerHTML;
-                        actionCell.innerHTML = '<div class="flex justify-center"><i class="fas fa-spinner fa-spin text-blue-600"></i></div>';
-                        
+                    if (confirm(`Are you sure you want to mark this tender as '${applicationStatus}'?`)) {
                         fetch(form.action, {
                             method: form.method,
                             body: formData,
@@ -541,40 +518,16 @@
                                 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
                             }
                         })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                // Create notification
-                                const notification = document.createElement('div');
-                                notification.className = 'fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg z-50';
-                                notification.style.animation = 'slideInUp 0.3s ease-out forwards';
-                                notification.innerHTML = `
-                                    <div class="flex items-center">
-                                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                        <p>Tender ${applicationStatus === 'Won' ? 'awarded' : 'rejected'} successfully!</p>
-                                    </div>
-                                `;
-                                document.body.appendChild(notification);
-                                
-                                // Remove notification after 3 seconds
-                                setTimeout(() => {
-                                    notification.style.animation = 'fadeOut 0.3s ease-out forwards';
-                                    setTimeout(() => notification.remove(), 300);
-                                }, 3000);
-                                
-                                // Reload page to show updated status
-                                setTimeout(() => location.reload(), 1000);
-                            } else {
-                                // Restore original content and show error
-                                actionCell.innerHTML = originalContent;
-                                alert("Failed to update award status.");
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Error:", error);
-                            actionCell.innerHTML = originalContent;
-                            alert("An error occurred. Please try again.");
-                        });
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert(`Tender marked as '${applicationStatus}' successfully!`);
+                                    location.reload(); // Update the status dynamically
+                                } else {
+                                    alert("Failed to update award status.");
+                                }
+                            })
+                            .catch(error => console.error("Error:", error));
                     }
                 });
             });

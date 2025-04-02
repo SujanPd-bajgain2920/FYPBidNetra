@@ -1,0 +1,308 @@
+﻿@model CompanyEdit
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+
+<style>
+    .company-card {
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    
+
+    .info-section {
+        transition: all 0.3s ease;
+    }
+
+    .info-section:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .document-image {
+        max-height: 300px;
+        object-fit: contain;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .document-image:hover {
+        transform: scale(1.02);
+    }
+
+    .rating-stars {
+        color: #FCD34D;
+    }
+
+    .contact-button {
+        transition: all 0.3s ease;
+    }
+
+    .contact-button:hover {
+        transform: scale(1.05);
+    }
+    
+    .rating-button {
+        background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+        transition: all 0.3s ease;
+    }
+    
+    .rating-button:hover {
+        background: linear-gradient(135deg, #2563EB, #1E40AF);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+    }
+    
+    .document-container {
+        position: relative;
+        overflow: hidden;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    .document-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .document-container:hover .document-overlay {
+        opacity: 1;
+    }
+    
+    .view-button {
+        background: white;
+        color: #1E40AF;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+</style>
+
+<div class="bg-gray-50 min-h-screen py-8">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <!-- Back Button -->
+        <button onclick="history.back()"
+                class="mb-6 text-gray-600 hover:text-gray-800 transition-all duration-300 flex items-center gap-2">
+            <i class="fas fa-arrow-left"></i>
+            <span class="font-medium">Back</span>
+        </button>
+
+        <div class="company-card bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Company Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-blue-800 p-8 text-white">
+                <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-2">@Model.CompanyName</h1>
+                        <p class="text-blue-100 flex items-center gap-2">
+                            <i class="fas fa-building"></i>
+                            @Model.CompanyType
+                        </p>
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <div class="rating-stars text-2xl mb-1">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (Model.Rating.HasValue)
+                                {
+                                    decimal rating = Model.Rating.Value;
+                                    if (i <= Math.Floor(Convert.ToDouble(rating)))
+                                    {
+                                        <i class="fas fa-star"></i>
+                                    }
+                                    else if (i - 0.5 <= Convert.ToDouble(rating))
+                                    {
+                                        <i class="fas fa-star-half-alt"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="far fa-star"></i>
+                                    }
+                                }
+                                else
+                                {
+                                    <i class="far fa-star"></i>
+                                }
+                            }
+                        </div>
+                        <p class="text-blue-100 mb-3">Rating: @(Model.Rating?.ToString("N1") ?? "N/A") / 5.0</p>
+                        
+                        <!-- Add Rating Button -->
+                        <a asp-action="ViewReview" asp-controller="Company" asp-route-id="@Model.EncId"
+                                class="btn rating-button text-white px-4 py-2 rounded-lg shadow-md flex items-center gap-2">
+                            <i class="fas fa-star"></i>
+                            <span>View Rating</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Company Information -->
+            <div class="p-8">
+                <!-- Basic Information -->
+                <div class="info-section bg-white rounded-lg p-6 mb-8 shadow-sm border border-gray-100">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+                        Basic Information
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-gray-600 mb-2 flex items-center">
+                                <i class="fas fa-map-marker-alt w-6 text-blue-600"></i>
+                                <span class="font-medium mr-2">Address:</span>
+                                @Model.FullAddress
+                            </p>
+                            <p class="text-gray-600 mb-2 flex items-center">
+                                <i class="fas fa-envelope w-6 text-blue-600"></i>
+                                <span class="font-medium mr-2">Email:</span>
+                                @Model.OfficeEmail
+                            </p>
+                            <p class="text-gray-600 mb-2 flex items-center">
+                                <i class="fas fa-globe w-6 text-blue-600"></i>
+                                <span class="font-medium mr-2">Website:</span>
+                                @if (!string.IsNullOrEmpty(Model.CompanyWebsiteUrl))
+                                {
+                                    <a href="@Model.CompanyWebsiteUrl" target="_blank" class="text-blue-600 hover:text-blue-800">
+                                        @Model.CompanyWebsiteUrl
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span>Not provided</span>
+                                }
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600 mb-2 flex items-center">
+                                <i class="fas fa-id-card w-6 text-blue-600"></i>
+                                <span class="font-medium mr-2">Registration No:</span>
+                                @Model.RegistrationNumber
+                            </p>
+                            <p class="text-gray-600 mb-2 flex items-center">
+                                <i class="fas fa-file-alt w-6 text-blue-600"></i>
+                                <span class="font-medium mr-2">PAN Number:</span>
+                                @Model.PanNumber
+                            </p>
+                            <p class="text-gray-600 mb-2 flex items-center">
+                                <i class="fas fa-user-tie w-6 text-blue-600"></i>
+                                <span class="font-medium mr-2">Position:</span>
+                                @Model.Position
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documents -->
+                <div class="info-section bg-white rounded-lg p-6 mb-8 shadow-sm border border-gray-100">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-file-alt text-blue-600 mr-2"></i>
+                        Company Documents
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Registration Document -->
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-3">Registration Document</h3>
+                            <div class="document-container">
+                                <img src="@Url.Content("~/RegisterImage/" + Model.RegistrationDocument)" 
+                                     alt="Registration Document" 
+                                     class="document-image w-full" />
+                                <div class="document-overlay">
+                                    <a href="@Url.Content("~/RegisterImage/" + Model.RegistrationDocument)" 
+                                       target="_blank" 
+                                       class="view-button">
+                                        <i class="fas fa-search-plus"></i>
+                                        <span>View Full Size</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PAN Document -->
+                        <div>
+                            <h3 class="font-medium text-gray-700 mb-3">PAN Document</h3>
+                            <div class="document-container">
+                                <img src="@Url.Content("~/PanImage/" + Model.PanDocument)" 
+                                     alt="PAN Document" 
+                                     class="document-image w-full" />
+                                <div class="document-overlay">
+                                    <a href="@Url.Content("~/PanImage/" + Model.PanDocument)" 
+                                       target="_blank" 
+                                       class="view-button">
+                                        <i class="fas fa-search-plus"></i>
+                                        <span>View Full Size</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Person Information -->
+                @if (Model.User != null)
+                {
+                    <div class="info-section bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-user text-blue-600 mr-2"></i>
+                            Contact Person Details
+                        </h2>
+                        <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+                            <!-- Profile Photo -->
+                            <div class="w-32 h-32 rounded-full overflow-hidden shadow-lg flex-shrink-0">
+                                @if (!string.IsNullOrEmpty(Model.User.UserPhoto))
+                                {
+                                    <img src="@Url.Content("~/UserImage/" + Model.User.UserPhoto)"
+                                         alt="Profile Photo"
+                                         class="w-full h-full object-cover" />
+                                }
+                                else
+                                {
+                                    <div class="w-full h-full bg-blue-100 flex items-center justify-center">
+                                        <i class="fas fa-user text-4xl text-blue-500"></i>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Contact Details -->
+                            <div class="flex-1">
+                                <h3 class="text-lg font-medium text-gray-800 mb-2 text-center md:text-left">
+                                    @Model.User.FirstName @Model.User.MiddleName @Model.User.LastName
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <p class="text-gray-600 flex items-center">
+                                        <i class="fas fa-envelope w-6 text-blue-600"></i>
+                                        @Model.User.EmailAddress
+                                    </p>
+                                    <p class="text-gray-600 flex items-center">
+                                        <i class="fas fa-phone w-6 text-blue-600"></i>
+                                        @Model.User.Phone
+                                    </p>
+                                    <p class="text-gray-600 flex items-center">
+                                        <i class="fas fa-map-marker-alt w-6 text-blue-600"></i>
+                                        @Model.User.Province, @Model.User.District
+                                    </p>
+                                    <p class="text-gray-600 flex items-center">
+                                        <i class="fas fa-city w-6 text-blue-600"></i>
+                                        @Model.User.City
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+

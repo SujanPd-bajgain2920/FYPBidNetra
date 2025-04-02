@@ -466,7 +466,7 @@
                                             </span>
                                         </div>
                                         <div class="mt-6">
-                                            <a href="@Url.Action("CompanyProfile", "Company", new { id = Model.AwardedCompany.CompanyId })"
+                                            <a asp-action="Index" asp-controller="Company" asp-route-id="@Model.AwardedCompany.EncId"
                                                class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-200">
                                                 <i class="fas fa-external-link-alt mr-2"></i>
                                                 View Company Profile

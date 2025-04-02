@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace FYPBidNetra.Models;
 
@@ -10,6 +12,14 @@ public partial class Rating
     public string? RatingDescription { get; set; }
 
     public decimal? Rating1 { get; set; }
+
+    
+
+    [Column(TypeName = "DECIMAL(3,2)")]
+    [Range(0, 5)]
+    public decimal? Rate { get; set; }
+
+    
 
     public short? RatingBy { get; set; }
 

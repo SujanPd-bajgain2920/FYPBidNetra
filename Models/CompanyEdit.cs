@@ -25,10 +25,13 @@ namespace FYPBidNetra.Models
 
         public string Position { get; set; } = null!;
 
+        public string EncId { get; set; } = null!;
 
         public decimal? Rating { get; set; }
         public short? UserbidId { get; set; }
 
-       
+        public UserListEdit User { get; set; }
+
+
     }
 }

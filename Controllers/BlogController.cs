@@ -87,5 +87,7 @@ namespace FYPBidNetra.Controllers
                 return View();
             }
         }
+
+
     }
 }

@@ -215,38 +215,10 @@
             transform: translateX(-5px);
         }
 
-        /* Award dropdown */
-        .award-dropdown {
-            z-index: 10;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            border: 1px solid #e5e7eb;
-            overflow: hidden;
-            width: 150px;
-            right: 0;
-        }
+        
 
-        .award-btn {
-            padding: 0.75rem 1rem;
-            transition: all 0.2s ease;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .award-btn:hover {
-            background-color: #f3f4f6;
-        }
-
-        .award-btn.won:hover {
-            background-color: #d1fae5;
-        }
-
-        .award-btn.lost:hover {
-            background-color: #fee2e2;
-        }
-
+      
+        
         /* Contract button */
         .contract-button {
             display: inline-flex;
@@ -293,6 +265,15 @@
             font-weight: 500;
             font-size: 0.875rem;
         }
+
+        .award-btn {
+            transition: all 0.3s ease;
+        }
+
+            .award-btn:hover {
+                transform: scale(1.05);
+            }
+
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen py-8">
@@ -317,31 +298,16 @@
                         </p>
                     </div>
                     <div class="flex items-center gap-4">
-                        <span class="status-badge @(Model.Application.ApplicationStatus.ToLower() == "won" ? "status-won" :
-                                              Model.Application.ApplicationStatus.ToLower() == "lost" ? "status-lost" :
-                                              "status-pending")">
-                            <i class="fas @(Model.Application.ApplicationStatus.ToLower() == "won" ? "fa-trophy" :
-                                    Model.Application.ApplicationStatus.ToLower() == "lost" ? "fa-times-circle" :
-                                    "fa-hourglass-half")"></i>
-                            @Model.Application.ApplicationStatus
-                        </span>
                         @if (Model.Application.ApplicationStatus == "Pending")
                         {
                             <!-- Award Tender Dropdown -->
                             <div class="relative inline-block">
-                                <button class="action-button primary award-dropdown-btn" title="Award Tender">
+                                <button class="btn text-blue-600 hover:text-blue-900 award-dropdown-btn" title="Award Tender">
                                     <i class="fas fa-trophy"></i>
-                                    <span>Award</span>
                                 </button>
-                                <div class="hidden absolute award-dropdown mt-2">
-                                    <button class="award-btn won w-full" data-id="@Model.Application.ApplicationId" data-status="Won">
-                                        <i class="fas fa-trophy text-green-600"></i>
-                                        <span>Award</span>
-                                    </button>
-                                    <button class="award-btn lost w-full" data-id="@Model.Application.ApplicationId" data-status="Lost">
-                                        <i class="fas fa-times-circle text-red-600"></i>
-                                        <span>Reject</span>
-                                    </button>
+                                <div class="hidden absolute bg-white shadow-md border rounded-md p-2 mt-2 w-32 award-dropdown">
+                                    <button class="block w-full text-left px-3 py-1 text-green-600 hover:bg-gray-200 award-btn" data-id="@Model.Application.ApplicationId" data-status="Won">🏆 Won</button>
+                                    <button class="block w-full text-left px-3 py-1 text-red-600 hover:bg-gray-200 award-btn" data-id="@Model.Application.ApplicationId" data-status="Lost">❌ Lost</button>
                                 </div>
                             </div>
 
@@ -351,7 +317,17 @@
                                 <input type="hidden" name="ApplicationId" value="@Model.Application.ApplicationId" />
                                 <input type="hidden" name="ApplicationStatus" />
                             </form>
+
                         }
+                        <span class="status-badge @(Model.Application.ApplicationStatus.ToLower() == "won" ? "status-won" :
+                                              Model.Application.ApplicationStatus.ToLower() == "lost" ? "status-lost" :
+                                              "status-pending")">
+                            <i class="fas @(Model.Application.ApplicationStatus.ToLower() == "won" ? "fa-trophy" :
+                                    Model.Application.ApplicationStatus.ToLower() == "lost" ? "fa-times-circle" :
+                                    "fa-hourglass-half")"></i>
+                            @Model.Application.ApplicationStatus
+                        </span>
+                        
                     </div>
                 </div>
             </div>
@@ -757,24 +733,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+
             // Toggle dropdown visibility
             document.querySelectorAll('.award-dropdown-btn').forEach(button => {
                 button.addEventListener('click', function (event) {
                     event.stopPropagation();
-                    const dropdown = this.nextElementSibling;
-                    
-                    // Close all other dropdowns first
-                    document.querySelectorAll('.award-dropdown').forEach(d => {
-                        if (d !== dropdown) d.classList.add('hidden');
-                    });
-                    
-                    // Toggle this dropdown
+                    let dropdown = this.nextElementSibling;
                     dropdown.classList.toggle('hidden');
                 });
             });
 
             // Close dropdown when clicking outside
-            document.addEventListener('click', function () {
+            document.addEventListener('click', function (event) {
                 document.querySelectorAll('.award-dropdown').forEach(dropdown => {
                     dropdown.classList.add('hidden');
                 });
@@ -783,25 +753,13 @@
             // Award Tender Status Update
             document.querySelectorAll('.award-btn').forEach(button => {
                 button.addEventListener('click', function () {
-                    const applicationId = this.getAttribute('data-id');
-                    const applicationStatus = this.getAttribute('data-status');
-                    const form = document.getElementById(`awardForm_${applicationId}`);
-                    
-                    if (!form) return;
-                    
-                    const formData = new FormData(form);
+                    let applicationId = this.getAttribute('data-id');
+                    let applicationStatus = this.getAttribute('data-status');
+                    let form = document.getElementById(`awardForm_${applicationId}`);
+                    let formData = new FormData(form);
                     formData.set('ApplicationStatus', applicationStatus);
-                    
-                    const statusText = applicationStatus === 'Won' ? 'award this tender to' : 'reject';
-                    const companyName = document.querySelector('.info-value:contains("Company Name")').textContent.trim();
 
-                    if (confirm(`Are you sure you want to ${statusText} ${companyName}?`)) {
-                        // Show loading state
-                        const button = this;
-                        const originalContent = button.innerHTML;
-                        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                        button.disabled = true;
-                        
+                    if (confirm(`Are you sure you want to mark this tender as '${applicationStatus}'?`)) {
                         fetch(form.action, {
                             method: form.method,
                             body: formData,
@@ -809,30 +767,25 @@
                                 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
                             }
                         })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                let alertMessage = `Tender marked as '${applicationStatus}' successfully!`;
-                                
-                                // If the status is "Won", show the contract message
-                                if (applicationStatus === "Won") {
-                                    alertMessage += "\nContract has been generated.";
-                                }
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    let alertMessage = `Tender marked as '${applicationStatus}' successfully!`;
 
-                                alert(alertMessage);
-                                location.reload();
-                            } else {
-                                button.innerHTML = originalContent;
-                                button.disabled = false;
-                                alert("Failed to update award status: " + (data.message || "Unknown error"));
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Error:", error);
-                            button.innerHTML = originalContent;
-                            button.disabled = false;
-                            alert("An error occurred. Please try again.");
-                        });
+                                    // If the status is "Won", show the contract message
+                                    if (applicationStatus === "Won") {
+                                        alertMessage += "\nContract has been generated.";
+                                    }
+
+                                    alert(alertMessage); // Show the combined message
+                                    location.reload();
+
+
+                                } else {
+                                    alert("Failed to update award status: " + data.message);
+                                }
+                            })
+                            .catch(error => console.error("Error:", error));
                     }
                 });
             });

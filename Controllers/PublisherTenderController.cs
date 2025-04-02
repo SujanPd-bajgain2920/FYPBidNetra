@@ -551,7 +551,7 @@ namespace FYPBidNetra.Controllers
                         Position = t.AwardCompany.Position,
                         Rating = t.AwardCompany.Rating,
                         UserbidId = t.AwardCompany.UserbidId,
-                        
+                        EncId = _protector.Protect(t.AwardCompany.CompanyId.ToString())
                     } : null
                 })
                 .FirstOrDefault();
