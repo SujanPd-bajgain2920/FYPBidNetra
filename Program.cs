@@ -18,7 +18,7 @@ namespace FYPBidNetra
 
             builder.Services.AddScoped<EmailService>();
 
-
+            builder.Services.AddHttpClient();
 
             // Add DbContext with connection string
             builder.Services.AddDbContext<FypContext>(options =>
@@ -44,6 +44,17 @@ namespace FYPBidNetra
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("FlaskAPI",
+                    policy =>
+                    {
+                        policy.WithOrigins("http://127.0.0.1:5000")
+                              .AllowAnyMethod()
+                              .AllowAnyHeader();
+                    });
+            });
+
             var app = builder.Build();
 
 
@@ -58,6 +69,7 @@ namespace FYPBidNetra
                 app.UseHsts();
             }
 
+            app.UseCors("FlaskAPI");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSession();

@@ -51,5 +51,7 @@ namespace FYPBidNetra.Models
         public string? PaymentStatus { get; set; }
 
         public short? PaymentId { get; set; }
+
+        public List<RecommendedCompany> RecommendedCompanies { get; set; }
     }
 }
