@@ -333,11 +333,15 @@
             </div>
             
             <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-                <a asp-action="Index" asp-controller="TenderContract" asp-route-id="@Model.Application.EncId"
-                   class="contract-button">
-                    <i class="fas fa-file-contract mr-2"></i>
-                    Generate Contract
-                </a>
+                @if (Model.Application.ApplicationStatus.ToLower() == "won")
+                {
+                    <a asp-action="Index" asp-controller="TenderContract" asp-route-id="@Model.Application.EncId"
+                       class="contract-button">
+                        <i class="fas fa-file-contract mr-2"></i>
+                        Generate Contract
+                    </a>
+                }
+                
                 <div class="info-card">
                     <p class="info-label">Issued By</p>
                     <p class="info-value flex items-center gap-2">

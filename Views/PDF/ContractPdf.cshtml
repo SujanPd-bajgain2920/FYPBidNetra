@@ -1,4 +1,7 @@
 ﻿@model TenderApplicationViewModel
+@{
+    Layout = null;
+}
 <!DOCTYPE html>
 <html>
 <head>
@@ -61,6 +64,29 @@
                 }
             </div>
         }
+
+        <div class="contract-section">
+            <h2>Signatures</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Buyer Signature:</strong><br />
+                    @if (!string.IsNullOrEmpty(Model.Contract.BuyerSignature))
+                    {
+                        <img src="~/uploads/signatures/@Model.Contract.BuyerSignature" alt="Buyer Signature" style="max-width: 200px; margin-top: 10px;" />
+                    }
+                    <p>Signed by Buyer: @(Model.Contract.SignedByBuyer ? "Yes" : "No")</p>
+                </div>
+                <div class="info-item">
+                    <strong>Seller Signature:</strong><br />
+                    @if (!string.IsNullOrEmpty(Model.Contract.SellerSignature))
+                    {
+                        <img src="~/uploads/signatures/@Model.Contract.SellerSignature" alt="Seller Signature" style="max-width: 200px; margin-top: 10px;" />
+                    }
+                    <p>Signed by Seller: @(Model.Contract.SignedBySeller ? "Yes" : "No")</p>
+                </div>
+            </div>
+        </div>
     </div>
+    
 </body>
 </html>

@@ -349,9 +349,7 @@
                                                 <span class="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Highest</span>
                                             }
                                         </div>
-                                        <div class="text-sm text-gray-500">
-                                            Bid ID: @bid.BiddingId
-                                        </div>
+                                        
                                     </div>
                                 </div>
                             }
@@ -370,6 +368,11 @@
                 <h2 class="text-xl font-semibold text-gray-900 mb-6">
                     <i class="fas fa-user mr-2 text-purple-600"></i>Bidder Details
                 </h2>
+                <a asp-action="UserMessage" asp-controller="Chat" asp-route-receiverId="@Model.User.UserId"
+                   class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all duration-300 shadow-md hover:shadow-lg">
+                    <i class="fas fa-envelope mr-2"></i>
+                    Send Message
+                </a>
                 <div class="flex gap-6">
                     <!-- Profile Image Section -->
                     <div class="flex-shrink-0">

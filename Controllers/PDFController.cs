@@ -189,7 +189,7 @@ namespace FYPBidNetra.Controllers
                 FileName = $"{contract.ContractId}_{tender.Title}_Contract.pdf",
                 PageSize = Rotativa.AspNetCore.Options.Size.A4,
                 PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
-                CustomSwitches = "--disable-smart-shrinking" // Optional: Adjust rendering options
+                CustomSwitches = "--disable-smart-shrinking" 
             };
 
             return pdfResult;

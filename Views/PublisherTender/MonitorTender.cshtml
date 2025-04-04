@@ -480,25 +480,28 @@
                 }
             </div>
         </div>
-        
-        <!-- Recommendations Section -->
-        <div class="recommendations-card">
-            <div class="recommendations-header">
-                <h2 class="text-xl font-semibold">Recommended Companies</h2>
-                <div id="recommendationsCount" class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                    Loading...
-                </div>
-            </div>
-
-            <div id="recommendationsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-                <div class="col-span-full text-center py-12">
-                    <div class="animate-spin text-blue-600 mb-4">
-                        <i class="fas fa-circle-notch text-4xl"></i>
+        @if (Model.Applications?.Any(a => a.Application.ApplicationStatus == "Pending") == true)
+        {
+            <!-- Recommendations Section -->
+            <div class="recommendations-card">
+                <div class="recommendations-header">
+                    <h2 class="text-xl font-semibold">Recommended Companies</h2>
+                    <div id="recommendationsCount" class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                        Loading...
                     </div>
-                    <p class="text-gray-600">Loading recommendations...</p>
+                </div>
+
+                <div id="recommendationsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+                    <div class="col-span-full text-center py-12">
+                        <div class="animate-spin text-blue-600 mb-4">
+                            <i class="fas fa-circle-notch text-4xl"></i>
+                        </div>
+                        <p class="text-gray-600">Loading recommendations...</p>
+                    </div>
                 </div>
             </div>
-        </div>
+        }
+        
     </div>
     
     

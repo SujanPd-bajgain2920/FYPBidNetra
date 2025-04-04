@@ -759,9 +759,13 @@
 
         <!-- Action Buttons -->
         <div class="action-buttons">
-            <a asp-action="DownloadPdf" asp-controller="PDF" asp-route-id="@Model.Application.EncId" class="btn btn-secondary">
-                <i class="fas fa-download"></i>Download PDF
-            </a>
+            @if ((Model.Contract.SignedBySeller == true && Model.Contract.SignedByBuyer == true))
+            {
+                <a asp-action="DownloadPdf" asp-controller="PDF" asp-route-id="@Model.Application.EncId" class="btn btn-secondary">
+                    <i class="fas fa-download"></i>Download PDF
+                </a>
+            }
+
             @if (User.FindFirst("Role")?.Value == "Bidder")
             {
                 <a asp-action="UserMessage" asp-controller="Chat" asp-route-receiverId="@Model.Publisher.UserId" class="btn btn-primary">
