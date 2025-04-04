@@ -571,31 +571,49 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data && data.recommended_companies && Array.isArray(data.recommended_companies)) {
-                        const companies = data.recommended_companies;
-                        recommendationsCount.textContent = `${companies.length} Companies`;
-                        recommendationsContainer.innerHTML = companies.map(company => `
-                            <div class="company-card">
-                                <div class="flex items-center mb-4">
-                                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                                        <i class="fas fa-building text-blue-600"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="font-semibold text-gray-900">${company.company_name}</h3>
-                                        <p class="text-sm text-gray-500">${company.company_type || 'Not specified'}</p>
-                                    </div>
+                        // Filter companies based on matching tender_type
+                        const matchingCompanies = data.recommended_companies.filter(
+                            company => company.company_type === data.tender_type
+                        );
+
+                        recommendationsCount.textContent = `${matchingCompanies.length} Companies`;
+
+                        if (matchingCompanies.length === 0) {
+                            recommendationsContainer.innerHTML = `
+                            <div class="col-span-full text-center py-12">
+                                <div class="text-gray-400 mb-4">
+                                    <i class="fas fa-filter text-4xl"></i>
                                 </div>
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center">
-                                        <i class="fas fa-star text-yellow-400 mr-2"></i>
-                                        <span class="font-medium">${company.rating.toFixed(1)} Rating</span>
-                                    </div>
-                                    <a href="/Company/Profile/${company.company_id}"
-                                       class="text-blue-600 hover:text-blue-800 font-medium">
-                                        View Profile
-                                    </a>
+                                <h3 class="text-lg font-semibold text-gray-700">No Matching Companies</h3>
+                                <p class="text-gray-500 mt-2">No companies found matching the tender type: ${data.tender_type}</p>
+                            </div>
+                        `;
+                            return;
+                        }
+
+                        recommendationsContainer.innerHTML = matchingCompanies.map(company => `
+                        <div class="company-card">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-building text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">${company.company_name}</h3>
+                                    <p class="text-sm text-gray-500">${company.company_type}</p>
                                 </div>
                             </div>
-                        `).join('');
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-yellow-400 mr-2"></i>
+                                    <span class="font-medium">${company.rating.toFixed(1)} Rating</span>
+                                </div>
+                                <a href="/Company/Profile/${company.company_id}"
+                                   class="text-blue-600 hover:text-blue-800 font-medium">
+                                    View Profile
+                                </a>
+                            </div>
+                        </div>
+                    `).join('');
                     } else {
                         throw new Error('Invalid data format');
                     }
