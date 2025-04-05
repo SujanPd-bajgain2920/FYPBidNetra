@@ -13,5 +13,7 @@
 
         public string ApplicationId { get; set; }
         public string EncId { get; set; }
+
+        public bool HasUserReviewed { get; set; }
     }
 }

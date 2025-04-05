@@ -145,6 +145,10 @@ namespace FYPBidNetra.Controllers
                 var company = _context.Companies.FirstOrDefault(c => c.CompanyId == companyId);
                 var tender = _context.TenderDetails.FirstOrDefault(t => t.TenderId == decodedTenderId);
 
+                int currentUserId = Convert.ToInt16(User.Identity!.Name);
+                
+                var hasReviewed = _context.Ratings.Any(r => r.RatingFor == companyId && r.RatingBy == currentUserId);
+
                 if (company == null || tender == null)
                 {
                     return NotFound("Company or tender not found.");
@@ -156,6 +160,7 @@ namespace FYPBidNetra.Controllers
                     CompanyName = company.CompanyName,
                     CompanyRating = company.Rating,
                     TenderId = decodedTenderId,
+                    HasUserReviewed = hasReviewed,
                     EncTenderId = tenderId,
                     NewRating = new RatingEdit(),
                     Reviews = _context.Ratings
