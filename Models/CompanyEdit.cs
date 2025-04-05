@@ -32,6 +32,8 @@ namespace FYPBidNetra.Models
 
         public UserListEdit User { get; set; }
 
+        public TenderEdit Tenders { get; set; }
+
 
     }
 }

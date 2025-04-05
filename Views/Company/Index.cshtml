@@ -94,11 +94,15 @@
 <div class="bg-gray-50 min-h-screen py-8">
     <div class="container mx-auto px-4 max-w-6xl">
         <!-- Back Button -->
-        <button onclick="history.back()"
-                class="mb-6 text-gray-600 hover:text-gray-800 transition-all duration-300 flex items-center gap-2">
-            <i class="fas fa-arrow-left"></i>
-            <span class="font-medium">Back</span>
-        </button>
+        @if (Model.Tenders?.EncId != null)
+        {
+            <a asp-action="TenderDetails" asp-controller="PublisherTender" asp-route-id="@Model.Tenders.EncId"
+               class="mb-6 text-gray-600 hover:text-gray-800 transition-all duration-300 flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i>
+                <span class="font-medium">Back to Tender Details</span>
+            </a>
+        }
+        
 
         <div class="company-card bg-white rounded-xl shadow-lg overflow-hidden">
             <!-- Company Header -->
@@ -113,34 +117,35 @@
                     </div>
                     <div class="flex flex-col items-end">
                         <div class="rating-stars text-2xl mb-1">
-                            @for (int i = 1; i <= 5; i++)
+                            @if (Model?.Rating == null)
                             {
-                                if (Model.Rating.HasValue)
+                                <p class="text-gray-500 text-sm">No reviews yet. Be the first to review!</p>
+                            }
+                            else
+                            {
+                                decimal rating = Model.Rating.Value;
+                                decimal floor = Math.Floor(rating);
+                                for (int i = 1; i <= 5; i++)
                                 {
-                                    decimal rating = Model.Rating.Value;
-                                    if (i <= Math.Floor(Convert.ToDouble(rating)))
+                                    if (i <= floor)
                                     {
-                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
                                     }
-                                    else if (i - 0.5 <= Convert.ToDouble(rating))
+                                    else if (i - 0.5m <= rating)
                                     {
-                                        <i class="fas fa-star-half-alt"></i>
+                                        <i class="fas fa-star-half-alt text-yellow-400"></i>
                                     }
                                     else
                                     {
-                                        <i class="far fa-star"></i>
+                                        <i class="far fa-star text-yellow-400"></i>
                                     }
-                                }
-                                else
-                                {
-                                    <i class="far fa-star"></i>
                                 }
                             }
                         </div>
                         <p class="text-blue-100 mb-3">Rating: @(Model.Rating?.ToString("N1") ?? "N/A") / 5.0</p>
                         
                         <!-- Add Rating Button -->
-                        <a asp-action="ViewReview" asp-controller="Company" asp-route-id="@Model.EncId"
+                        <a asp-action="ViewReview" asp-controller="Company" asp-route-id="@Model.EncId" asp-route-tenderId="@Model.Tenders.EncId"
                                 class="btn rating-button text-white px-4 py-2 rounded-lg shadow-md flex items-center gap-2">
                             <i class="fas fa-star"></i>
                             <span>View Rating</span>

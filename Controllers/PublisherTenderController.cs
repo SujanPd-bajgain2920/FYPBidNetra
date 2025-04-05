@@ -478,44 +478,12 @@ namespace FYPBidNetra.Controllers
             }
         }
 
-        // view the whole details of tenders
-        /*public IActionResult TenderDetails(string id)
-        {
-
-            int tenderid = Convert.ToInt32(_protector.Unprotect(id));
-
-            var tender = _context.TenderDetails
-            .Where(t => t.TenderId == tenderid)
-            .Select(t => new TenderEdit
-            {
-                TenderId = t.TenderId,
-                Title = t.Title,
-                IssuedBy = t.IssuedBy,
-                TenderType = t.TenderType,
-                ProjectDuration = t.ProjectDuration,
-                BudgetEstimation = t.BudgetEstimation,
-                TenderStatus = t.TenderStatus,
-                IsVerified = t.IsVerified,
-                IssuedDate = t.IssuedDate,
-                OpeningDate = t.OpeningDate,
-                ClosingDate = t.ClosingDate,
-                AwardDate = t.AwardDate,
-                AwardCompanyId = t.AwardCompanyId,
-                TenderDescription = t.TenderDescription,
-                TenderDocument = t.TenderDocument,
-                AwardStatus = "Pending",
-                EncId = _protector.Protect(t.TenderId.ToString())
-            })
-            .FirstOrDefault();
-
-            return View(tender);
-        }*/
-
+        
 
         public IActionResult TenderDetails(string id)
         {
             int tenderid = Convert.ToInt32(_protector.Unprotect(id));
-
+            //return Json(tenderid);
             var tender = _context.TenderDetails
                 .Include(t => t.AwardCompany)
                     .ThenInclude(c => c.Userbid)
@@ -760,7 +728,8 @@ namespace FYPBidNetra.Controllers
                     PanDocument = c.PanDocument,
                     PanNumber = c.PanNumber,
                     RegistrationDocument = c.RegistrationDocument,
-                    UserbidId = c.UserbidId
+                    UserbidId = c.UserbidId,
+                    EncId = _protector.Protect(c.CompanyId.ToString())
 
                 })
                 .FirstOrDefault();

@@ -20,14 +20,15 @@ namespace FYPBidNetra.Controllers
             _env = env;
         }
 
-        public IActionResult Index(string id)
+        public IActionResult Index(string id, int? tenderId)
         {
+            //return Json(tenderId);
             try
             {
                 int companyId = Convert.ToInt32(_protector.Unprotect(id));
 
                 var company = _context.Companies
-                    .Include(c => c.Userbid)
+                    .Include(c => c.TenderDetails)
                     .Where(c => c.CompanyId == companyId)
                     .Select(c => new CompanyEdit
                     {
@@ -59,9 +60,22 @@ namespace FYPBidNetra.Controllers
                             City = c.Userbid.City,
                             UserRole = c.Userbid.UserRole,
                             UserPhoto = c.Userbid.UserPhoto
-                        }
+                        },
+                        Tenders = tenderId.HasValue
+                            ? c.TenderDetails
+                                .Where(t => t.TenderId == tenderId)
+                                .Select(t => new TenderEdit
+                                {
+                                    TenderId = t.TenderId,
+                                    Title = t.Title,
+                                    EncId = _protector.Protect(t.TenderId.ToString())
+                                }).FirstOrDefault() ?? new TenderEdit()  
+                            : new TenderEdit()  
+
                     })
                     .FirstOrDefault();
+
+
 
                 if (company == null)
                 {
@@ -78,7 +92,7 @@ namespace FYPBidNetra.Controllers
 
 
 
-        [HttpGet]
+        /*[HttpGet]
         public IActionResult ViewReview(string id)
         {
             try
@@ -96,6 +110,7 @@ namespace FYPBidNetra.Controllers
                     CompanyId = id,
                     CompanyName = company.CompanyName,
                     CompanyRating = company.Rating,
+
                     NewRating = new RatingEdit(),
                     Reviews = _context.Ratings
                         .Include(r => r.RatingByNavigation)
@@ -117,12 +132,57 @@ namespace FYPBidNetra.Controllers
             {
                 return NotFound("Invalid company ID or reviews not found.");
             }
-        }
+        }*/
 
+
+        public IActionResult ViewReview(string id, string tenderId)
+        {
+            try
+            {
+                int companyId = Convert.ToInt32(_protector.Unprotect(id));
+                int decodedTenderId = Convert.ToInt32(_protector.Unprotect(tenderId));
+                //return Json(decodedTenderId);
+                var company = _context.Companies.FirstOrDefault(c => c.CompanyId == companyId);
+                var tender = _context.TenderDetails.FirstOrDefault(t => t.TenderId == decodedTenderId);
+
+                if (company == null || tender == null)
+                {
+                    return NotFound("Company or tender not found.");
+                }
+
+                var model = new CompanyReviewViewModel
+                {
+                    CompanyId = id,
+                    CompanyName = company.CompanyName,
+                    CompanyRating = company.Rating,
+                    TenderId = decodedTenderId,
+                    EncTenderId = tenderId,
+                    NewRating = new RatingEdit(),
+                    Reviews = _context.Ratings
+                        .Include(r => r.RatingByNavigation)
+                        .Where(r => r.RatingFor == companyId)
+                        .Select(r => new RatingEdit
+                        {
+                            RatingId = r.RatingId,
+                            Rate = (decimal)r.Rate,
+                            RatingDescription = r.RatingDescription,
+                            ReviewerName = $"{r.RatingByNavigation.FirstName} {r.RatingByNavigation.LastName}",
+                            ReviewerPhoto = r.RatingByNavigation.UserPhoto
+                        })
+                        .ToList()
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return NotFound("Invalid company ID, tender ID, or reviews not found.");
+            }
+        }
 
         [HttpPost]
 
-        public IActionResult AddRating(RatingEdit r)
+        public IActionResult AddRating(RatingEdit r, string companyid, string tenderid)
         {
             try
             {
@@ -165,34 +225,58 @@ namespace FYPBidNetra.Controllers
                 _context.Entry(company).State = EntityState.Modified;
                 _context.SaveChanges();
 
-                return RedirectToAction("ViewReview", new { id = r.CompanyId });
+                return RedirectToAction("ViewReview", new { id = companyid, tenderId = tenderid });
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return RedirectToAction("ViewReview", new { id = r.CompanyId, error = ex.Message });
+                return RedirectToAction("ViewReview", new { id = r.CompanyId, tenderId = r.EncTenderId });
             }
         }
 
+        [HttpGet]
+        public IActionResult ViewCompanyReview(string id, string applicationId)
+        {
+            try
+            {
+                int companyId = Convert.ToInt32(_protector.Unprotect(id));
+                var company = _context.Companies.FirstOrDefault(c => c.CompanyId == companyId);
 
-        /* private void UpdateCompanyAverageRating(int companyId)
-         {
-             // Check if there are any ratings for this company
-             if (_context.Ratings.Any(r => r.RatingFor == companyId))
-             {
-                 // Calculate average rating
-                 var averageRating = _context.Ratings
-                     .Where(rt => rt.RatingFor == companyId)
-                     .Average(rt => rt.Rate);
 
-                 // Update company rating
-                 var company = _context.Companies.Find(companyId);
-                 if (company != null)
-                 {
-                     company.Rating = averageRating;
-                     _context.SaveChanges();
-                 }
-             }
-         }*/
+                if (company == null)
+                {
+                    return NotFound("Company not found.");
+                }
+                
+
+                var model = new CompanyReviewViewModel
+                {
+                    CompanyId = id,
+                    CompanyName = company.CompanyName,
+                    CompanyRating = company.Rating,
+                    ApplicationId = applicationId,
+                    NewRating = new RatingEdit(),
+                    Reviews = _context.Ratings
+                        .Include(r => r.RatingByNavigation)
+                        .Where(r => r.RatingFor == companyId)
+                        .Select(r => new RatingEdit
+                        {
+                            RatingId = r.RatingId,
+                            Rate = (decimal)r.Rate,
+                            RatingDescription = r.RatingDescription,
+                            ReviewerName = $"{r.RatingByNavigation.FirstName} {r.RatingByNavigation.LastName}",
+                            ReviewerPhoto = r.RatingByNavigation.UserPhoto
+                        })
+                        .ToList()
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return NotFound("Invalid company ID or reviews not found.");
+            }
+        }
+
     }
 }

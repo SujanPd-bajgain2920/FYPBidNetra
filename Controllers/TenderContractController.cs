@@ -72,7 +72,8 @@ namespace FYPBidNetra.Controllers
                     AwardCompanyId = t.AwardCompanyId,
                     AwardDate = t.AwardDate,
                     TenderDocument = t.TenderDocument,
-                    AwardStatus = t.AwardStatus
+                    AwardStatus = t.AwardStatus,
+                    EncId = _protector.Protect(t.TenderId.ToString())
                 })
                 .FirstOrDefault();
 

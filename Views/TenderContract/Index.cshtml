@@ -434,6 +434,13 @@
     </style>
 </head>
 <body>
+    <!-- Back button -->
+    <div class="mb-6">
+        <a asp-action="ApplicationDetails" asp-controller="PublisherTender" asp-route-id="@Model.Application.EncId" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back</span>
+        </a>
+    </div>
     <div class="contract-container">
         <!-- Contract Header -->
         <div class="contract-header">
@@ -601,7 +608,7 @@
                     </div>
                 </div>
 
-                <p>@User.FindFirst("Role")?.Value</p>
+                
 
                 <div class="term-container">
                     @if (Model.Terms != null && Model.Terms.Any())

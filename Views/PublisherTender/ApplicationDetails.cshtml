@@ -280,10 +280,10 @@
     <div class="page-container container mx-auto px-4">
         <!-- Back button -->
         <div class="mb-6">
-            <button onclick="history.back()" class="back-button">
+            <a asp-action="MonitorTender" asp-controller="PublisherTender" asp-route-id="@Model.Tender.EncId" class="back-button">
                 <i class="fas fa-arrow-left"></i>
                 <span>Back</span>
-            </button>
+            </a>
         </div>
         
         <!-- Top Status Bar -->
@@ -494,9 +494,9 @@
                     
                     <!-- Added View Profile Button -->
                     <div class="flex justify-center mt-4">
-                        <a href="#" class="action-button primary">
+                        <a asp-action="ViewCompanyReview" asp-controller="Company" asp-route-id="@Model.Company.EncId" asp-route-applicationId="@Model.Application.EncId" class="action-button primary">
                             <i class="fas fa-id-card"></i>
-                            <span>View Company Profile</span>
+                            <span>View Company Review</span>
                         </a>
                     </div>
                 </div>
@@ -722,10 +722,7 @@
                                     Send Message
                                 </a>
                                 
-                                <a href="#" class="action-button secondary">
-                                    <i class="fas fa-user"></i>
-                                    View Profile
-                                </a>
+                                
                             </div>
                         </div>
                     </div>
