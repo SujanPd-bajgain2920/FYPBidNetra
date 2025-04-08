@@ -187,6 +187,7 @@ namespace FYPBidNetra.Controllers
         public IActionResult AddAuctionTerm(string id)
         {
             int contractid = Convert.ToInt32(_protector.Unprotect(id));
+
             // Fetch contract details
             var contract = _context.ContractDetails
                 .Where(c => c.ContractId == contractid)
@@ -280,7 +281,7 @@ namespace FYPBidNetra.Controllers
 
 
 
-            return RedirectToAction("AuctionIndex", new
+            return RedirectToAction("Index", new
             {
                 contractid = _protector.Protect(contractid.ToString()),
                 id = _protector.Protect(application.BidId.ToString())

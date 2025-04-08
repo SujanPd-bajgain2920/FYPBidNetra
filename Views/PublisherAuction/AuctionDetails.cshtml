@@ -313,14 +313,13 @@
                     </button>
                 </nav>
 
-                 @if (Model.AuctionStatus == "Completed")
-                 {
+                 
                      <a asp-action="MonitorAuction" asp-controller="PublisherAuction" asp-route-id="@Model.EncId"
                                class="apply-button">
                                 <i class="fas fa-bell mr-2"></i>
                                 Monitor Now
                      </a>
-                 }
+                 
 
                 
             </div>

@@ -86,6 +86,9 @@
 </style>
 
 <div class="chat-container mx-auto bg-white rounded-lg shadow-md overflow-hidden mt-4">
+    <a href="javascript:history.back()" class="mr-3 text-gray-600 hover:text-gray-800">
+        <i class="fas fa-arrow-left text-xl"></i>
+    </a>
     <!-- Chat header with user info -->
     <div class="chat-header flex items-center p-3">
         <div class="relative">
@@ -142,18 +145,12 @@
     <!-- Message input area -->
     <div class="message-input p-3">
         <div class="flex items-center">
-            <button class="attachment-button p-2 mr-2">
-                <i class="fas fa-plus-circle text-blue-500 text-xl"></i>
-            </button>
+            
             <div class="flex-grow relative">
                 <input type="text" id="messageInput" class="w-full py-2 px-4 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300" placeholder="Aa">
-                <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <i class="far fa-smile text-gray-400"></i>
-                </div>
+                
             </div>
-            <button class="attachment-button p-2 ml-2">
-                <i class="fas fa-microphone text-gray-500 text-lg"></i>
-            </button>
+            
             <button id="sendButton" class="ml-2 text-blue-500 hover:text-blue-700" onclick="sendMessage()">
                 <i class="fas fa-paper-plane text-xl"></i>
             </button>
@@ -171,21 +168,29 @@
         const connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
 
         connection.on("ReceiveMessage", function (senderId, message) {
-            console.log(`Message received from ${senderId}: ${message}`); // Debug log for incoming messages
+            console.log(`Message received from ${senderId}: ${message}`);
 
-            // Create a new message element
-            var li = document.createElement("div");
-            li.classList.add("message");
-            li.innerHTML = `<div class="flex ${senderId == document.getElementById("currentUserId").value ? "justify-end" : "justify-start"}">
-                                                        <span class="inline-block rounded-lg p-2 ${senderId == document.getElementById("currentUserId").value ? "bg-blue-500 text-white" : "bg-gray-200 text-black"}">${message}</span>
-                                            </div>`;
+            // Create message element with consistent styling
+            var messageDiv = document.createElement("div");
+            var isSender = senderId == document.getElementById("currentUserId").value;
 
-            // Append the new message to the messages list
-            document.getElementById("messagesList").appendChild(li);
+            messageDiv.className = `flex ${isSender ? "justify-end" : "justify-start"} mb-4`;
+            messageDiv.innerHTML = `
+                        ${!isSender ? `
+                            <div class="mr-2">
+                                <img src="/UserImage/${document.querySelector('img[alt="User Profile"]').src.split('/').pop()}" alt="User" class="w-8 h-8 rounded-full">
+                            </div>` : ''}
+                        <div>
+                            <div class="message-bubble p-3 ${isSender ? "sender-bubble" : "receiver-bubble"}">
+                                ${message}
+                            </div>
+                            <div class="${isSender ? "text-right" : "text-left"}">
+                                <span class="text-gray-500 message-time">${new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</span>
+                            </div>
+                        </div>`;
 
-            // Scroll to the bottom of the messages list
-            var messagesList = document.getElementById("messagesList");
-            messagesList.scrollTop = messagesList.scrollHeight;
+            document.getElementById("messagesList").appendChild(messageDiv);
+            document.getElementById("messagesList").scrollTop = document.getElementById("messagesList").scrollHeight;
         });
 
         connection.start().then(() => {
@@ -205,29 +210,33 @@
 
             if (message.trim() === "") return;
 
-            // Append sent message to the message list
-            var li = document.createElement("div");
-            li.classList.add("message");
-            li.innerHTML = `<div class="flex justify-end">
-                                                <span class="inline-block rounded-lg p-2 bg-blue-500 text-white">${message}</span>
-                                            </div>`;
-            document.getElementById("messagesList").appendChild(li);
+            // Create message element with consistent styling
+            var messageDiv = document.createElement("div");
+            messageDiv.className = "flex justify-end mb-4";
+            messageDiv.innerHTML = `
+                        <div>
+                            <div class="message-bubble p-3 sender-bubble">
+                                ${message}
+                            </div>
+                            <div class="text-right">
+                                <span class="text-gray-500 message-time">${new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</span>
+                            </div>
+                        </div>`;
+
+            document.getElementById("messagesList").appendChild(messageDiv);
 
             connection.invoke("SendMessage", parseInt(currentUserId), parseInt(receiverId), message)
                 .then(() => {
                     console.log("Message sent successfully.");
-                    checkConnectionState(); // Check connection state after sending message
+                    checkConnectionState();
                 })
                 .catch(err => {
                     console.error("Error sending message: ", err);
                     alert("Error sending message: " + err.message + "\nCheck server logs for details.");
                 });
 
-            document.getElementById("messageInput").value = ''; // Clear input
-
-            // Scroll to the bottom of the messages list
-            var messagesList = document.getElementById("messagesList");
-            messagesList.scrollTop = messagesList.scrollHeight;
+            document.getElementById("messageInput").value = '';
+            document.getElementById("messagesList").scrollTop = document.getElementById("messagesList").scrollHeight;
         }
     </script>
 }

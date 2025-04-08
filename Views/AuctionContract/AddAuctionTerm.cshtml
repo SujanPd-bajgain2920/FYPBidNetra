@@ -28,6 +28,14 @@
     </style>
 </head>
 <body class="bg-gray-100">
+
+    <div class="mb-6">
+
+        <a asp-action="Index" asp-controller="AuctionContract" asp-route-id="@Model.AuctinBid.EncId" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back</span>
+        </a>
+    </div>
     <div class="min-h-screen p-6">
         <!-- Header -->
         <div class="mb-8 text-center">
@@ -50,8 +58,8 @@
                             <span class="font-medium">@Model.Contract.ContractId</span>
                         </div>
                         <div class="flex items-center">
-                            <span class="text-gray-600 w-32">Tender ID:</span>
-                            <span class="font-medium">@Model.Contract.ConTenderId</span>
+                            <span class="text-gray-600 w-32">Auction ID:</span>
+                            <span class="font-medium">@Model.Contract.ConAuctionId</span>
                         </div>
                         <div class="flex items-center">
                             <span class="text-gray-600 w-32">Seller ID:</span>
@@ -91,7 +99,7 @@
         <div class="max-w-4xl mx-auto">
             <form asp-action="AddAuctionTerm" asp-controller="AuctionContract" method="post"  class="bg-white rounded-lg shadow-lg p-6">
                 <input type="hidden" name="id" value="@Model.Contract.EncId" />
-                <input type="number" name="id" value="@Model.AuctinBid.BidId" />
+                
 
                 <h2 class="text-2xl font-semibold text-gray-800 mb-6">
                     <i class="fas fa-plus-circle mr-2"></i>Add New Term

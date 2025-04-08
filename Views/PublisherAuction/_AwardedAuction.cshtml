@@ -142,7 +142,16 @@
                                 
                                 <td class="px-6 py-4 text-center text-gray-800">
                                     <div class="flex items-center justify-center">
-                                        <span class="line-clamp-1">@tender.WinnerDetails.FirstName @tender.WinnerDetails.MiddleName @tender.WinnerDetails.LastName</span>
+                                        <span class="line-clamp-1">
+                                            @if (tender.WinnerDetails != null)
+                                            {
+                                                @($"{tender.WinnerDetails.FirstName} {tender.WinnerDetails.MiddleName} {tender.WinnerDetails.LastName}")
+                                            }
+                                            else
+                                            {
+                                                <span class="text-gray-500">No Winner</span>
+                                            }
+                                        </span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-center">
