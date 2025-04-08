@@ -12,6 +12,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- SignalR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
+
+    <!-- Toastify CSS and JS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
     <style>
         :root {
             --primary: #2563eb;
@@ -137,6 +142,7 @@
     </style>
 </head>
 <body>
+    
     <div class="container mx-auto px-4 py-8 max-w-7xl">
         <!-- Auction Header -->
         <div class="auction-header mb-6">
@@ -249,6 +255,7 @@
 
                 <div class="mt-4">
                     <form asp-action="PlaceBid" method="post" class="flex">
+
                         <input type="hidden" name="auctionId" value="@Model.Auction.AuctionId" />
                         <input type="number" name="bidAmount" class="block w-full rounded-l-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                                min="@Model.MinBidAmount" 
@@ -377,6 +384,26 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
     <script>
+
+        
+
+            // Update form submission handler
+            document.addEventListener('DOMContentLoaded', function () {
+                const bidForm = document.querySelector('form[asp-action="PlaceBid"]');
+                if (bidForm) {
+                    bidForm.addEventListener('submit', function (e) {
+                        const bidAmount = document.querySelector('input[name="bidAmount"]').value;
+                        const minBid = document.querySelector('input[name="bidAmount"]').min;
+
+                        if (parseFloat(bidAmount) < parseFloat(minBid)) {
+                            e.preventDefault();
+                            showToast(`Bid amount must be at least ₹${minBid}`, false);
+                            return;
+                        }
+                    });
+                }
+            });
+
         var connection = new signalR.HubConnectionBuilder().withUrl("/auctionHub").build();
 
         connection.start()
@@ -493,8 +520,51 @@
                 setInterval(updateCountdown, 1000);
             }
         });
-        
-       
+
+        // Update form submission handler
+        document.addEventListener('DOMContentLoaded', function () {
+            // Show toast messages from TempData
+        @if (TempData["BidMessage"] != null)
+        {
+            <text>
+                        showToast('@TempData["BidMessage"]', @(TempData["IsSuccess"]?.ToString()?.ToLower() ?? "false"));
+            </text>
+        }
+
+        @if (TempData["ClosedMessage"] != null)
+        {
+            <text>
+                        showToast('@TempData["ClosedMessage"]', false);
+            </text>
+        }
+
+            const bidForm = document.querySelector('form[asp-action="PlaceBid"]');
+            if (bidForm) {
+                bidForm.addEventListener('submit', function (e) {
+                    const bidAmount = document.querySelector('input[name="bidAmount"]').value;
+                    const minBid = document.querySelector('input[name="bidAmount"]').min;
+
+                    if (parseFloat(bidAmount) < parseFloat(minBid)) {
+                        e.preventDefault();
+                        showToast(`Bid amount must be at least ₹${minBid}`, false);
+                        return;
+                    }
+                });
+            }
+        });
+
+        function showToast(message, isSuccess = true) {
+            Toastify({
+                text: message,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                stopOnFocus: true,
+                style: {
+                    background: isSuccess ? "linear-gradient(to right, #00b09b, #96c93d)" : "linear-gradient(to right, #ff5f6d, #ffc371)",
+                }
+            }).showToast();
+        }
     </script>
 </body>
 </html>

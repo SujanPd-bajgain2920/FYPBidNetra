@@ -1,0 +1,91 @@
+@model AuctionContractViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auction Contract Document</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 14px; }
+        .contract-container { padding: 20px; border: 1px solid #ddd; }
+        .contract-header { text-align: center; margin-bottom: 20px; }
+        .contract-header h1 { font-size: 24px; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .info-item { padding: 10px; background: #f9f9f9; border-radius: 5px; }
+        .terms-section { margin-top: 20px; padding: 15px; background: #eee; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="contract-container">
+        <div class="contract-header">
+            <h1>@Model.Auction.Title</h1>
+            <p><strong>Contract Reference:</strong> AUC-2024-@Model.Auction.AuctionId</p>
+            <p><strong>Status:</strong> @Model.Contract.ContractStatus</p>
+        </div>
+
+        <div class="contract-section">
+            <h2>Parties Information</h2>
+            <div class="info-grid">
+                <div class="info-item"><strong>Seller:</strong> @Model.Publisher.FirstName @Model.Publisher.LastName</div>
+                <div class="info-item"><strong>Seller Contact:</strong> @Model.Publisher.EmailAddress | @Model.Publisher.Phone</div>
+                <div class="info-item"><strong>Buyer:</strong> @Model.Bidder.FirstName @Model.Bidder.LastName</div>
+                <div class="info-item"><strong>Buyer Contact:</strong> @Model.Bidder.EmailAddress | @Model.Bidder.Phone</div>
+            </div>
+        </div>
+
+        <div class="contract-section">
+            <h2>Auction Details</h2>
+            <div class="info-grid">
+                <div class="info-item"><strong>Start Date:</strong> @Model.Auction.StartDate</div>
+                <div class="info-item"><strong>End Date:</strong> @Model.Auction.EndDate</div>
+                <div class="info-item"><strong>Starting Price:</strong> @Model.Auction.StartingPrice</div>
+                <div class="info-item"><strong>Winning Bid Amount:</strong> @Model.Auction.WinningBidAmount</div>
+            </div>
+        </div>
+
+        <div class="contract-section terms-section">
+            <h2>Contract Terms and Conditions</h2>
+            <p>The buyer agrees to purchase the auctioned item under the following terms:</p>
+            <ul>
+                <li>Payment must be made within the specified timeframe</li>
+                <li>Item condition as described in the auction listing</li>
+                <li>Compliance with auction regulations</li>
+            </ul>
+        </div>
+
+        @if (Model.Terms != null && Model.Terms.Any())
+        {
+            <div class="contract-section terms-section">
+                <h2>Additional Terms</h2>
+                @foreach (var term in Model.Terms)
+                {
+                    <p>@term.TermDescription (Created by @term.CreatedBy on @term.CreatedDate)</p>
+                }
+            </div>
+        }
+
+        <div class="contract-section">
+            <h2>Signatures</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Seller Signature:</strong><br />
+                    @if (!string.IsNullOrEmpty(Model.Contract.SellerSignature))
+                    {
+                        <img src="~/uploads/signatures/@Model.Contract.SellerSignature" alt="Seller Signature" style="max-width: 200px; margin-top: 10px;" />
+                    }
+                    <p>Signed by Seller: @(Model.Contract.SignedBySeller ? "Yes" : "No")</p>
+                </div>
+                <div class="info-item">
+                    <strong>Buyer Signature:</strong><br />
+                    @if (!string.IsNullOrEmpty(Model.Contract.BuyerSignature))
+                    {
+                        <img src="~/uploads/signatures/@Model.Contract.BuyerSignature" alt="Buyer Signature" style="max-width: 200px; margin-top: 10px;" />
+                    }
+                    <p>Signed by Buyer: @(Model.Contract.SignedByBuyer ? "Yes" : "No")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

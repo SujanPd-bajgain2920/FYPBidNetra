@@ -737,7 +737,7 @@
         <div class="action-buttons">
             @if ((Model.Contract.SignedBySeller == true && Model.Contract.SignedByBuyer == true))
             {
-                <a asp-action="DownloadPdf" asp-controller="PDF" asp-route-id="@Model.AuctinBid.EncId" class="btn btn-secondary">
+                <a asp-action="DownloadAuctionPdf" asp-controller="PDF" asp-route-id="@Model.AuctinBid.EncId" class="btn btn-secondary">
                     <i class="fas fa-download"></i>Download PDF
                 </a>
             }

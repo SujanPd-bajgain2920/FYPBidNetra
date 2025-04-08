@@ -67,7 +67,7 @@
                 <span class="text-lg">Back</span>
             </button>
             <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">
-                Published Tenders
+                Applied Tenders
             </h2>
         </div>
 
@@ -103,7 +103,7 @@
                                 <i class="fas fa-file-alt mr-2"></i>Title
                             </th>
                             <th class="px-6 py-4 text-center font-semibold">
-                                <i class="fas fa-dollar-sign mr-2"></i>Proposed Budget
+                                <i class="fas fa-rupee-sign mr-2"></i>Proposed Budget
                             </th>
                             <th class="px-6 py-4 text-center font-semibold">
                                 <i class="fas fa-clock mr-2"></i>Proposed Duration
@@ -131,7 +131,7 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-center text-gray-800">
-                                    <span>@tender.Application.ProposedBudget.ToString("C")</span>
+                                    <span>₹@tender.Application.ProposedBudget.ToString("N2")</span>
                                 </td>
                                 <td class="px-6 py-4 text-center text-gray-800">
                                     <span>@tender.Application.ProposedDuration</span>

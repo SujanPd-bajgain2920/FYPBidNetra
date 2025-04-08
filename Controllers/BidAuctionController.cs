@@ -571,11 +571,32 @@ namespace FYPBidNetra.Controllers
         {
             UpdateAuctionStatuses();
             var userId = Convert.ToInt16(User.Identity!.Name);
-            var auction = _context.AuctionDetails.FirstOrDefault(a => a.AuctionId == auctionId);
+            //var auction = _context.AuctionDetails.FirstOrDefault(a => a.AuctionId == auctionId);
+
+            var auction = _context.AuctionDetails
+                .Where(a => a.AuctionId == auctionId)
+                .Select(a => new AuctionEdit
+                {
+                    AuctionId = a.AuctionId,
+                    Title = a.Title,
+                    AuctionDescription = a.AuctionDescription,
+                    ItemImage = a.ItemImage,
+                    StartingPrice = a.StartingPrice,
+                    StartDate = a.StartDate,
+                    EndDate = a.EndDate,
+                    StartTime = a.StartTime,
+                    EndTime = a.EndTime,
+                    AuctionType = a.AuctionType,
+                    AuctionStatus = a.AuctionStatus,
+                    PublishedByUserId = a.PublishedByUserId,
+                    EncId = _protector.Protect(a.AuctionId.ToString())
+                })
+                .FirstOrDefault();
 
             if (auction == null || auction.AuctionStatus != "Active")
             {
-                return BadRequest("Auction is not active or does not exist.");
+                TempData["ClosedMessage"] = "Auction is closed!! Thank you for participating.";
+                return RedirectToAction("MonitorAuction", new { id = auction.EncId });
             }
 
             // Fetch the highest bid for this auction
@@ -587,7 +608,8 @@ namespace FYPBidNetra.Controllers
             // Check if the current bid is higher than the highest bid
             if (highestBid != null && bidAmount <= highestBid.BiddingAmount)
             {
-                return BadRequest("Your bid must be higher than the current highest bid.");
+                TempData["BidMessage"] = "Your bid must be higher than the current highest bid.";
+                return RedirectToAction("MonitorAuction", new { id = auction.EncId });
             }
 
             // Get the current time in Nepal Standard Time
