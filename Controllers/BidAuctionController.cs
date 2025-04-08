@@ -239,6 +239,7 @@ namespace FYPBidNetra.Controllers
                         BidDate = b.BidDate,
                         BidTime = b.BidTime,
                         BidStatus = b.BidStatus,
+                        EncId = _protector.Protect(b.BidId.ToString()),
                         Bids = _context.Bids
                             .Where(bid => bid.AucBidId == b.BidId)
                             .OrderByDescending(bid => bid.BiddingAmount)

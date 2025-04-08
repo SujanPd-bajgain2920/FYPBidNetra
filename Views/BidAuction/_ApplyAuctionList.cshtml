@@ -188,7 +188,15 @@
 <body>
     <div class="container">
        
-
+        <div class="flex justify-between items-center mb-8">
+            <a asp-action="Index" asp-controller="BidTender" class="text-blue-600 hover:text-blue-800 transition-colors duration-300 text-2xl" >
+                <i class="fas fa-arrow-left mr-2"></i>
+                <span class="text-lg">Back</span>
+            </a>
+            <h2 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">
+                Applied Auction
+            </h2>
+        </div>
         <div class="tender-grid">
             @foreach (var auction in Model)
             {

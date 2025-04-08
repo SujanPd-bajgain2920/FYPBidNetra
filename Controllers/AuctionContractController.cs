@@ -74,7 +74,8 @@ namespace FYPBidNetra.Controllers
                     AuctionType = t.AuctionType,
                     BuyerId = t.BuyerId,
                     WinningBidAmount = t.WinningBidAmount,
-                    AuctionStatus = t.AuctionStatus
+                    AuctionStatus = t.AuctionStatus,
+                    EncId = _protector.Protect(t.AuctionId.ToString())
                 })
                 .FirstOrDefault();
 

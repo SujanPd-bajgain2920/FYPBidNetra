@@ -353,6 +353,19 @@
                     Place Bid
                 </a>
             }
+            @if (Model.UserBidHistory != null && Model.UserBidHistory.Any())
+            {
+                <div class="flex justify-center">
+                    @if (Model.UserBidHistory.FirstOrDefault()?.BidStatus?.ToLower() == "accepted")
+                    {
+                        <a asp-action="Index" asp-controller="AuctionContract" asp-route-id="@Model.UserBidHistory.FirstOrDefault()?.EncId"
+                           class="bid-button">
+                            <i class="fas fa-file-contract"></i>
+                            Generate Contract
+                        </a>
+                    }
+                </div>
+            }
         </div>
 
         <div class="bg-white min-h-screen">

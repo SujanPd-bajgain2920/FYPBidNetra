@@ -186,7 +186,7 @@
                 <i class="fas fa-comments text-blue-600 mr-2"></i> Live Bidding
             </h3>
             <div class="text-sm text-gray-500">
-                <i class="fas fa-info-circle mr-1"></i> Minimum Bid: ₹@Model.MinBidAmount.ToString("N2")
+                <i class="fas fa-info-circle mr-1"></i> Minimum Bid: ₹<span id="minBidDisplay">@Model.MinBidAmount.ToString("N2")</span>
             </div>
         </div>
         
@@ -259,7 +259,7 @@
         <form id="bidForm" asp-action="PlaceBid" method="post" class="mt-4">
             <input type="hidden" name="auctionId" value="@Model.AuctionDetails.AuctionId" />
             <div class="flex">
-                <input type="number" name="bidAmount" class="block w-full rounded-l-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-500 focus:ring-blue-500" 
+                <input type="number" id="bidAmountInput" name="bidAmount" class="block w-full rounded-l-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                        min="@Model.MinBidAmount" placeholder="Enter your bid (min ₹@Model.MinBidAmount)" required />
                 <button type="submit" class="inline-flex items-center rounded-r-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300">
                     <i class="fas fa-gavel mr-2"></i> Bid Now
@@ -278,7 +278,11 @@
             connection.on("ReceiveBidUpdate", function (auctionId, bidderName, bidAmount, bidTime) {
                 const bidHistoryDiv = document.getElementById("bidHistory");
                 const currentUserId = '@User.Identity.Name';
-        
+
+                // Update minimum bid amount (current highest bid + 1)
+                const newMinBid = parseFloat(bidAmount) + 1;
+                updateMinimumBid(newMinBid);
+
                 const bidMessage = document.createElement("div");
                 const isCurrentUser = bidderName === currentUserId;
         
@@ -315,6 +319,22 @@
 
                 bidHistoryDiv.prepend(bidMessage);
             });
+
+        function updateMinimumBid(newMinBid) {
+            // Update the displayed minimum bid amount
+            const minBidDisplay = document.getElementById("minBidDisplay");
+            minBidDisplay.textContent = newMinBid.toFixed(2);
+
+            // Update the bid input field
+            const bidInput = document.getElementById("bidAmountInput");
+            bidInput.min = newMinBid;
+            bidInput.placeholder = `Enter your bid (min ₹${newMinBid.toFixed(2)})`;
+
+            // If the current input value is less than new minimum, update it
+            if (parseFloat(bidInput.value) < newMinBid) {
+                bidInput.value = newMinBid;
+            }
+        }
 
             connection.start().catch(err => console.error("SignalR Connection Error: ", err));
         </script>
