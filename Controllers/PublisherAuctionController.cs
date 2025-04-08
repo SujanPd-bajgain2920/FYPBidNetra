@@ -349,14 +349,136 @@ namespace FYPBidNetra.Controllers
              return PartialView("_AwardedAuction", auctions);
          }*/
 
+        /*public IActionResult AwardedAuction()
+        {
+            UpdateAuctionStatuses();
+            int currentUserID = Convert.ToInt16(User.Identity!.Name);
+
+            using var transaction = _context.Database.BeginTransaction();
+            try
+            {
+                // First, handle automatic awarding for completed auctions
+                var completedAuctions = _context.AuctionDetails
+                    .AsNoTracking()
+                    .Where(a => a.PublishedByUserId == currentUserID &&
+                                a.AuctionStatus == "Completed" &&
+                                a.AwardStatus != "Awarded" &&
+                                a.IsVerified == "Verified")
+                    .ToList();
+
+                foreach (var auction in completedAuctions)
+                {
+                    try
+                    {
+                        // Get the highest bid for this auction
+                        var highestBid = _context.AuctionBids
+                            .AsNoTracking()
+                            .Where(b => b.AuctionBidId == auction.AuctionId)
+                            .OrderByDescending(b => b.BidAmount)
+                            .FirstOrDefault();
+
+                        if (highestBid != null)
+                        {
+                            // Check if a contract already exists for this auction
+                            var existingContract = _context.ContractDetails
+                                .AsNoTracking()
+                                .FirstOrDefault(c => c.ConAuctionId == auction.AuctionId);
+
+                            if (existingContract == null)
+                            {
+                                var auctionToUpdate = _context.AuctionDetails.Find(auction.AuctionId);
+                                if (auctionToUpdate != null)
+                                {
+                                    // Award the auction to the highest bidder
+                                    auctionToUpdate.BuyerId = highestBid.BidderId;
+                                    auctionToUpdate.WinningBidAmount = highestBid.BidAmount;
+                                    auctionToUpdate.AwardStatus = "Awarded";
+
+                                    // Update the bid status
+                                    var bidToUpdate = _context.AuctionBids.Find(highestBid.BidId);
+                                    if (bidToUpdate != null)
+                                    {
+                                        bidToUpdate.BidStatus = "Accepted";
+                                    }
+
+                                    // Reject other bids in batch
+                                    var otherBids = _context.AuctionBids
+                                        .Where(b => b.AuctionBidId == auction.AuctionId && b.BidId != highestBid.BidId)
+                                        .ToList();
+
+                                    foreach (var bid in otherBids)
+                                    {
+                                        bid.BidStatus = "Rejected";
+                                    }
+
+                                    // Get the next available ContractId
+                                    short nextContractId = 1;
+                                    if (_context.ContractDetails.Any())
+                                    {
+                                        nextContractId = (short)(_context.ContractDetails
+                                            .AsNoTracking()
+                                            .Max(c => c.ContractId) + 1);
+                                    }
+
+                                    var contract = new ContractDetail
+                                    {
+                                        ContractId = nextContractId,
+                                        ConAuctionId = auction.AuctionId,
+                                        SellerId = auction.PublishedByUserId,
+                                        BuyerId = highestBid.BidderId,
+                                        ContractCreateDate = DateOnly.FromDateTime(DateTime.Now),
+                                        ContractStatus = "Pending",
+                                        SignedBySeller = false,
+                                        SignedByBuyer = false,
+                                    };
+
+                                    _context.Add(contract);
+                                    _context.SaveChanges();
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log the error for this specific auction but continue processing others
+                        Console.WriteLine($"Error processing auction {auction.AuctionId}: {ex.Message}");
+                        continue;
+                    }
+                }
+
+                transaction.Commit();
+
+                // Fetch awarded auctions
+                var auctions = _context.AuctionDetails
+                    .AsNoTracking()
+                    .Where(a => a.PublishedByUserId == currentUserID &&
+                                a.AuctionStatus == "Completed" &&
+                                a.IsVerified == "Verified")
+                    .Select(a => new AuctionEdit
+                    {
+                        // ... existing select properties ...
+                    })
+                    .ToList();
+
+                return PartialView("_AwardedAuction", auctions);
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                // Log the error
+                Console.WriteLine($"Error in AwardedAuction: {ex.Message}");
+                return StatusCode(500, "An error occurred while processing auctions.");
+            }
+        }*/
 
         public IActionResult AwardedAuction()
         {
             UpdateAuctionStatuses();
             int currentUserID = Convert.ToInt16(User.Identity!.Name);
 
-            // First, handle automatic awarding for completed auctions
+           
             var completedAuctions = _context.AuctionDetails
+                .AsNoTracking()  
                 .Where(a => a.PublishedByUserId == currentUserID &&
                             a.AuctionStatus == "Completed" &&
                             a.AwardStatus != "Awarded" &&
@@ -367,51 +489,78 @@ namespace FYPBidNetra.Controllers
             {
                 // Get the highest bid for this auction
                 var highestBid = _context.AuctionBids
+                    .AsNoTracking()
+                    .Include(b => b.Bidder)
                     .Where(b => b.AuctionBidId == auction.AuctionId)
                     .OrderByDescending(b => b.BidAmount)
                     .FirstOrDefault();
 
                 if (highestBid != null)
                 {
-                    // Award the auction to the highest bidder
-                    auction.BuyerId = highestBid.BidderId;
-                    auction.WinningBidAmount = highestBid.BidAmount;
-                    auction.AwardStatus = "Awarded";
+                    // Check if a contract already exists for this auction
+                    var existingContract = _context.ContractDetails
+                        .AsNoTracking()  // Add this to prevent tracking
+                        .FirstOrDefault(c => c.ConAuctionId == auction.AuctionId);
 
-                    // Update the bid status
-                    highestBid.BidStatus = "Accepted";
-
-                    // Reject other bids
-                    var otherBids = _context.AuctionBids
-                        .Where(b => b.AuctionBidId == auction.AuctionId && b.BidId != highestBid.BidId)
-                        .ToList();
-
-                    foreach (var bid in otherBids)
+                    if (existingContract == null)
                     {
-                        bid.BidStatus = "Rejected";
+                        var auctionToUpdate = _context.AuctionDetails.Find(auction.AuctionId);
+                        if (auctionToUpdate != null)
+                        {
+                            // Award the auction to the highest bidder
+                            auctionToUpdate.BuyerId = highestBid.BidderId;
+                            auctionToUpdate.WinningBidAmount = highestBid.BidAmount;
+                            auctionToUpdate.AwardStatus = "Awarded";
+
+                            // Update the bid status
+                            var bidToUpdate = _context.AuctionBids.Find(highestBid.BidId);
+                            if (bidToUpdate != null)
+                            {
+                                bidToUpdate.BidStatus = "Accepted";
+                            }
+
+                            // Reject other bids
+                            var otherBids = _context.AuctionBids
+                                .Where(b => b.AuctionBidId == auction.AuctionId && b.BidId != highestBid.BidId);
+
+                            foreach (var bid in otherBids)
+                            {
+                                bid.BidStatus = "Rejected";
+                            }
+
+                            // Get the next available ContractId
+                            short nextContractId = 1;
+                            if (_context.ContractDetails.Any())
+                            {
+                                nextContractId = (short)(_context.ContractDetails.Max(c => c.ContractId) + 1);
+                            }
+
+                            var contract = new ContractDetail
+                            {
+                                ContractId = nextContractId,
+                                ConAuctionId = auction.AuctionId,
+                                SellerId = auction.PublishedByUserId,
+                                BuyerId = highestBid.BidderId,
+                                ContractCreateDate = DateOnly.FromDateTime(DateTime.Now),
+                                ContractStatus = "Pending",
+                                SignedBySeller = false,
+                                SignedByBuyer = false,
+                            };
+
+                            _context.Add(contract);
+
+                        }
                     }
-
-                    // Create contract
-                    var contract = new ContractDetail
-                    {
-                        ContractId = (short)(_context.ContractDetails.Max(c => c.ContractId) + 1),
-                        ConAuctionId = auction.AuctionId,
-                        SellerId = auction.PublishedByUserId,
-                        BuyerId = highestBid.BidderId,
-                        ContractCreateDate = DateOnly.FromDateTime(DateTime.Now),
-                        ContractStatus = "Pending",
-                        SignedBySeller = false,
-                        SignedByBuyer = false,
-                    };
-
-                    _context.Add(contract);
                 }
             }
 
             _context.SaveChanges();
 
-            // Now fetch the awarded auctions with winner details
+
+
+            // Fetch awarded auctions
             var auctions = _context.AuctionDetails
+                .AsNoTracking()
                 .Where(a => a.PublishedByUserId == currentUserID &&
                             a.AuctionStatus == "Completed" &&
                             a.IsVerified == "Verified")
@@ -850,6 +999,8 @@ namespace FYPBidNetra.Controllers
 */
 
 
+        // ... existing code ...
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AwardBid(long BidId, string BidStatus)
@@ -857,7 +1008,7 @@ namespace FYPBidNetra.Controllers
             try
             {
                 var AuctionBid = await _context.AuctionBids
-                    .Include(b => b.Bidder) // Include the User details
+                    .Include(b => b.Bidder)
                     .FirstOrDefaultAsync(a => a.BidId == BidId);
 
                 if (AuctionBid == null)
@@ -884,7 +1035,6 @@ namespace FYPBidNetra.Controllers
                         auction.AwardStatus = "Awarded";
                         auction.BuyerId = AuctionBid.BidderId;
                         auction.WinningBidAmount = AuctionBid.BidAmount;
-                        
 
                         _context.Update(auction);
 
@@ -897,32 +1047,45 @@ namespace FYPBidNetra.Controllers
                             bid.BidStatus = "Rejected";
                         }
 
-                        var contract = new ContractDetail
-                        {
-                            ContractId = (short)(_context.ContractDetails.Max(c => c.ContractId) + 1),
-                            ConAuctionId = auction.AuctionId,
-                            SellerId = auction.PublishedByUserId,
-                            BuyerId = AuctionBid.BidderId,
-                            ContractCreateDate = currentDate,
-                            ContractStatus = "Pending",
-                            SignedBySeller = false,
-                            SignedByBuyer = false,
-                        };
+                        // Check if contract already exists
+                        var existingContract = await _context.ContractDetails
+                            .FirstOrDefaultAsync(c => c.ConAuctionId == auction.AuctionId);
 
-                        _context.Add(contract);
+                        if (existingContract == null)
+                        {
+                            // Get the next available ContractId
+                            short nextContractId = 1;
+                            if (await _context.ContractDetails.AnyAsync())
+                            {
+                                nextContractId = (short)(await _context.ContractDetails.MaxAsync(c => c.ContractId) + 1);
+                            }
+
+                            var contract = new ContractDetail
+                            {
+                                ContractId = nextContractId,
+                                ConAuctionId = auction.AuctionId,
+                                SellerId = auction.PublishedByUserId,
+                                BuyerId = AuctionBid.BidderId,
+                                ContractCreateDate = currentDate,
+                                ContractStatus = "Pending",
+                                SignedBySeller = false,
+                                SignedByBuyer = false,
+                            };
+
+                            _context.Add(contract);
+                        }
 
                         // Send email to winning bidder
                         if (AuctionBid.Bidder?.EmailAddress != null)
                         {
                             string winnerEmailBody = $@"
-                        <h2>Congratulations! You've Won the Auction</h2>
-                        <p>Your bid for the following auction has been accepted:</p>
-                        <ul>
-                            <li><strong>Auction Title:</strong> {auction.Title}</li>
-                            <li><strong>Your Winning Bid:</strong> {AuctionBid.BidAmount:C}</li>
-                           
-                        </ul>
-                        <p>A contract has been generated. Please login to your account to review and sign the contract.</p>";
+                    <h2>Congratulations! You've Won the Auction</h2>
+                    <p>Your bid for the following auction has been accepted:</p>
+                    <ul>
+                        <li><strong>Auction Title:</strong> {auction.Title}</li>
+                        <li><strong>Your Winning Bid:</strong> {AuctionBid.BidAmount:C}</li>
+                    </ul>
+                    <p>A contract has been generated. Please login to your account to review and sign the contract.</p>";
 
                             await _emailService.SendEmailAsync(
                                 AuctionBid.Bidder.EmailAddress,
@@ -945,6 +1108,8 @@ namespace FYPBidNetra.Controllers
                 return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
             }
         }
+
+        
 
         [HttpGet]
         public IActionResult EditAuction(string id)
