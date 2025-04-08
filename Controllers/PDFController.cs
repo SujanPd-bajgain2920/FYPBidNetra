@@ -163,7 +163,7 @@ namespace FYPBidNetra.Controllers
                 {
                     TermId = t.TermId,
                     ContractId = t.ContractId,
-                    TermDescription = t.TermDescription,
+                    TermDescription = _protector.Unprotect(t.TermDescription),
                     CreatedDate = t.CreatedDate,
                     CreatedBy = t.CreatedBy
                 })
@@ -285,7 +285,7 @@ namespace FYPBidNetra.Controllers
                 {
                     TermId = t.TermId,
                     ContractId = t.ContractId,
-                    TermDescription = t.TermDescription,
+                    TermDescription = _protector.Unprotect(t.TermDescription),
                     CreatedDate = t.CreatedDate,
                     CreatedBy = t.CreatedBy
                 })

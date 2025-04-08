@@ -172,7 +172,7 @@ namespace FYPBidNetra.Controllers
                 {
                     TermId = t.TermId,
                     ContractId = t.ContractId,
-                    TermDescription = t.TermDescription,
+                    TermDescription = _protector.Unprotect(t.TermDescription),
                     CreatedDate = t.CreatedDate,
                     CreatedBy = t.CreatedBy
                 })
@@ -283,7 +283,7 @@ namespace FYPBidNetra.Controllers
             {
                 TermId = (short)(maxTermId),
                 ContractId = (short)contractid,
-                TermDescription = termDescription,
+                TermDescription = _protector.Protect(termDescription),
                 CreatedDate = DateTime.Now,
                 CreatedBy = Convert.ToInt16(User.Identity!.Name)
             };

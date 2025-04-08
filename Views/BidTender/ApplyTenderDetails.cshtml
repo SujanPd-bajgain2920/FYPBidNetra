@@ -430,10 +430,10 @@
         <!-- Tender Header -->
         <div class="tender-header">
             <div class="flex justify-between items-center mb-6">
-                <button onclick="history.back()" class="back-button">
+                <a asp-action="TenderBidTab" asp-controller="BidTender" asp-route-activeTab="UpcomingTender" class="back-button">
                     <i class="fas fa-arrow-left text-xl"></i>
                     <span class="hidden sm:inline">Back</span>
-                </button>
+                </a>
                 <div class="flex gap-4">
                     <span class="status-badge status-@Model.Application.ApplicationStatus.ToLower()">
                         <i class="fas @(Model.Application.ApplicationStatus.ToLower() == "won" ? "fa-trophy" :
