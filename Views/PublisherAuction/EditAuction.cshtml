@@ -74,10 +74,10 @@
             <div class="p-8">
                 <form asp-action="EditAuction" asp-controller="PublisherAuction" method="POST" enctype="multipart/form-data" id="auctionForm">
                     <div asp-validation-summary="ModelOnly" class="p-4 mb-6 text-sm text-red-800 rounded-lg bg-red-50"></div>
-                    <input asp-for="AuctionId" type="number" value="@Model.AuctionId" />
-                    <input asp-for="IsVerified" type="text" value="@Model.IsVerified" />
-                    <input asp-for="AuctionStatus" type="text" value="@Model.AuctionStatus" />
-                    <input asp-for="AwardStatus" type="text" value="@Model.AwardStatus" />
+                    <input asp-for="AuctionId" type="hidden" value="@Model.AuctionId" />
+                    <input asp-for="IsVerified" type="hidden" value="@Model.IsVerified" />
+                    <input asp-for="AuctionStatus" type="hidden" value="@Model.AuctionStatus" />
+                    <input asp-for="AwardStatus" type="hidden" value="@Model.AwardStatus" />
 
                     <!-- Basic Information Section -->
                     <div class="form-section">
@@ -145,9 +145,21 @@
                                     <i class="fas fa-tags input-icon"></i>
                                     <select asp-for="AuctionType" required
                                             class="icon-input block w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
-                                        <option value="Live">Live Auction</option>
-                                        <option value="Silent">Silent Auction</option>
-                                        <option value="Sealed">Sealed Bid</option>
+                                        <option value="">-- Select Category --</option>
+                                        <option value="House">House</option>
+                                        <option value="Land">Land</option>
+                                        <option value="Car">Car</option>
+                                        <option value="Bike">Bike</option>
+                                        <option value="Electronics">Electronics</option>
+                                        <option value="Furniture">Furniture</option>
+                                        <option value="Jewelry">Jewelry</option>
+                                        <option value="Art">Art & Collectibles</option>
+                                        <option value="Antiques">Antiques</option>
+                                        <option value="Books">Books & Literature</option>
+                                        <option value="Sports">Sports Equipment</option>
+                                        <option value="Musical">Musical Instruments</option>
+                                        <option value="Fashion">Fashion & Accessories</option>
+                                        <option value="Others">Others</option>
                                     </select>
                                 </div>
                                 <span asp-validation-for="AuctionType" class="text-sm text-red-600 mt-1"></span>
@@ -204,23 +216,26 @@
                         </div>
                     </div>
 
-                    <!-- Image Upload -->
                     <div class="form-section">
                         <h2 class="text-xl font-semibold text-gray-800 mb-6">
                             <i class="fas fa-image mr-2 text-blue-600"></i>Item Image
                         </h2>
 
                         <div class="input-group">
-                            <label asp-for="AuctionFile" class="block text-sm font-medium text-gray-700 mb-2">Upload Image</label>
-                            <div class="relative">
-                                <input asp-for="AuctionFile" type="file" accept="image/*"
-                                       class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
-                                       onchange="previewImage(event)">
-                            </div>
-                            <span asp-validation-for="AuctionFile" class="text-sm text-red-600 mt-1"></span>
-                            <!-- Image Preview -->
-                            <div class="mt-4">
-                                <img id="imagePreview" class="image-preview" src="#" alt="Preview">
+                            <label asp-for="AuctionFile" class="block text-sm font-medium text-gray-700 mb-2">Item Image</label>
+                            <div class="flex items-center">
+                                <div class="w-32 h-32 bg-gray-200 overflow-hidden mr-4 rounded-lg">
+                                    <img src="~/AuctionImage/@Model.ItemImage" alt="Current Item" class="w-full h-full object-cover" id="imagePreview">
+                                </div>
+                                <div class="flex-1">
+                                    <div class="relative">
+                                        <input asp-for="AuctionFile" type="file" accept="image/*"
+                                               class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                               onchange="previewImage(event)" />
+                                    </div>
+                                    <p class="mt-1 text-xs text-gray-500">PNG, JPG or JPEG (max. 2MB)</p>
+                                    <span asp-validation-for="AuctionFile" class="text-red-500 text-xs"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -257,15 +272,55 @@
             }
         }
 
-        // Form validation for dates
-        document.getElementById('auctionForm').addEventListener('submit', function(event) {
-            const startDate = new Date(document.getElementById('StartDate').value + 'T' + document.getElementById('StartTime').value);
-            const endDate = new Date(document.getElementById('EndDate').value + 'T' + document.getElementById('EndTime').value);
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const startDate = new Date(document.querySelector('[name="StartDate"]').value + 'T' + document.querySelector('[name="StartTime"]').value);
+            const endDate = new Date(document.querySelector('[name="EndDate"]').value + 'T' + document.querySelector('[name="EndTime"]').value);
+            const startingPrice = parseFloat(document.querySelector('[name="StartingPrice"]').value);
+            const fileInput = document.querySelector('[name="AuctionFile"]');
 
+            let isValid = true;
+
+            // Clear previous error messages
+            document.querySelectorAll('.validation-error').forEach(el => el.remove());
+
+            // Validate end date and time
             if (endDate <= startDate) {
-                event.preventDefault();
-                alert('End date and time must be after start date and time');
+                e.preventDefault();
+                const endDateInput = document.querySelector('[name="EndDate"]');
+                addErrorMessage(endDateInput, 'End date and time must be after the start date and time');
+                isValid = false;
             }
+
+            // Validate starting price
+            if (startingPrice <= 0 || isNaN(startingPrice)) {
+                e.preventDefault();
+                const priceInput = document.querySelector('[name="StartingPrice"]');
+                addErrorMessage(priceInput, 'Starting price must be greater than 0');
+                isValid = false;
+            }
+
+            // Validate file if one is selected
+            if (fileInput.files.length > 0) {
+                const fileName = fileInput.files[0].name.toLowerCase();
+                const validExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
+                const hasValidExtension = validExtensions.some(ext => fileName.endsWith(ext));
+
+                if (!hasValidExtension) {
+                    e.preventDefault();
+                    addErrorMessage(fileInput, 'Only image files (JPG, JPEG, PNG, GIF) are allowed');
+                    isValid = false;
+                }
+            }
+
+            return isValid;
         });
+
+        function addErrorMessage(element, message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'validation-error text-sm text-red-600 mt-1';
+            errorDiv.textContent = message;
+            element.parentNode.appendChild(errorDiv);
+        }
     </script>
 </body>
