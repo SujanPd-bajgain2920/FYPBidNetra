@@ -378,7 +378,8 @@
             <p class="text-white opacity-90">Complete your proposal details to participate in the tender process</p>
         </div>
 
-        <form asp-action="AppliedTender" asp-controller="BidTender" enctype="multipart/form-data" method="Post">
+        <form asp-action="AppliedTender" asp-controller="BidTender" enctype="multipart/form-data" method="Post" id="proposalForm">
+            
             <div asp-validation-summary="ModelOnly" class="p-4 mb-6 text-sm text-red-800 rounded-lg bg-red-50"></div>
 
             <input asp-for="CompanyApplyId" type="hidden" value="@Model.CompanyApplyId" />
@@ -397,7 +398,10 @@
                             <label asp-for="ProposedDuration" class="input-label">
                                 Proposed Duration <span class="text-red-500">*</span>
                             </label>
-                            <input asp-for="ProposedDuration" type="text" class="input-field" placeholder="e.g., 6 months" required>
+                            <input asp-for="ProposedDuration" type="text" class="input-field"
+                                   placeholder="e.g., 6 months, 30 days, 1 year" required
+                                   pattern="^\d+\s+(day|days|month|months|year|years)$">
+                            <small class="text-gray-500">Format: number followed by days, months, or years</small>
                             <span asp-validation-for="ProposedDuration" class="validation-error"></span>
                         </div>
 
@@ -476,15 +480,85 @@
             }
         }
 
-        // Form submission handler
         document.getElementById('proposalForm').addEventListener('submit', function (e) {
-            if (!document.getElementById('terms').checked) {
+        const proposedDuration = document.querySelector('[name="ProposedDuration"]').value;
+        const proposedBudget = parseFloat(document.querySelector('[name="ProposedBudget"]').value);
+        const fileInput = document.querySelector('[name="TenderFile"]');
+        const termsCheckbox = document.getElementById('terms');
+
+        let isValid = true;
+
+        // Clear previous error messages
+        document.querySelectorAll('.validation-error').forEach(el => el.remove());
+        // Validate proposed duration
+        const durationPattern = /^\d+\s+(day|days|month|months|year|years)$/;
+        if (!durationPattern.test(proposedDuration)) {
+            e.preventDefault();
+            const durationInput = document.querySelector('[name="ProposedDuration"]');
+            addErrorMessage(durationInput, 'Please enter duration in format: number followed by days, months, or years');
+            isValid = false;
+        }
+        // Validate proposed budget
+        if (proposedBudget <= 0 || isNaN(proposedBudget)) {
+            e.preventDefault();
+            const budgetInput = document.querySelector('[name="ProposedBudget"]');
+            addErrorMessage(budgetInput, 'Proposed budget must be greater than 0');
+            isValid = false;
+        }
+
+        // Validate file
+        if (fileInput.files.length > 0) {
+            const fileName = fileInput.files[0].name.toLowerCase();
+            const fileSize = fileInput.files[0].size / 1024 / 1024; // Convert to MB
+
+            if (!fileName.endsWith('.pdf')) {
                 e.preventDefault();
-                alert('Please agree to the terms and conditions to proceed.');
-                return;
+                addErrorMessage(fileInput, 'Only PDF files are allowed');
+                isValid = false;
             }
+
+            // Check file size (max 5MB)
+            if (fileSize > 5) {
+                e.preventDefault();
+                addErrorMessage(fileInput, 'File size should not exceed 5MB');
+                isValid = false;
+            }
+        }
+
+        // Validate terms checkbox
+        if (!termsCheckbox.checked) {
+            e.preventDefault();
+            addErrorMessage(termsCheckbox, 'Please agree to the terms and conditions');
+            isValid = false;
+        }
+
+        if (isValid) {
             showLoading();
-        });
+        }
+
+        return isValid;
+    });
+
+    function addErrorMessage(element, message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'validation-error';
+        errorDiv.textContent = message;
+        element.parentNode.appendChild(errorDiv);
+    }
+
+    // Existing functions
+    function showLoading() {
+        document.getElementById('loadingOverlay').classList.remove('hidden');
+    }
+
+    function hideLoading() {
+        document.getElementById('loadingOverlay').classList.add('hidden');
+    }
+
+    // Back button functionality
+    document.getElementById('backButton').addEventListener('click', function() {
+        window.history.back();
+    });
 
         
     </script>
