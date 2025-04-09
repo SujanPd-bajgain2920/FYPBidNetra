@@ -283,28 +283,30 @@
                                                 <div class="tooltip-arrow" data-popper-arrow></div>
                                             </div>
 
-                                            <a href="javascript:void(0);" 
-                                               class="action-btn bg-green-50 text-green-600 hover:bg-green-100 verify-btn" 
-                                               data-id="@auction.AuctionId" data-status="Verified"
-                                               data-tooltip-target="tooltip-verify-@auction.AuctionId">
-                                                <i class="fas fa-check-circle"></i>
-                                            </a>
-                                            <div id="tooltip-verify-@auction.AuctionId" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip">
-                                                Verify Auction
-                                                <div class="tooltip-arrow" data-popper-arrow></div>
-                                            </div>
+                                            @if (auction.IsVerified == "Pending")
+                                            {
+                                                <a href="javascript:void(0);" 
+                                                   class="action-btn bg-green-50 text-green-600 hover:bg-green-100 verify-btn" 
+                                                   data-id="@auction.AuctionId" data-status="Verified"
+                                                   data-tooltip-target="tooltip-verify-@auction.AuctionId">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </a>
+                                                <div id="tooltip-verify-@auction.AuctionId" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip">
+                                                    Verify Auction
+                                                    <div class="tooltip-arrow" data-popper-arrow></div>
+                                                </div>
 
-                                            <a href="javascript:void(0);" 
-                                               class="action-btn bg-red-50 text-red-600 hover:bg-red-100 verify-btn" 
-                                               data-id="@auction.AuctionId" data-status="Not Verified"
-                                               data-tooltip-target="tooltip-reject-@auction.AuctionId">
-                                                <i class="fas fa-times-circle"></i>
-                                            </a>
-                                            <div id="tooltip-reject-@auction.AuctionId" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip">
-                                                Reject Auction
-                                                <div class="tooltip-arrow" data-popper-arrow></div>
-                                            </div>
-
+                                                <a href="javascript:void(0);" 
+                                                   class="action-btn bg-red-50 text-red-600 hover:bg-red-100 verify-btn" 
+                                                   data-id="@auction.AuctionId" data-status="Not Verified"
+                                                   data-tooltip-target="tooltip-reject-@auction.AuctionId">
+                                                    <i class="fas fa-times-circle"></i>
+                                                </a>
+                                                <div id="tooltip-reject-@auction.AuctionId" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip">
+                                                    Reject Auction
+                                                    <div class="tooltip-arrow" data-popper-arrow></div>
+                                                </div>
+                                            }
                                             <!-- Hidden Form for AJAX Submit -->
                                             <form id="verifyForm_@auction.AuctionId" class="hidden" method="POST" asp-action="UpdateAVerifiedStatus" asp-controller="Admin">
                                                 @Html.AntiForgeryToken()

@@ -41,6 +41,8 @@ namespace FYPBidNetra.Models
 
         public string EncId { get; set; } = null!;
 
+        public string UserEncId { get; set; }
+
 
         [DataType(DataType.Upload)]
         public IFormFile? UserFile { get; set; } = null!;

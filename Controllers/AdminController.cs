@@ -73,7 +73,25 @@ namespace BidNetra.Controllers
 
         public IActionResult UserList()
         {
-            var users = _context.UserLists.ToList();
+            //var users = _context.UserLists.ToList();
+            var users = _context.UserLists
+                .Select(u => new UserListEdit
+                {
+                    UserId = u.UserId,
+                    UserEncId = _protector.Protect(u.UserId.ToString()),
+                    FirstName = u.FirstName,
+                    MiddleName = u.MiddleName,
+                    LastName = u.LastName,
+                    Province = u.Province,
+                    District = u.District,
+                    City = u.City,
+                    Gender = u.Gender,
+                    Phone = u.Phone,
+                    EmailAddress = u.EmailAddress,
+                    UserPhoto = u.UserPhoto,
+                    UserRole = u.UserRole
+                })
+                .ToList();
             var totalAdmins = _context.UserLists.Count(u => u.UserRole == "Admin");
             var totalPublishers = _context.UserLists.Count(u => u.UserRole == "Publisher");
             var totalBidders = _context.UserLists.Count(u => u.UserRole == "Bidders");
@@ -83,6 +101,78 @@ namespace BidNetra.Controllers
             ViewBag.TotalPublishers = totalPublishers;
 
             return View(users);
+        }
+
+
+        public IActionResult UserDetails(string id)
+        {
+            int userId = Convert.ToInt32(_protector.Unprotect(id));
+
+            var user = _context.UserLists
+                .Where(u => u.UserId == userId)
+                .Select(u => new UserListEdit
+                {
+                    UserId = u.UserId,
+                    FirstName = u.FirstName,
+                    MiddleName = u.MiddleName,
+                    LastName = u.LastName,
+                    Province = u.Province,
+                    District = u.District,
+                    City = u.City,
+                    Gender = u.Gender,
+                    Phone = u.Phone,
+                    EmailAddress = u.EmailAddress,
+                    UserPhoto = u.UserPhoto,
+                    UserRole = u.UserRole
+                })
+                .FirstOrDefault();
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Get company details if they exist
+            var company = _context.Companies
+                .Where(c => c.UserbidId == userId)
+                .Select(c => new CompanyEdit
+                {
+                    CompanyId = c.CompanyId,
+                    CompanyName = c.CompanyName,
+                    FullAddress = c.FullAddress,
+                    OfficeEmail = c.OfficeEmail,
+                    CompanyWebsiteUrl = c.CompanyWebsiteUrl,
+                    RegistrationNumber = c.RegistrationNumber,
+                    RegistrationDocument = c.RegistrationDocument,
+                    PanNumber = c.PanNumber,
+                    PanDocument = c.PanDocument,
+                    CompanyType = c.CompanyType,
+                    Position = c.Position,
+                    Rating = (decimal)c.Rating
+                })
+                .FirstOrDefault();
+
+            // Get bank details if they exist
+            var bank = _context.Banks
+                .Where(b => b.UserbankId == userId)
+                .Select(b => new BankEdit
+                {
+                    BankId = b.BankId,
+                    BankName = b.BankName,
+                    AccountNumber = b.AccountNumber,
+                    AccountType = b.AccountType,
+                    AccountHolderName = b.AccountHolderName
+                })
+                .FirstOrDefault();
+
+            var viewModel = new UserDetailsViewModel
+            {
+                User = user,
+                Company = company,
+                Bank = bank
+            };
+
+            return View(viewModel);
         }
 
         // ####################################### Tender ################################

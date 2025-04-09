@@ -348,31 +348,35 @@
         </div>
     </div>
 
-    <!-- Verification Actions -->
-    <div class="bg-white p-4 border-b border-gray-200 flex justify-end gap-3">
-        <a href="javascript:void(0);" 
-           class="action-button verify-button verify-btn" 
-           data-id="@Model.Auction.AuctionId" 
-           data-status="Verified">
-            <i class="fas fa-check-circle"></i>
-            Verify Auction
-        </a>
-        <a href="javascript:void(0);" 
-           class="action-button reject-button verify-btn" 
-           data-id="@Model.Auction.AuctionId" 
-           data-status="Not Verified">
-            <i class="fas fa-times-circle"></i>
-            Reject Auction
-        </a>
-        
-        <!-- Hidden Form for AJAX Submit -->
-        <form id="verifyForm_@Model.Auction.AuctionId" class="hidden" method="POST" 
-              asp-action="UpdateAVerifiedStatus" asp-controller="Admin">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="AuctionId" value="@Model.Auction.AuctionId" />
-            <input type="hidden" name="IsVerified" />
-        </form>
-    </div>
+     @if (Model.Auction.IsVerified == "Pending")
+    {
+        <!-- Verification Actions -->
+        <div class="bg-white p-4 border-b border-gray-200 flex justify-end gap-3">
+            <a href="javascript:void(0);"
+               class="action-button verify-button verify-btn"
+               data-id="@Model.Auction.AuctionId"
+               data-status="Verified">
+                <i class="fas fa-check-circle"></i>
+                Verify Auction
+            </a>
+            <a href="javascript:void(0);"
+               class="action-button reject-button verify-btn"
+               data-id="@Model.Auction.AuctionId"
+               data-status="Not Verified">
+                <i class="fas fa-times-circle"></i>
+                Reject Auction
+            </a>
+
+            <!-- Hidden Form for AJAX Submit -->
+            <form id="verifyForm_@Model.Auction.AuctionId" class="hidden" method="POST"
+                  asp-action="UpdateAVerifiedStatus" asp-controller="Admin">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="AuctionId" value="@Model.Auction.AuctionId" />
+                <input type="hidden" name="IsVerified" />
+            </form>
+        </div>
+    }
+   
 
     <!-- Tabs Navigation -->
     <div class="tabs-container">

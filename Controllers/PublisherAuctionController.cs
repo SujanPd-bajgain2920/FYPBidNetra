@@ -349,7 +349,7 @@ namespace FYPBidNetra.Controllers
              return PartialView("_AwardedAuction", auctions);
          }*/
 
-        /*public IActionResult AwardedAuction()
+        public IActionResult AwardedAuction()
         {
             UpdateAuctionStatuses();
             int currentUserID = Convert.ToInt16(User.Identity!.Name);
@@ -451,15 +451,52 @@ namespace FYPBidNetra.Controllers
                 // Fetch awarded auctions
                 var auctions = _context.AuctionDetails
                     .AsNoTracking()
-                    .Where(a => a.PublishedByUserId == currentUserID &&
-                                a.AuctionStatus == "Completed" &&
-                                a.IsVerified == "Verified")
-                    .Select(a => new AuctionEdit
+                    .Where(t => t.PublishedByUserId == currentUserID &&
+                                t.AuctionStatus == "Completed" &&
+                                t.IsVerified == "Verified")
+                    .Select(t => new AuctionEdit
                     {
-                        // ... existing select properties ...
+                        AuctionId = t.AuctionId,
+                        Title = t.Title,
+                        AuctionType = t.AuctionType,
+                        StartingPrice = t.StartingPrice,
+                        AuctionStatus = t.AuctionStatus,
+                        EndDate = t.EndDate,
+                        IsVerified = t.IsVerified,
+                        EncId = _protector.Protect(t.AuctionId.ToString()),
+                        WinnerDetails = t.BuyerId != null ? new UserListEdit
+                        {
+                            UserId = (short)t.BuyerId,
+                            FirstName = _context.UserLists
+                             .Where(u => u.UserId == t.BuyerId)
+                             .Select(u => u.FirstName)
+                             .FirstOrDefault(),
+                            MiddleName = _context.UserLists
+                        .Where(u => u.UserId == t.BuyerId)
+                             .Select(u => u.MiddleName)
+                             .FirstOrDefault(),
+                            LastName = _context.UserLists
+                        .Where(u => u.UserId == t.BuyerId)
+                             .Select(u => u.LastName)
+                             .FirstOrDefault(),
+                        } : null,
+                        // Add payment status
+                        PaymentStatus = _context.Payments
+                         .Where(p => p.PayAuctionId == t.AuctionId &&
+                                    p.PayByUser == currentUserID &&
+                                    p.PaymentMethod == "Deposit")
+                         .OrderByDescending(p => p.PaymentDate)
+                         .Select(p => p.PaymentStatus)
+                         .FirstOrDefault() ?? "Not Paid",
+                        PaymentId = _context.Payments
+                         .Where(p => p.PayAuctionId == t.AuctionId &&
+                                    p.PayByUser == currentUserID &&
+                                    p.PaymentMethod == "Deposit")
+                         .Select(p => p.PaymentId)
+                         .FirstOrDefault()
                     })
-                    .ToList();
-
+                       .ToList();
+                //return Json(tenders);
                 return PartialView("_AwardedAuction", auctions);
             }
             catch (Exception ex)
@@ -469,9 +506,9 @@ namespace FYPBidNetra.Controllers
                 Console.WriteLine($"Error in AwardedAuction: {ex.Message}");
                 return StatusCode(500, "An error occurred while processing auctions.");
             }
-        }*/
+        }
 
-        public IActionResult AwardedAuction()
+        /*public IActionResult AwardedAuction()
         {
             UpdateAuctionStatuses();
             int currentUserID = Convert.ToInt16(User.Identity!.Name);
@@ -602,7 +639,7 @@ namespace FYPBidNetra.Controllers
                 .ToList();
 
             return PartialView("_AwardedAuction", auctions);
-        }
+        }*/
 
 
         public IActionResult MonitorAuction(string id)
