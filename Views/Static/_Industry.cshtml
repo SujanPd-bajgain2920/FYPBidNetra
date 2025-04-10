@@ -1,0 +1,106 @@
+﻿<style>
+    .industry-solutions-container {
+        background-color: #e6f2f8;
+        padding: 40px 0;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-top: 0;
+        width: 100vw;
+    }
+
+    .content-wrapper {
+        max-width: 1280px; 
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem;
+    }
+
+    .section-title {
+        font-size: 42px;
+        font-weight: bold;
+        margin-bottom: 30px;
+        color: #000;
+    }
+
+    .solutions-grid {
+        display: flex;
+        gap: 30px;
+    }
+
+    .solutions-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .solution-card {
+        background-color: rgba(173, 216, 230, 0.4);
+        border-radius: 8px;
+        padding: 20px;
+    }
+
+        .solution-card h3 {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .solution-card p {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #444;
+        }
+
+    .solution-image {
+        flex: 0.8;
+        height: 100%;
+    }
+
+        .solution-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+</style>
+
+<div class="industry-solutions-container">
+    <div class="content-wrapper">
+        <h1 class="section-title">Industry Solutions</h1>
+        
+        <div class="solutions-grid">
+            <div class="solutions-content">
+                <!-- Solution 1: Construction -->
+                <div class="solution-card">
+                    <h3>Construction</h3>
+                    <p>Specialized tools for managing complex construction bids, including detailed BOQs, timeline planning, and subcontractor coordination.</p>
+                </div>
+                
+                <!-- Solution 2: IT Services -->
+                <div class="solution-card">
+                    <h3>IT Services</h3>
+                    <p>Streamlined processes for technology procurement, software development proposals, and digital transformation projects.</p>
+                </div>
+                
+                <!-- Solution 3: Supply Chain -->
+                <div class="solution-card">
+                    <h3>Supply Chain</h3>
+                    <p>End-to-end solutions for procurement, logistics, and inventory management with real-time tracking and analytics.</p>
+                </div>
+                
+                <!-- Solution 4: Consulting -->
+                <div class="solution-card">
+                    <h3>Consulting</h3>
+                    <p>Templates and workflows designed for service-based proposals, including milestone tracking and deliverable management.</p>
+                </div>
+            </div>
+            
+            <!-- Single large image instead of a gallery -->
+            <div class="solution-image">
+                <img src="~/Images/Industry.png" alt="Industry solutions collage" />
+            </div>
+        </div>
+    </div>
+</div>

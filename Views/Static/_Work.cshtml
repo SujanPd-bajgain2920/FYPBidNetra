@@ -1,0 +1,197 @@
+﻿<style>
+    .how-it-works-container {
+        padding: 60px 20px;
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-top: 0;
+       
+        /* Background image styling */
+        background-image: url('/Images/background.png'); /* Update path to your actual background image */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        /* Ensure the container has enough height */
+        min-height: 500px;
+    }
+
+        /* Add a semi-transparent overlay to improve text readability over the background */
+        .how-it-works-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.6); /* White overlay with 70% opacity */
+            z-index: 0;
+        }
+
+    .work-inner {
+        max-width: 1280px; /* matches max-w-7xl from header container */
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem;
+    }
+    .section-title {
+        font-size: 42px;
+        font-weight: bold;
+        margin-bottom: 40px;
+        color: #000;
+        position: relative;
+        z-index: 1;
+    }
+
+    .flow-diagram {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: nowrap;
+        gap: 10px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .step-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 300px;
+    }
+
+    .arrow-box {
+        background-color: rgba(173, 216, 230, 0.9); /* Made more opaque */
+        width: 100%;
+        height: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        clip-path: polygon(0 0, 90% 0, 100% 50%, 90% 100%, 0 100%, 10% 50%);
+        margin-bottom: 20px;
+    }
+
+    .icon {
+        font-size: 24px;
+        color: #1a1a1a; /* Darker icon color */
+    }
+
+    .step-content h3 {
+        font-size: 22px;
+        font-weight: bold;
+        margin-bottom: 12px;
+        color: #1a1a1a; /* Darker heading color */
+    }
+
+    .step-content p {
+        font-size: 16px;
+        color: #333; /* Darker text color */
+        line-height: 1.5;
+    }
+
+    .section-title {
+        font-size: 42px;
+        font-weight: bold;
+        margin-bottom: 40px;
+        color: #1a1a1a; /* Darker title color */
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Last arrow doesn't have a right pointer */
+    .step-container:last-child .arrow-box {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 10% 50%);
+    }
+
+    /* First arrow doesn't have a left indent */
+    .step-container:first-child .arrow-box {
+        clip-path: polygon(0 0, 90% 0, 100% 50%, 90% 100%, 0 100%);
+    }
+
+    .icon {
+        font-size: 24px;
+        color: #333;
+    }
+
+    .step-content {
+        text-align: left;
+        width: 100%;
+    }
+
+        .step-content h3 {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .step-content p {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+</style>
+
+<div class="how-it-works-container">
+    <div class="work-inner">
+        <h1 class="section-title">How BidNetra Works</h1>
+
+        <div class="flow-diagram">
+            <!-- Step 1: Register -->
+            <div class="step-container">
+                <div class="arrow-box">
+                    <div class="icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+                <div class="step-content">
+                    <h3>Register</h3>
+                    <p>Create your account and complete verification in minutes with our streamlined onboarding process.</p>
+                </div>
+            </div>
+
+            <!-- Step 2: Find Opportunities -->
+            <div class="step-container">
+                <div class="arrow-box">
+                    <div class="icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                <div class="step-content">
+                    <h3>Find Opportunities</h3>
+                    <p>Browse relevant tenders filtered by industry, location, and budget to find perfect matches.</p>
+                </div>
+            </div>
+
+            <!-- Step 3: Submit Bids -->
+            <div class="step-container">
+                <div class="arrow-box">
+                    <div class="icon">
+                        <i class="fas fa-paperclip"></i>
+                    </div>
+                </div>
+                <div class="step-content">
+                    <h3>Submit Bids</h3>
+                    <p>Prepare and submit detailed proposals with our intuitive document management system.</p>
+                </div>
+            </div>
+
+            <!-- Step 4: Win Projects -->
+            <div class="step-container">
+                <div class="arrow-box">
+                    <div class="icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                </div>
+                <div class="step-content">
+                    <h3>Win Projects</h3>
+                    <p>Receive award notifications and proceed to contract finalization through our secure platform.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

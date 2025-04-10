@@ -1,84 +1,102 @@
 ﻿
-    <style>
-        .custom-card {
-            background-color: rgba(31, 0, 255, 0.04); /* #1F00FF with 4% opacity */
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 250px; /* Set a fixed height or adjust as needed */
-            position: relative; /* Required for absolute positioning of the icon */
-            border: 1px solid #ccc; /* Border effect */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Drop shadow */
-            margin: 10px; /* Reduced space between cards */
-        }
-        .button-container {
-            margin-top: auto; /* Pushes the button to the bottom */
-            text-align: center; /* Centers the button horizontally */
-        }
-        .icon-container {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 24px; /* Adjust icon size as needed */
-            color: rgba(123, 58, 255, 0.85); /* Icon color with 85% opacity */
-            margin-bottom: 20px; /* Adds gap between icon and header */
-        }
-        h5 {
-            margin-top: 40px; /* Adds gap between icon and header */
-            margin-bottom: 15px; /* Adds gap between header and normal text */
-        }
-        p {
-            margin-bottom: 15px; /* Adjusts gap between paragraph and button */
-        }
-        .button-container a {
-            background-color: rgba(123, 58, 255, 0.85); /* Button background color with 85% opacity */
-            color: white; /* White text color */
-        }
-        .button-container a:hover {
-            background-color: rgba(123, 58, 255, 1); /* Full opacity on hover */
-        }
-    </style>
 
+<style>
+    .features-container {
+        background-color: #e6f2f8;
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-top: 0;
+    }
 
-    <!-- Key Services Section with Drop Shadow -->
-    <div class="p-6 shadow-lg rounded-lg">
-        <!-- Added shadow-lg class to the container -->
-        <h2 class="text-3xl font-bold mb-6 text-center">Key Services</h2>
-        <div class="flex flex-wrap gap-6 justify-center px-4">
-            <!-- Flexbox and responsive utilities -->
-            <!-- First Card: Document -->
-            <div class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 custom-card">
-                <div class="icon-container">
-                    <i class="fas fa-file-alt"></i> <!-- Document icon -->
-                </div>
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Efficient, Transparent Tenders</h5>
-                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Your Vision, Our Platform for Seamless Procurement.</p>
-                <div class="button-container">
-                    <a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        <svg class="w-3.5 h-3.5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
-                        </svg>
-                        Get Started
-                    </a>
-                </div>
+    .features-inner {
+        max-width: 1280px; /* matches max-w-7xl from header container */
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem;
+    }
+
+    .feature-heading {
+        font-size: 42px;
+        margin-bottom: 50px;
+        font-weight: bold;
+        color: #000;
+        text-align: center;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 40px;
+    }
+
+    .feature-icon {
+        color: #0088cc;
+        font-size: 48px;
+        margin-right: 20px;
+        min-width: 60px;
+    }
+
+    .feature-content {
+        flex: 1;
+    }
+
+    .feature-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .feature-description {
+        font-size: 16px;
+        color: #333;
+        line-height: 1.5;
+    }
+</style>
+
+<div class="features-container">
+    <div class="features-inner">
+        <h1 class="feature-heading">Core Platform Features</h1>
+
+        <div class="feature-item">
+            <div class="feature-icon">
+                <i class="fa fa-window-maximize"></i>
             </div>
+            <div class="feature-content">
+                <h2 class="feature-title">Transparent Bidding</h2>
+                <p class="feature-description">
+                    Our platform ensures complete visibility throughout the bidding process, with clear evaluation criteria and real-time updates
+                    on bid status.
+                </p>
+            </div>
+        </div>
 
-            <!-- Second Card: Auction -->
-            <div class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 custom-card">
-                <div class="icon-container">
-                    <i class="fas fa-gavel"></i> <!-- Auction hammer icon -->
-                </div>
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Real-Time Auctions, Real Opportunities</h5>
-                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Bid Beyond Limits with Instantaneous Auction Results.</p>
-                <div class="button-container">
-                    <a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        <svg class="w-3.5 h-3.5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
-                        </svg>
-                        Get Started
-                    </a>
-                </div>
+        <div class="feature-item">
+            <div class="feature-icon">
+                <i class="fa fa-shield"></i>
+            </div>
+            <div class="feature-content">
+                <h2 class="feature-title">Secure Transactions</h2>
+                <p class="feature-description">
+                    Enterprise-grade security protocols protect your sensitive data and financial transactions, with end-to-end encryption and
+                    secure payment gateways.
+                </p>
+            </div>
+        </div>
+
+        <div class="feature-item">
+            <div class="feature-icon">
+                <i class="fa fa-bell"></i>
+            </div>
+            <div class="feature-content">
+                <h2 class="feature-title">Smart Notifications</h2>
+                <p class="feature-description">
+                    Never miss an opportunity with automated alerts for new tenders, bid updates, and deadline reminders tailored to your
+                    preferences and needs.
+                </p>
             </div>
         </div>
     </div>
+</div>
+

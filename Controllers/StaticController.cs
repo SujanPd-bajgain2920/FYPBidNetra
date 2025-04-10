@@ -25,14 +25,32 @@ namespace FYPBidNetra.Controllers
             return View();
         }
 
-
-        public IActionResult BlogPage()
+        public IActionResult About()
         {
-            var blogPosts = _context.BlogContents
+            return View();
+        }
+
+
+        public IActionResult BlogList()
+        {
+            var blog = _context.BlogContents
                 .Include(b => b.UploadUser)
-                .OrderByDescending(b => b.Postdate)
+                .Select(b => new BlogContentEdit
+                {
+                    Bid = b.Bid,
+                    SectionHeading = b.SectionHeading,
+                    SectionDescription = b.SectionDescription,
+                    SectionImage = b.SectionImage,
+                    Postdate = b.Postdate,
+                    UploadUserId = b.UploadUserId,
+                    EncId = _protector.Protect(b.Bid.ToString()),
+                    FirstName = b.UploadUser.FirstName,
+                    MiddleName = b.UploadUser.MiddleName,
+                    LastName = b.UploadUser.LastName,
+                    UserPhoto = b.UploadUser.UserPhoto
+                })
                 .ToList();
-            return View(blogPosts);
+            return View(blog);
         }
     }
 }

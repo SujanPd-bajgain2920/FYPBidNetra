@@ -1,0 +1,184 @@
+﻿<style>
+    .mission-section {
+        background: linear-gradient(135deg, #2c87bb 0%, #1e5c8a 100%);
+        padding: 3rem 4rem 4rem;
+        color: white;
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-top: 0;
+    }
+
+    .mission-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 2.5rem;
+        color: white;
+    }
+
+    .pyramid-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .pyramid {
+        position: relative;
+        width: 100%;
+        max-width: 900px;
+    }
+
+    .pyramid-level {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        background-color: #e6f2f8;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .pyramid-icon-container {
+        width: 45%;
+        background-color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1.5rem 0;
+        border-right: 1px solid #e0e0e0;
+    }
+
+    .pyramid-icon {
+        font-size: 1.5rem;
+        color: #333;
+    }
+
+    .pyramid-content {
+        width: 55%;
+        padding: 1.2rem 2rem;
+    }
+
+    .pyramid-heading {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: black;
+    }
+
+    .pyramid-text {
+        font-size: 1rem;
+        line-height: 1.4;
+        color: black;
+    }
+
+    .pyramid-divider {
+        display: none;
+    }
+
+    .mission-statement {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        max-width: 900px;
+        margin: 0 auto;
+        color: white;
+    }
+
+    .pyramid-level:nth-child(1) {
+        width: 100%;
+    }
+
+    .pyramid-level:nth-child(3) {
+        width: 90%;
+        margin-left: 5%;
+    }
+
+    .pyramid-level:nth-child(5) {
+        width: 80%;
+        margin-left: 10%;
+    }
+
+    .pyramid-level:nth-child(7) {
+        width: 70%;
+        margin-left: 15%;
+    }
+
+    .pyramid-level:nth-child(9) {
+        width: 60%;
+        margin-left: 20%;
+    }
+
+    
+</style>
+
+<section class="mission-section">
+    <h2 class="mission-title">Our Mission and Values</h2>
+
+    <div class="pyramid-container">
+        <div class="pyramid">
+            <!-- Transparency Level -->
+            <div class="pyramid-level">
+                <div class="pyramid-icon-container">
+                    <i class="pyramid-icon fas fa-th"></i>
+                </div>
+                <div class="pyramid-content">
+                    <h3 class="pyramid-heading">Transparency</h3>
+                    <p class="pyramid-text">Creating open and fair procurement processes for all participants</p>
+                </div>
+            </div>
+            <hr class="pyramid-divider">
+
+            <!-- Innovation Level -->
+            <div class="pyramid-level">
+                <div class="pyramid-icon-container">
+                    <i class="pyramid-icon fas fa-lightbulb"></i>
+                </div>
+                <div class="pyramid-content">
+                    <h3 class="pyramid-heading">Innovation</h3>
+                    <p class="pyramid-text">Driving continuous platform enhancement and technological advancement</p>
+                </div>
+            </div>
+            <hr class="pyramid-divider">
+
+            <!-- Integrity Level -->
+            <div class="pyramid-level">
+                <div class="pyramid-icon-container">
+                    <i class="pyramid-icon fas fa-search"></i>
+                </div>
+                <div class="pyramid-content">
+                    <h3 class="pyramid-heading">Integrity</h3>
+                    <p class="pyramid-text">Upholding the highest ethical standards in all our operations</p>
+                </div>
+            </div>
+            <hr class="pyramid-divider">
+
+            <!-- Efficiency Level -->
+            <div class="pyramid-level">
+                <div class="pyramid-icon-container">
+                    <i class="pyramid-icon far fa-comment"></i>
+                </div>
+                <div class="pyramid-content">
+                    <h3 class="pyramid-heading">Efficiency</h3>
+                    <p class="pyramid-text">Streamlining procurement to save valuable time and resources</p>
+                </div>
+            </div>
+            <hr class="pyramid-divider">
+
+            <!-- Accessibility Level -->
+            <div class="pyramid-level">
+                <div class="pyramid-icon-container">
+                    <i class="pyramid-icon fas fa-user-friends"></i>
+                </div>
+                <div class="pyramid-content">
+                    <h3 class="pyramid-heading">Accessibility</h3>
+                    <p class="pyramid-text">Making opportunities available to all qualified participants</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p class="mission-statement">
+        Our mission is to create a transparent, efficient, and accessible procurement ecosystem that empowers both buyers and suppliers through innovative technology solutions tailored to Nepal's unique business environment.
+    </p>
+</section>
+

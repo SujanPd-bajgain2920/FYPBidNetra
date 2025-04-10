@@ -1,0 +1,118 @@
+<style>
+    .testimonials-container {
+        background-color: #e6f2f8;
+        padding: 40px 0;
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-top: 0;
+    }
+
+    .content-wrapper {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem;
+    }
+
+    .section-title {
+        font-size: 42px;
+        font-weight: bold;
+        margin-bottom: 40px;
+        color: #000;
+    }
+
+    .testimonials-grid {
+        display: flex;
+        gap: 30px;
+        justify-content: space-between;
+    }
+
+    .testimonial-card {
+        flex: 1;
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .testimonial-image {
+        width: 100%;
+        height: 250px;
+        overflow: hidden;
+    }
+
+        .testimonial-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .testimonial-content {
+        padding: 20px;
+    }
+
+        .testimonial-content h3 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .testimonial-content .company {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .testimonial-content p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #444;
+            font-style: italic;
+        }
+</style>
+
+<div class="testimonials-container">
+    <div class="content-wrapper">
+        <h1 class="section-title">Success Stories</h1>
+
+        <div class="testimonials-grid">
+            <!-- Testimonial 1 -->
+            <div class="testimonial-card">
+                <div class="testimonial-image">
+                    <img src="~/Images/Constructor.png" alt="Robert Chen" />
+                </div>
+                <div class="testimonial-content">
+                    <h3>Robert Chen</h3>
+                    <div class="company">Construction Ltd.</div>
+                    <p>"BidNetra streamlined our bidding process and increased our win rate by 27%. The platform's analytics helped us refine our approach and identify the most profitable opportunities."</p>
+                </div>
+            </div>
+
+            <!-- Testimonial 2 -->
+            <div class="testimonial-card">
+                <div class="testimonial-image">
+                    <img src="~/Images/Lady.png" alt="Sarah Johnson" />
+                </div>
+                <div class="testimonial-content">
+                    <h3>Sarah Johnson</h3>
+                    <div class="company">TechSolutions Inc.</div>
+                    <p>"The transparency and efficiency of BidNetra revolutionized how we approach government tenders. We've cut preparation time by 40% while improving the quality of our proposals."</p>
+                </div>
+            </div>
+
+            <!-- Testimonial 3 -->
+            <div class="testimonial-card">
+                <div class="testimonial-image">
+                    <img src="~/Images/Man.png" alt="Michael Okoye" />
+                </div>
+                <div class="testimonial-content">
+                    <h3>Michael Okoye</h3>
+                    <div class="company">Global Procurement</div>
+                    <p>"As a procurement officer, BidNetra gives me confidence that we're receiving the best possible bids while maintaining complete transparency for all stakeholders involved."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

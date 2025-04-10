@@ -78,58 +78,55 @@
                         </a>
                     </div>
 
-                    <!-- Desktop Navigation Menu -->
-                    <div class="hidden w-full md:block md:w-auto md:order-1" id="navbar-user">
-                        <ul class="flex flex-col md:flex-row md:space-x-8 md:mt-0 md:font-medium">
-                                <li>
-                                    <a asp-action="Index" asp-controller="Admin" class="nav-link-active block py-2 px-3 text-blue-600 font-medium md:p-0" aria-current="page">
-                                        Home
-                                    </a>
-                                </li>
-                                <li>
-                                    <a asp-action="TenderList" asp-controller="Admin" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
-                                        Tender
-                                    </a>
-                                </li>
-                                <li>
-                                    <a asp-action="AuctionList" asp-controller="Admin" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
-                                        Auction
-                                    </a>
-                                </li>
-                                <li>
-                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
-                                        Blog
-                                    </a>
-                                </li>
-                        </ul>
-                    </div>
+                <!-- Desktop Navigation Menu -->
+                <div class="hidden w-full md:block md:w-auto md:order-1" id="navbar-user">
+                    <ul class="flex flex-col md:flex-row md:space-x-8 md:mt-0 md:font-medium">
+                        <li>
+                            <a asp-action="Index" asp-controller="Static"
+                               class="block py-2 px-3 @(ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "text-blue-600 font-medium" : "text-gray-700 hover:text-blue-600") md:p-0 transition-colors duration-200">
+                                Home
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-action="About" asp-controller="Static"
+                               class="block py-2 px-3 @(ViewContext.RouteData.Values["Action"].ToString() == "About" ? "text-blue-600 font-medium" : "text-gray-700 hover:text-blue-600") md:p-0 transition-colors duration-200">
+                                About Us
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-action="BlogList" asp-controller="Static"
+                               class="block py-2 px-3 @(ViewContext.RouteData.Values["Action"].ToString() == "BlogList" ? "text-blue-600 font-medium" : "text-gray-700 hover:text-blue-600") md:p-0 transition-colors duration-200">
+                                Blog
+                            </a>
+                        </li>
+                    </ul>
+                </div>
 
-                    <!-- Mobile Navigation Menu -->
-                    <div class="mobile-menu w-full md:hidden mt-3 border-t border-gray-200 pt-3 hidden" id="mobile-menu">
-                        <ul class="flex flex-col space-y-2">
-                            
-                                <li>
-                                    <a asp-action="Index" asp-controller="Admin" class="block py-2 px-3 text-blue-600 bg-blue-50 rounded-md font-medium" aria-current="page">
-                                        Home
-                                    </a>
-                                </li>
-                                <li>
-                                    <a asp-action="TenderList" asp-controller="Admin" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
-                                        Tender
-                                    </a>
-                                </li>
-                                <li>
-                                    <a asp-action="AuctionList" asp-controller="Admin" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
-                                        Auction
-                                    </a>
-                                </li>
-                                <li>
-                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
-                                        Blog
-                                    </a>
-                                </li>
-                        </ul>
-                    </div>
+                <!-- Mobile Navigation Menu -->
+                <div class="mobile-menu w-full md:hidden mt-3 border-t border-gray-200 pt-3 hidden" id="mobile-menu">
+                    <ul class="flex flex-col space-y-2">
+                        <li>
+                            <a asp-action="Index" asp-controller="Static"
+                               class="block py-2 px-3 @(ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50") rounded-md font-medium">
+                                Home
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-action="About" asp-controller="Static"
+                               class="block py-2 px-3 @(ViewContext.RouteData.Values["Action"].ToString() == "About" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50") rounded-md font-medium">
+                                About Us
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-action="BlogList" asp-controller="Static"
+                               class="block py-2 px-3 @(ViewContext.RouteData.Values["Action"].ToString() == "BlogList" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50") rounded-md font-medium">
+                                Blog
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                   
                 </div>
             </nav>
         </header>

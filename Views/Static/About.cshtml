@@ -1,0 +1,133 @@
+﻿@{
+    ViewBag.Title = "About BidNetra";
+    Layout = "_StaticLayout";
+}
+
+<!-- FontAwesome CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<!-- Flowbite CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.css" />
+
+<style>
+    body {
+        overflow-x: hidden;
+    }
+
+    .hero-section {
+        background: linear-gradient(135deg, #e6f7ff 0%, #cce6ff 100%);
+        padding: 40px 0;
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        margin: -24px 0 0 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem;
+    }
+
+    .hero-content {
+        max-width: 600px;
+        padding-right: 2rem;
+    }
+
+    .hero-image-container {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        line-height: 1.2;
+        color: #0a2540;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-description {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: #334155;
+        margin-bottom: 2rem;
+    }
+
+    .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .cta-primary {
+        background-color: #0284c7;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.375rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .cta-primary:hover {
+        background-color: #0369a1;
+    }
+
+    .cta-secondary {
+        background-color: #0284c7;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.375rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .cta-secondary:hover {
+        background-color: #0369a1;
+    }
+
+    .platform-image {
+        max-width: 100%;
+        border-radius: 1rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    
+</style>
+<body>
+    <div class="mx-auto w-full max-w-7xl">
+        <section class="hero-section">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <h1 class="hero-title">Transforming Nepal's Procurement Landscape Through Digital Innovation</h1>
+                    <p class="hero-description">
+                        BidNetra is Nepal's premier e-procurement platform, revolutionizing tender processes through powerful digital solutions that connect buyers and suppliers in a secure, transparent ecosystem.
+                    </p>
+                    <div class="cta-buttons">
+                        <a href="#" class="cta-primary">Join BidNetra Today</a>
+                        <a href="#" class="cta-secondary">Request Demo</a>
+                    </div>
+                </div>
+
+                <div class="hero-image-container">
+                    <img src="~/Images/about1.png" alt="BidNetra Platform Interface" class="platform-image">
+                </div>
+            </div>
+        </section>
+    </div>
+
+    @Html.Partial("~/Views/Static/_Story.cshtml")
+    @Html.Partial("~/Views/Static/_Mission.cshtml")
+    @Html.Partial("~/Views/Static/_Impact.cshtml")
+
+</body>
+
