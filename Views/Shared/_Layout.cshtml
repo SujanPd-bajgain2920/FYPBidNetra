@@ -132,7 +132,7 @@
                             @if (User.IsInRole("Admin"))
                             {
                                 <li>
-                                    <a href="#" class="nav-link-active block py-2 px-3 text-blue-600 font-medium md:p-0" aria-current="page">
+                                    <a asp-action="Index" asp-controller="Admin" class="nav-link-active block py-2 px-3 text-blue-600 font-medium md:p-0" aria-current="page">
                                         Home
                                     </a>
                                 </li>
@@ -147,7 +147,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="AddBlog" asp-controller="Blog" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
+                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
                                         Blog
                                     </a>
                                 </li>
@@ -155,7 +155,7 @@
                             else if (User.IsInRole("Publisher"))
                             {
                                 <li>
-                                    <a asp-action="Index" asp-controller="Publisher" class="nav-link-active block py-2 px-3 text-blue-600 font-medium md:p-0" aria-current="page">
+                                    <a asp-action="Index" asp-controller="PublisherTender" class="nav-link-active block py-2 px-3 text-blue-600 font-medium md:p-0" aria-current="page">
                                         Home
                                     </a>
                                 </li>
@@ -170,7 +170,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="Index" asp-controller="Blog" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
+                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
                                         Blog
                                     </a>
                                 </li>
@@ -178,22 +178,22 @@
                             else
                             {
                                 <li>
-                                    <a href="#" class="nav-link-active block py-2 px-3 text-blue-600 font-medium md:p-0" aria-current="page">
+                                    <a asp-action="Index" asp-controller="BidTender" class="nav-link-active block py-2 px-3 text-blue-600 font-medium md:p-0" aria-current="page">
                                         Home
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="Index" asp-controller="Home" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
+                                    <a asp-action="TenderBidTab" asp-controller="BidTender" asp-route-activeTab="UpcomingTender" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
                                         Tender
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="Create" asp-controller="Home" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
+                                    <a asp-action="AuctionBidTab" asp-controller="BidAuction" asp-route-activeTab="UpcomingAuction" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
                                         Auction
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="AddBlog" asp-controller="Blog" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
+                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
                                         Blog
                                     </a>
                                 </li>
@@ -207,7 +207,7 @@
                             @if (User.IsInRole("Admin"))
                             {
                                 <li>
-                                    <a href="#" class="block py-2 px-3 text-blue-600 bg-blue-50 rounded-md font-medium" aria-current="page">
+                                    <a asp-action="Index" asp-controller="Admin" class="block py-2 px-3 text-blue-600 bg-blue-50 rounded-md font-medium" aria-current="page">
                                         Home
                                     </a>
                                 </li>
@@ -222,7 +222,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="AddBlog" asp-controller="Blog" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
+                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
                                         Blog
                                     </a>
                                 </li>
@@ -230,7 +230,7 @@
                             else if (User.IsInRole("Publisher"))
                             {
                                 <li>
-                                    <a asp-action="Index" asp-controller="Publisher" class="block py-2 px-3 text-blue-600 bg-blue-50 rounded-md font-medium" aria-current="page">
+                                    <a asp-action="Index" asp-controller="PublisherTender" class="block py-2 px-3 text-blue-600 bg-blue-50 rounded-md font-medium" aria-current="page">
                                         Home
                                     </a>
                                 </li>
@@ -245,7 +245,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="Index" asp-controller="Blog" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
+                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
                                         Blog
                                     </a>
                                 </li>
@@ -253,22 +253,22 @@
                             else
                             {
                                 <li>
-                                    <a href="#" class="block py-2 px-3 text-blue-600 bg-blue-50 rounded-md font-medium" aria-current="page">
+                                    <a asp-action="Index" asp-controller="BidTender" class="block py-2 px-3 text-blue-600 bg-blue-50 rounded-md font-medium" aria-current="page">
                                         Home
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="Index" asp-controller="Home" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
+                                    <a asp-action="TenderBidTab" asp-controller="BidTender" asp-route-activeTab="UpcomingTender" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
                                         Tender
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="Create" asp-controller="Home" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
+                                    <a asp-action="AuctionBidTab" asp-controller="BidAuction" asp-route-activeTab="UpcomingAuction" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
                                         Auction
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="AddBlog" asp-controller="Blog" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
+                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
                                         Blog
                                     </a>
                                 </li>
