@@ -3,6 +3,7 @@ using FYPBidNetra.Security;
 using FYPBidNetra.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Rotativa.AspNetCore;
 
 namespace FYPBidNetra
@@ -36,8 +37,9 @@ namespace FYPBidNetra
             // session add
             builder.Services.AddSession(o =>
             {
-                o.IdleTimeout = TimeSpan.FromMinutes(1);
+                o.IdleTimeout = TimeSpan.FromMinutes(20);
                 o.Cookie.HttpOnly = true;
+                o.Cookie.IsEssential = true;
             });
 
             builder.Services.AddHttpContextAccessor();
