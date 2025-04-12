@@ -90,18 +90,128 @@
     </div>
 </div>
 
-<!-- Add FontAwesome and Flowbite JS -->
+<!-- Add FontAwesome, Flowbite JS, and Toastify -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<style>
+    /* Custom styles for Toastify notifications */
+    .toastify {
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    .toast-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+    
+    .toast-error {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+    
+    .toast-warning {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+    
+    .toast-info {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+    }
+    
+    .toast-icon {
+        margin-right: 8px;
+    }
+    
+    /* Loading spinner */
+    .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+        margin-right: 8px;
+    }
+    
+   
+    
+    /* Button loading state */
+    .btn-loading {
+        position: relative;
+        pointer-events: none;
+        opacity: 0.8;
+    }
+</style>
 
 <script>
+    // Toast notification functions
+    function showToast(message, type = 'info') {
+        let backgroundColor, icon;
+
+        switch (type) {
+            case 'success':
+                backgroundColor = 'linear-gradient(135deg, #10b981, #059669)';
+                icon = '<i class="fas fa-check-circle toast-icon"></i>';
+                break;
+            case 'error':
+                backgroundColor = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                icon = '<i class="fas fa-exclamation-circle toast-icon"></i>';
+                break;
+            case 'warning':
+                backgroundColor = 'linear-gradient(135deg, #f59e0b, #d97706)';
+                icon = '<i class="fas fa-exclamation-triangle toast-icon"></i>';
+                break;
+            default:
+                backgroundColor = 'linear-gradient(135deg, #3b82f6, #2563eb)';
+                icon = '<i class="fas fa-info-circle toast-icon"></i>';
+        }
+
+        Toastify({
+            text: message,
+            duration: 5000,
+            close: true,
+            gravity: "top",
+            position: "right",
+            stopOnFocus: true,
+            escapeMarkup: false, // Add this line to prevent HTML escaping
+            className: `toast-${type}`,
+            style: {
+                background: backgroundColor,
+            },
+            onClick: function () { }
+        }).showToast();
+
+        // Add icon separately
+        const toastElement = document.querySelector('.toastify.on');
+        if (toastElement) {
+            toastElement.insertAdjacentHTML('afterbegin', icon);
+        }
+    }
+    
+    // Set button loading state
+    function setButtonLoading(button, isLoading) {
+        if (isLoading) {
+            button.innerHTML = '<div class="spinner"></div> Processing...';
+            button.classList.add('btn-loading');
+        } else {
+            button.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Submit Payment';
+            button.classList.remove('btn-loading');
+        }
+    }
+
     // Image preview functionality
     document.getElementById('SlipFile').addEventListener('change', function (e) {
         const file = e.target.files[0];
         if (file) {
             // Check if file is an image
             if (!file.type.match('image.*')) {
-                alert('Please select an image file (PNG or JPG)');
+                showToast('Please select an image file (PNG or JPG)', 'error');
                 this.value = '';
                 return;
             }
@@ -109,7 +219,7 @@
             // Check file size (max 10MB)
             const fileSize = (file.size / 1024 / 1024).toFixed(2);
             if (fileSize > 10) {
-                alert('File size exceeds 10MB limit');
+                showToast('File size exceeds 10MB limit', 'error');
                 this.value = '';
                 return;
             }
@@ -128,6 +238,25 @@
 
     // Form submission to Flask API
     document.getElementById('submitBtn').addEventListener('click', async function () {
+        const submitBtn = this;
+        
+        // Validate form
+        const slipFile = document.getElementById('SlipFile').files[0];
+        if (!slipFile) {
+            showToast('Please upload a payment slip', 'warning');
+            return;
+        }
+        
+        const paymentDate = document.getElementById('PaymentDate').value;
+        if (!paymentDate) {
+            showToast('Please select a payment date', 'warning');
+            return;
+        }
+        
+        // Show loading state
+        setButtonLoading(submitBtn, true);
+        showToast('Processing payment verification...', 'info');
+        
         const formData = new FormData();
         formData.append('pay_tender_id', document.getElementById('PayTenderId_TenderId').value);
         formData.append('pay_company_id', document.getElementById('PayToCompany_CompanyId').value);
@@ -135,8 +264,8 @@
         formData.append('pay_to_user', document.getElementById('PayToUser_UserId').value);
         formData.append('payment_amount', document.getElementById('PaymentAmount').value);
         formData.append('payment_method', 'Deposit');
-        formData.append('payment_date', document.getElementById('PaymentDate').value);
-        formData.append('file', document.getElementById('SlipFile').files[0]);
+        formData.append('payment_date', paymentDate);
+        formData.append('file', slipFile);
 
         try {
             const response = await fetch('http://127.0.0.1:5000/verify-payment', {
@@ -154,13 +283,20 @@
                 throw new Error('Payment verification failed. Please upload a valid payment slip.');
             }
 
-            alert('Payment submitted and verified successfully!');
-            // Redirect after success
-            window.location.href = '@Url.Action("TenderPage", "PublisherTender", new { activeTab = "AwardedTender" })';
+            // Show success message
+            showToast('Payment submitted and verified successfully!', 'success');
+            
+            // Redirect after success (with a small delay to show the toast)
+            setTimeout(() => {
+                window.location.href = '@Url.Action("PaymentSuccess", "TenderSlip")' + '?tenderId=' + document.getElementById('TenderId').value;
+            }, 2000);
 
         } catch (error) {
-            alert(error.message);
+            // Show error message
+            showToast(error.message, 'error');
             console.error('Error:', error);
+            // Reset button state
+            setButtonLoading(submitBtn, false);
         }
     });
 </script>
