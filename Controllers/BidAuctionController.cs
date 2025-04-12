@@ -157,15 +157,30 @@ namespace FYPBidNetra.Controllers
                      IsVerified = t.IsVerified,
                      EncId = _protector.Protect(t.AuctionId.ToString()),
                      Bid = _context.AuctionBids
-                .Where(ta => ta.AuctionBidId == t.AuctionId && ta.BidderId == userCompanyId)
-                .Select(ta => new AuctionBidEdit
-                {
-                    BidId = ta.BidId,
-                    BidDate = ta.BidDate,
-                    BidAmount = ta.BidAmount,
-                    BidStatus = ta.BidStatus,
-                })
-                .FirstOrDefault()
+                    .Where(ta => ta.AuctionBidId == t.AuctionId && ta.BidderId == userCompanyId)
+                    .Select(ta => new AuctionBidEdit
+                    {
+                        BidId = ta.BidId,
+                        BidDate = ta.BidDate,
+                        BidAmount = ta.BidAmount,
+                        BidStatus = ta.BidStatus,
+                    })
+                    .FirstOrDefault(),
+
+                    // Add payment status
+                    PaymentStatus = _context.Payments
+                        .Where(p => p.PayAuctionId == t.AuctionId &&
+                                   p.PayByUser == currentUserID &&
+                                   p.PaymentMethod == "Deposit")
+                        .OrderByDescending(p => p.PaymentDate)
+                        .Select(p => p.PaymentStatus)
+                        .FirstOrDefault() ?? "Not Paid",
+                     PaymentId = _context.Payments
+                        .Where(p => p.PayAuctionId == t.AuctionId &&
+                                   p.PayByUser == currentUserID &&
+                                   p.PaymentMethod == "Deposit")
+                        .Select(p => p.PaymentId)
+                        .FirstOrDefault()
                  })
                  .ToList();
 

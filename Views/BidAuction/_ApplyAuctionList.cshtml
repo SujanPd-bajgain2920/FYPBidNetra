@@ -203,7 +203,7 @@
                 <div class="tender-card">
                     <div class="card-content">
                         <h5 class="card-title">Auction #@auction.AuctionId - @auction.Title</h5>
-
+                        
                         @if (auction.Bid != null)
                         {
                             <div class="bid-status @(auction.Bid.BidStatus == "Accepted" ? "bid-accepted" :
@@ -211,6 +211,12 @@
                                 <i class="fas @(auction.Bid.BidStatus == "Accepted" ? "fa-check-circle" :
                                         auction.Bid.BidStatus == "Rejected" ? "fa-times-circle" : "fa-clock")"></i>
                                 Status: @auction.Bid.BidStatus
+                                @if (auction.Bid.BidStatus == "Accepted" && auction.PaymentStatus == "Not Paid")
+                                {
+                                    <a asp-action="AuctionPayment" asp-controller="AuctionSlip" asp-route-auctionId="@auction.EncId" class="ml-2 text-green-600 hover:text-green-800" title="Make Payment">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                    </a>
+                                }
                             </div>
 
                             <div class="bid-info">

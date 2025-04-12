@@ -1,0 +1,298 @@
+﻿@model PaymentEdit
+
+<!-- Add FontAwesome, Flowbite JS, and Toastify -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<style>
+    /* Custom styles for Toastify notifications */
+    .toastify {
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .toast-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .toast-error {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    .toast-warning {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .toast-info {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+    }
+
+    .toast-icon {
+        margin-right: 8px;
+    }
+
+    /* Loading spinner */
+    .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+        margin-right: 8px;
+    }
+
+
+
+    /* Button loading state */
+    .btn-loading {
+        position: relative;
+        pointer-events: none;
+        opacity: 0.8;
+    }
+</style>
+
+<div class="min-h-screen bg-gray-100 py-6">
+    <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-8">
+        <h2 class="text-2xl font-bold text-center mb-8 text-blue-600">
+            <i class="fas fa-gavel me-2"></i>Auction Payment Form
+        </h2>
+
+        <!-- Auction and Buyer Information -->
+        <div class="mb-8 bg-gray-50 p-6 rounded-lg">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 border border-gray-200 rounded-lg">
+                    <h3 class="font-semibold text-gray-700 flex items-center">
+                        <i class="fas fa-gavel me-2 text-blue-500"></i>Auction Details
+                    </h3>
+                    <p class="text-gray-600 mt-2"><span class="font-medium">ID:</span> #@Model.AuctionId</p>
+                    <p class="text-gray-600"><span class="font-medium">Title:</span> @Model.AuctionTitle</p>
+                </div>
+                <div class="p-4 border border-gray-200 rounded-lg">
+                    <h3 class="font-semibold text-gray-700 flex items-center">
+                        <i class="fas fa-user me-2 text-blue-500"></i>Buyer Details
+                    </h3>
+                    <p class="text-gray-600 mt-2"><span class="font-medium">Name:</span> @Model.PayToUser.FirstName</p>
+                </div>
+            </div>
+        </div>
+
+        <form id="paymentForm" enctype="multipart/form-data">
+            <input type="hidden" id="PayAuctionId_AuctionId" value="@Model.AuctionId" />
+            <input type="hidden" id="AuctionId" value="@Model.AuctionId" />
+            <input type="hidden" id="PayFromUser_UserId" value="@Model.PayFromUser.UserId" />
+            <input type="hidden" id="PayToUser_UserId" value="@Model.PayToUser?.UserId" />
+
+            <div class="space-y-6">
+                <!-- Payment Amount -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <i class="fas fa-coins me-2 text-blue-500"></i>Payment Amount
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 sm:text-sm">Rs.</span>
+                        </div>
+                        <input type="number" id="PaymentAmount" value="@Model.PaymentAmount"
+                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-12 p-2.5"
+                               placeholder="0.00" readonly>
+                    </div>
+                </div>
+
+                <!-- Payment Date -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <i class="fas fa-calendar-alt me-2 text-blue-500"></i>Payment Date
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="fas fa-calendar text-gray-500"></i>
+                        </div>
+                        <input type="datetime-local" id="PaymentDate" value="@Model.PaymentDate.ToString("yyyy-MM-ddTHH:mm")"
+                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5">
+                    </div>
+                </div>
+
+                <!-- Payment Slip Upload -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <i class="fas fa-file-image me-2 text-blue-500"></i>Upload Payment Slip
+                    </label>
+                    <div class="mb-2">
+                        <input id="SlipFile" type="file" accept="image/*"
+                               class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none">
+                        <p class="mt-1 text-sm text-gray-500">PNG or JPG only (max. 10MB)</p>
+                    </div>
+                    <div id="imagePreview" class="mt-3 hidden">
+                        <p class="text-sm font-medium text-gray-700 mb-1">Preview:</p>
+                        <img id="preview" src="#" alt="Preview" class="max-h-40 rounded border border-gray-300">
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-end">
+                    <button type="button" id="submitBtn" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none">
+                        <i class="fas fa-paper-plane me-2"></i>Submit Payment
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<script>
+    // Toast notification functions
+    function showToast(message, type = 'info') {
+        let backgroundColor, icon;
+
+        switch(type) {
+            case 'success':
+                backgroundColor = 'linear-gradient(135deg, #10b981, #059669)';
+                icon = '<i class="fas fa-check-circle toast-icon"></i>';
+                break;
+            case 'error':
+                backgroundColor = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                icon = '<i class="fas fa-exclamation-circle toast-icon"></i>';
+                break;
+            case 'warning':
+                backgroundColor = 'linear-gradient(135deg, #f59e0b, #d97706)';
+                icon = '<i class="fas fa-exclamation-triangle toast-icon"></i>';
+                break;
+            default:
+                backgroundColor = 'linear-gradient(135deg, #3b82f6, #2563eb)';
+                icon = '<i class="fas fa-info-circle toast-icon"></i>';
+        }
+
+        Toastify({
+            text: message,
+            duration: 5000,
+            close: true,
+            gravity: "top",
+            position: "right",
+            stopOnFocus: true,
+            escapeMarkup: false,
+            className: `toast-${type}`,
+            style: {
+                background: backgroundColor,
+            },
+            onClick: function(){}
+        }).showToast();
+
+        // Add icon separately
+        const toastElement = document.querySelector('.toastify.on');
+        if (toastElement) {
+            toastElement.insertAdjacentHTML('afterbegin', icon);
+        }
+    }
+
+    // Set button loading state
+    function setButtonLoading(button, isLoading) {
+        if (isLoading) {
+            button.innerHTML = '<div class="spinner"></div> Processing...';
+            button.classList.add('btn-loading');
+        } else {
+            button.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Submit Payment';
+            button.classList.remove('btn-loading');
+        }
+    }
+
+    // Image preview functionality
+    document.getElementById('SlipFile').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Check if file is an image
+            if (!file.type.match('image.*')) {
+                showToast('Please select an image file (PNG or JPG)', 'error');
+                this.value = '';
+                return;
+            }
+
+            // Check file size (max 10MB)
+            const fileSize = (file.size / 1024 / 1024).toFixed(2);
+            if (fileSize > 10) {
+                showToast('File size exceeds 10MB limit', 'error');
+                this.value = '';
+                return;
+            }
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('preview').src = e.target.result;
+                document.getElementById('imagePreview').classList.remove('hidden');
+            }
+            reader.readAsDataURL(file);
+        } else {
+            document.getElementById('imagePreview').classList.add('hidden');
+        }
+    });
+
+    // Form submission to Flask API
+    document.getElementById('submitBtn').addEventListener('click', async function () {
+        const submitBtn = this;
+
+        // Validate form
+        const slipFile = document.getElementById('SlipFile').files[0];
+        if (!slipFile) {
+            showToast('Please upload a payment slip', 'warning');
+            return;
+        }
+
+        const paymentDate = document.getElementById('PaymentDate').value;
+        if (!paymentDate) {
+            showToast('Please select a payment date', 'warning');
+            return;
+        }
+
+        // Show loading state
+        setButtonLoading(submitBtn, true);
+        showToast('Processing payment verification...', 'info');
+
+        const formData = new FormData();
+        formData.append('pay_auction_id', document.getElementById('PayAuctionId_AuctionId').value);
+        formData.append('pay_by_user', document.getElementById('PayFromUser_UserId').value);
+        formData.append('pay_to_user', document.getElementById('PayToUser_UserId').value);
+        formData.append('payment_amount', document.getElementById('PaymentAmount').value);
+        formData.append('payment_method', 'Deposit');
+        formData.append('payment_date', paymentDate);
+        formData.append('file', slipFile);
+
+        try {
+            const response = await fetch('http://127.0.0.1:5000/verify-payment', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Payment verification failed');
+            }
+
+            if (result.payment_status !== 'Verified') {
+                throw new Error('Payment verification failed. Please upload a valid payment slip.');
+            }
+
+            showToast('Payment submitted and verified successfully!', 'success');
+
+            // Redirect after success
+            setTimeout(() => {
+                window.location.href = '@Url.Action("PaymentSuccess", "AuctionSlip")' + '?auctionId=' + document.getElementById('AuctionId').value;
+            }, 2000);
+
+        } catch (error) {
+            showToast(error.message, 'error');
+            console.error('Error:', error);
+            setButtonLoading(submitBtn, false);
+        }
+    });
+</script>
