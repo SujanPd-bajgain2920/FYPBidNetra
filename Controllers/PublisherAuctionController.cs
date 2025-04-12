@@ -276,7 +276,8 @@ namespace FYPBidNetra.Controllers
             var auctions = _context.AuctionDetails
                 .Where(t => t.PublishedByUserId == currentUserID &&
                             t.AuctionStatus == "Completed" &&
-                            t.IsVerified == "Verified")
+                            t.IsVerified == "Verified" &&
+                            t.AwardStatus == "Pending")
                 .Select(t => new AuctionEdit
                 {
                     AuctionId = t.AuctionId,

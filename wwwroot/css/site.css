@@ -754,3 +754,34 @@ body {
         width: 100%;
     }
 }
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .stats-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .actions-section {
+        grid-template-columns: 1fr;
+    }
+
+    .welcome-title {
+        font-size: 2rem;
+    }
+
+    .welcome-subtitle {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .stats-section {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-content {
+        padding: 2rem 1rem;
+    }
+}

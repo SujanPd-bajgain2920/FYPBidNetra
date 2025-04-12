@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
@@ -33,15 +34,160 @@ namespace FYPBidNetra.Controllers
         }
 
 
-        // publisher dashboards
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            // Get the current user's ID
+            int userId = Convert.ToInt16(User.Identity!.Name);
 
-            return View();
+            // Create view model for dashboard
+            var dashboardViewModel = new PublisherDashboardViewModel
+            {
+                // Active Tenders
+                ActiveTenders = await _context.TenderDetails
+                    .CountAsync(t => t.PublishedByUserId == userId && t.TenderStatus == "Open"),
+
+                // Active Auctions
+                ActiveAuctions = await _context.AuctionDetails
+                    .CountAsync(a => a.PublishedByUserId == userId && a.AuctionStatus == "Active"),
+
+                // Total Bidders (unique bidders for this publisher's auctions and tenders)
+                TotalBidders = await GetTotalBiddersAsync(userId),
+
+                // Completion Rate (percentage of completed tenders and auctions)
+                CompletionRate = await CalculateCompletionRateAsync(userId),
+
+                // Get Recent Activities
+                RecentActivities = await GetRecentActivitiesAsync(userId)
+            };
+
+            return View(dashboardViewModel);
         }
 
-        // tender related methods
-        [Route("tenderpage/{activeTab?}")]
+        private async Task<int> GetTotalBiddersAsync(int publisherId)
+        {
+            // Get unique bidders from auction bids
+            var auctionBidders = await _context.AuctionBids
+                .Where(b => _context.AuctionDetails
+                    .Any(a => a.AuctionId == b.AuctionBidId && a.PublishedByUserId == publisherId))
+                .Select(b => b.BidderId)
+                .Distinct()
+                .ToListAsync();
+
+            // Get unique bidders from tender applications
+            var tenderBidders = await _context.TenderApplications
+                .Where(t => _context.TenderDetails
+                    .Any(td => td.TenderId == t.TenderAppllyId && td.PublishedByUserId == publisherId))
+                .Select(t => t.CompanyApplyId)
+                .Distinct()
+                .ToListAsync();
+
+            // Count all companies that have applied to tenders
+            var companyUserIds = await _context.Companies
+                .Where(c => tenderBidders.Contains(c.CompanyId))
+                .Select(c => c.UserbidId)
+                .Distinct()
+                .ToListAsync();
+
+            // Combine unique bidders from both auctions and tenders
+            var allBidders = auctionBidders
+                .Select(b => (int)b)  // Convert short to int
+                .Union(companyUserIds.Select(id => (int)id))  // Convert short to int
+                .Distinct()
+                .Count();
+
+            return allBidders;
+        }
+
+        private async Task<int> CalculateCompletionRateAsync(int publisherId)
+        {
+            // Get total number of tenders and auctions created by this publisher
+            var totalTenders = await _context.TenderDetails
+                .CountAsync(t => t.PublishedByUserId == publisherId);
+
+            var totalAuctions = await _context.AuctionDetails
+                .CountAsync(a => a.PublishedByUserId == publisherId);
+
+            // Get number of completed tenders and auctions
+            var completedTenders = await _context.TenderDetails
+                .CountAsync(t => t.PublishedByUserId == publisherId &&
+                           (t.TenderStatus == "Closed" && t.AwardStatus == "Awarded"));
+
+            var completedAuctions = await _context.AuctionDetails
+                .CountAsync(a => a.PublishedByUserId == publisherId &&
+                           (a.AuctionStatus == "Completed" && a.AwardStatus == "Awarded"));
+
+            // Calculate completion rate
+            var total = totalTenders + totalAuctions;
+            var completed = completedTenders + completedAuctions;
+
+            return total > 0 ? (int)Math.Round((double)completed / total * 100) : 0;
+        }
+
+        private async Task<List<ActivityViewModel>> GetRecentActivitiesAsync(int publisherId)
+        {
+            var activities = new List<ActivityViewModel>();
+
+            // Get recent tender applications
+            var tenderApplications = await _context.TenderApplications
+                .Where(ta => _context.TenderDetails
+                    .Any(t => t.TenderId == ta.TenderAppllyId && t.PublishedByUserId == publisherId))
+                .OrderByDescending(ta => ta.ApplicationId) // Assuming newer applications have higher IDs
+                .Take(3)
+                .Select(ta => new
+                {
+                    Application = ta,
+                    Tender = _context.TenderDetails.FirstOrDefault(t => t.TenderId == ta.TenderAppllyId),
+                    Company = _context.Companies.FirstOrDefault(c => c.CompanyId == ta.CompanyApplyId)
+                })
+                .ToListAsync();
+
+            foreach (var app in tenderApplications)
+            {
+                activities.Add(new ActivityViewModel
+                {
+                    Type = "Tender",
+                    Title = "New tender application received",
+                    Description = $"{app.Tender?.Title} #{app.Tender?.TenderId}",
+                    Time = DateTime.Now.AddDays(-activities.Count), 
+                    Status = app.Application.ApplicationStatus,
+                    IconClass = "fas fa-file-contract"
+                });
+            }
+
+            // Get recent auction bids
+            var auctionBids = await _context.AuctionBids
+                .Where(ab => _context.AuctionDetails
+                    .Any(a => a.AuctionId == ab.AuctionBidId && a.PublishedByUserId == publisherId))
+                .OrderByDescending(ab => ab.BidId)
+                .Take(3)
+                .Select(ab => new
+                {
+                    Bid = ab,
+                    Auction = _context.AuctionDetails.FirstOrDefault(a => a.AuctionId == ab.AuctionBidId),
+                    Bidder = _context.UserLists.FirstOrDefault(u => u.UserId == ab.BidderId)
+                })
+                .ToListAsync();
+
+            foreach (var bid in auctionBids)
+            {
+                activities.Add(new ActivityViewModel
+                {
+                    Type = "Auction",
+                    Title = bid.Auction?.AuctionStatus == "Completed" ? "Auction completed successfully" : "New bid received",
+                    Description = $"{bid.Auction?.Title} #{bid.Auction?.AuctionId}",
+                    Time = DateTime.Parse($"{bid.Bid.BidDate} {bid.Bid.BidTime}"),
+                    Status = bid.Auction?.AuctionStatus == "Completed" ? "Completed" : "Pending",
+                    IconClass = "fas fa-gavel"
+                });
+            }
+
+            // Get the most recent 5 activities, ordered by time
+            return activities.OrderByDescending(a => a.Time).Take(5).ToList();
+        }
+    
+
+    // tender related methods
+    [Route("tenderpage/{activeTab?}")]
         public IActionResult TenderPage(string activeTab = "TenderList")
         {
             ViewBag.ActiveTab = activeTab; // Set the active tab in ViewBag
@@ -147,9 +293,11 @@ namespace FYPBidNetra.Controllers
             UpdateTenderStatuses();
             int currentUserID = Convert.ToInt16(User.Identity!.Name);
             var tenders = _context.TenderDetails
+
                 .Where(t => t.PublishedByUserId == currentUserID &&
                             t.TenderStatus == "Closed" &&
-                            t.IsVerified == "Verified")
+                            t.IsVerified == "Verified" &&
+                            t.AwardStatus == "Pending")
                 .OrderByDescending(t => t.IssuedDate).Select(t => new TenderEdit
                 {
                     TenderId = t.TenderId,
