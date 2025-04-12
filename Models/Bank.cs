@@ -17,5 +17,7 @@ public partial class Bank
 
     public short? UserbankId { get; set; }
 
+    public bool IsVerified { get; set; } = false;
+
     public virtual UserList? Userbank { get; set; }
 }

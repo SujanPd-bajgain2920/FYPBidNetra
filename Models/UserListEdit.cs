@@ -29,8 +29,8 @@ namespace FYPBidNetra.Models
 
 
         [Required(ErrorMessage = "Email is required")]
-        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z]+\.[a-zA-Z]{2,}$",
-    ErrorMessage = "Please enter a valid email address (e.g., user@gmail.com)")]
+        [RegularExpression(@"^(?!.*\.\.)[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$",
+    ErrorMessage = "Please enter a valid email address (e.g., user@example.com or np05cp4a220130@iic.edu.np)")]
         public string EmailAddress { get; set; } = null!;
         public string? UserPhoto { get; set; }
 
@@ -81,6 +81,7 @@ namespace FYPBidNetra.Models
         [DataType(DataType.Upload)]
         public IFormFile? PanFile { get; set; } = null!;
 
+        public bool IsVerified { get; set; } = false;
         //Bank
 
         public short BankId { get; set; }

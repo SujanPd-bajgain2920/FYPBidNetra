@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Security.Cryptography;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace FYPBidNetra.Controllers
 {
@@ -93,6 +94,20 @@ namespace FYPBidNetra.Controllers
         public IActionResult Index()
         {
             UpdateTenderStatuses();
+
+            var userId = Convert.ToInt16(User.Identity.Name);
+           
+            var company = _context.Companies
+                .FirstOrDefault(c => c.UserbidId == userId);
+
+            var kycStatus = _context.Companies
+                .Where(c => c.UserbidId == userId)
+                .Select(c => c.IsVerified)
+            .FirstOrDefault();
+
+            ViewBag.KycStatus = kycStatus;
+            ViewBag.HasCompany = company != null;
+
 
             var tenders = _context.TenderDetails
                 .Where(t =>

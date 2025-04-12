@@ -14,6 +14,8 @@
 
         public short? UserbankId { get; set; }
 
+        public bool IsVerified { get; set; } 
+
 
     }
 }

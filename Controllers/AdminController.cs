@@ -62,11 +62,14 @@ namespace BidNetra.Controllers
             var totalUsers = _context.UserLists.Count();
             var totalTenders = _context.TenderDetails.Count();
             var totalAuctions = _context.AuctionDetails.Count();
+            var totalPending = _context.Companies.Count(k => !k.IsVerified);
+            
 
 
             ViewBag.TotalUsers = totalUsers;
             ViewBag.TotalTenders = totalTenders;
             ViewBag.TotalAuctions = totalAuctions;
+            ViewBag.TotalCompanies = totalPending;
 
             return View();
         }
@@ -655,6 +658,227 @@ namespace BidNetra.Controllers
             return View(viewModel);
         }
 
+        /// ########################### Kyc ##############################
 
+        public IActionResult KycList()
+        {
+            var kycList = _context.UserLists
+                .Include(u => u.Companies)
+             .Where(u => u.UserRole == "Bidder")
+             .Select(u => new KycViewModel
+             {
+                 UserId = u.UserId,
+                 UserEncId = _protector.Protect(u.UserId.ToString()),
+                 FirstName = u.FirstName,
+                 LastName = u.LastName,
+                 EmailAddress = u.EmailAddress,
+                 Phone = u.Phone,
+                 
+                 CompanyId = _context.Companies
+                     .Where(c => c.UserbidId == u.UserId)
+                     .Select(c => c.CompanyId)
+                     .FirstOrDefault(),
+                 BankId = _context.Banks
+                     .Where(b => b.UserbankId == u.UserId)
+                     .Select(b => b.BankId)
+                     .FirstOrDefault(),
+                 CompanyName = _context.Companies
+                     .Where(c => c.UserbidId == u.UserId)
+                     .Select(c => c.CompanyName)
+                     .FirstOrDefault(),
+                 RegistrationNumber = _context.Companies
+                     .Where(c => c.UserbidId == u.UserId)
+                     .Select(c => c.RegistrationNumber)
+                     .FirstOrDefault(),
+                 PanNumber = _context.Companies
+                     .Where(c => c.UserbidId == u.UserId)
+                     .Select(c => c.PanNumber)
+                     .FirstOrDefault(),
+                 IsVerified = _context.Companies
+                     .Where(c => c.UserbidId == u.UserId)
+                     .Select(c => c.IsVerified)
+                     .FirstOrDefault(),
+                 HasCompany = _context.Companies.Any(c => c.UserbidId == u.UserId),
+                 HasBank = _context.Banks.Any(b => b.UserbankId == u.UserId)
+             })
+             .Where(k => k.HasCompany && k.HasBank && !k.IsVerified)
+             .ToList();
+
+            var totalPending = kycList.Count(k => !k.IsVerified);
+            var totalVerified = kycList.Count(k => k.IsVerified);
+
+            ViewBag.TotalPending = totalPending;
+            ViewBag.TotalVerified = totalVerified;
+
+            return View(kycList);
+        }
+
+        public IActionResult KycDetails(string id)
+        {
+            try
+            {
+                // Decrypt the user ID
+                int userId = Convert.ToInt32(_protector.Unprotect(id));
+
+                // Get user details
+                var user = _context.UserLists
+                    .Where(u => u.UserId == userId)
+                    .Select(u => new UserListEdit
+                    {
+                        UserId = u.UserId,
+                        FirstName = u.FirstName,
+                        LastName = u.LastName,
+                        EmailAddress = u.EmailAddress,
+                        Phone = u.Phone,
+                        Province = u.Province,
+                        District = u.District,
+                        City = u.City,
+                        UserPhoto = u.UserPhoto
+                    })
+                    .FirstOrDefault();
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                // Get company details
+                var company = _context.Companies
+                    .Where(c => c.UserbidId == userId)
+                    .Select(c => new CompanyEdit
+                    {
+                        CompanyId = c.CompanyId,
+                        CompanyName = c.CompanyName,
+                        FullAddress = c.FullAddress,
+                        OfficeEmail = c.OfficeEmail,
+                        RegistrationNumber = c.RegistrationNumber,
+                        RegistrationDocument = c.RegistrationDocument,
+                        PanNumber = c.PanNumber,
+                        PanDocument = c.PanDocument,
+                        CompanyType = c.CompanyType,
+                        IsVerified = c.IsVerified
+                    })
+                    .FirstOrDefault();
+
+                // Get bank details
+                var bank = _context.Banks
+                    .Where(b => b.UserbankId == userId)
+                    .Select(b => new BankEdit
+                    {
+                        BankId = b.BankId,
+                        BankName = b.BankName,
+                        AccountNumber = b.AccountNumber,
+                        AccountType = b.AccountType,
+                        AccountHolderName = b.AccountHolderName,
+                        IsVerified = b.IsVerified
+                    })
+                    .FirstOrDefault();
+
+                // Create view model
+                var viewModel = new KycDetailsViewModel
+                {
+                    User = user,
+                    Company = company,
+                    Bank = bank
+                };
+
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                // Log error and return error view
+                return View("Error");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateKycStatus(int userId, int companyId, int bankId, bool isVerified)
+        {
+            try
+            {
+                // Verify company
+                var company = await _context.Companies
+                    .FirstOrDefaultAsync(c => c.CompanyId == companyId && c.UserbidId == userId);
+                if (company == null)
+                {
+                    return Json(new { success = false, error = "Company not found" });
+                }
+
+                // Verify bank
+                var bank = await _context.Banks
+                    .FirstOrDefaultAsync(b => b.BankId == bankId && b.UserbankId == userId);
+                if (bank == null)
+                {
+                    return Json(new { success = false, error = "Bank details not found" });
+                }
+
+                // Update both records
+                company.IsVerified = isVerified;
+                bank.IsVerified = isVerified;
+                await _context.SaveChangesAsync();
+
+                // Get user details for email
+                var user = await _context.UserLists
+                    .FirstOrDefaultAsync(u => u.UserId == userId);
+
+                if (user != null)
+                {
+                    try
+                    {
+                        var emailSubject = isVerified ?
+                            "Your KYC Has Been Verified" :
+                            "KYC Verification Update";
+
+                        var emailBody = isVerified ?
+                            GenerateKycApprovedEmailBody(company, user) :
+                            GenerateKycRejectedEmailBody(company, user);
+
+                        await _emailService.SendEmailAsync(
+                            user.EmailAddress,
+                            emailSubject,
+                            emailBody);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Email sending failed: {ex.Message}");
+                        return Json(new { success = true, warning = "Status updated but email notification failed." });
+                    }
+                }
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+     
+
+        private string GenerateKycApprovedEmailBody(Company company, UserList user)
+        {
+            return $@"
+            <h2>KYC Verification Approved</h2>
+            <p>Dear {user.FirstName} {user.LastName},</p>
+            <p>Your KYC has been successfully verified by the admin:</p>
+            <ul>
+                <li><strong>Company Name:</strong> {company.CompanyName}</li>
+                <li><strong>Registration Number:</strong> {company.RegistrationNumber}</li>
+            </ul>
+            <p>You can now participate in all tenders and auctions.</p>";
+        }
+
+        private string GenerateKycRejectedEmailBody(Company company, UserList user)
+        {
+            return $@"
+            <h2>KYC Verification Update</h2>
+            <p>Dear {user.FirstName} {user.LastName},</p>
+            <p>Your KYC verification status has been updated:</p>
+            <ul>
+                <li><strong>Company Name:</strong> {company.CompanyName}</li>
+                <li><strong>Status:</strong> Not Verified</li>
+            </ul>
+            <p>Please contact the admin for more information.</p>";
+        }
     }
 }

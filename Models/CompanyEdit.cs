@@ -34,6 +34,8 @@ namespace FYPBidNetra.Models
 
         public TenderEdit Tenders { get; set; }
 
+        public bool IsVerified { get; set; }
+
 
     }
 }

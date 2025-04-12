@@ -31,6 +31,10 @@ public partial class Company
 
     public short? UserbidId { get; set; }
 
+    public bool IsVerified { get; set; } = false;
+
+    //public short? VerifiedBy { get; set; } // Admin ID who verified
+
     public virtual ICollection<ContractDetail> ContractDetails { get; set; } = new List<ContractDetail>();
 
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();

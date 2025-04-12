@@ -98,6 +98,14 @@
                                             Profile
                                         </a>
                                     </li>
+                                    @if (User.IsInRole("Bidder"))
+                                    {
+                                        <li>
+                                            <a asp-action="KycDetails" asp-controller="Kyc" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
+                                                Kyc Details
+                                            </a>
+                                        </li>
+                                    }
                                     <li>
                                         <a asp-action="ChangePassword" asp-controller="Account" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
                                             Change Password
