@@ -730,12 +730,125 @@ namespace FYPBidNetra.Controllers
                     MailMessage m = new()
                     {
                         From = new MailAddress("ghastlybarely2356@gmail.com"),
-                        Subject = "Forgot Password Token",
-                        Body = $@"<p class='text-red-800' style='background-color:red;'>Forgot Password</p>
-                        <a href='https://localhost:44321/Account/ResetPassword?UserId=0&EmailAddress={user.EmailAddress}&EmailToken={_protector.Protect(token)}' style='background-color:blue;' >ResetPassword</a>
-:{token}",
+                        Subject = "Reset Your BidNetra Password",
+                        Body = $@"
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Password Reset Request</title>
+    <style>
+        /* Base styles */
+        body, html {{
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }}
+        .container {{
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }}
+        .header {{
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }}
+        .content {{
+            padding: 40px 30px;
+            background-color: #ffffff;
+        }}
+        .footer {{
+            background-color: #f8f8f8;
+            padding: 15px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }}
+        .button {{
+            display: inline-block;
+            background-color: #0056b3;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 15px 0;
+        }}
+        .info-table {{
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }}
+        .info-table td {{
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }}
+        .info-table td:first-child {{
+            font-weight: bold;
+            width: 140px;
+        }}
+        .security-note {{
+            background-color: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #64748b;
+        }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h1 style='margin:0;'>Password Reset Request</h1>
+        </div>
+        <div class='content'>
+            <h2 style='color:#0056b3;'>Reset Your Password</h2>
+            <p>We received a request to reset your password for your BidNetra account.</p>
+            
+            <table class='info-table'>
+                <tr>
+                    <td>Account Email:</td>
+                    <td>{user.EmailAddress}</td>
+                </tr>
+                <tr>
+                    <td>Request Time:</td>
+                    <td>{DateTime.Now.ToString("dd MMM yyyy, HH:mm")}</td>
+                </tr>
+            </table>
+            
+            <p>To reset your password, please click the button below. This link will expire in 30 minutes for security reasons.</p>
+            
+            <div style='text-align: center;'>
+                <a href='https://localhost:44321/Account/ResetPassword?UserId=0&EmailAddress={user.EmailAddress}&EmailToken={_protector.Protect(token)}' class='button'>Reset Password</a>
+            </div>
+            
+           <div class='security-note'>
+                <strong>Security Tip:</strong> For your protection, please never share this email 
+                or your password reset link with anyone. BidNetra representatives will never ask 
+                for your password or this reset token.
+                <br><br>
+                <strong>Your verification code:</strong> {token}
+            </div>
+            
+            <p>If you did not request a password reset, please ignore this email or contact our support team if you have concerns about your account security.</p>
+        </div>
+        <div class='footer'>
+            <p>This is an automated message from BidNetra. Please do not reply to this email.</p>
+            <p>&copy; {DateTime.Now.Year} BidNetra. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>",
                         IsBodyHtml = true,
-
                     };
 
 
