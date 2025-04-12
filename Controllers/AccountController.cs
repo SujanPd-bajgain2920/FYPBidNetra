@@ -824,11 +824,10 @@ namespace FYPBidNetra.Controllers
                     <td>{DateTime.Now.ToString("dd MMM yyyy, HH:mm")}</td>
                 </tr>
             </table>
-            
-            <p>To reset your password, please click the button below. This link will expire in 30 minutes for security reasons.</p>
+           
             
             <div style='text-align: center;'>
-                <a href='https://localhost:44321/Account/ResetPassword?UserId=0&EmailAddress={user.EmailAddress}&EmailToken={_protector.Protect(token)}' class='button'>Reset Password</a>
+                <strong>Your verification code:</strong> {token}
             </div>
             
            <div class='security-note'>
@@ -836,7 +835,7 @@ namespace FYPBidNetra.Controllers
                 or your password reset link with anyone. BidNetra representatives will never ask 
                 for your password or this reset token.
                 <br><br>
-                <strong>Your verification code:</strong> {token}
+                
             </div>
             
             <p>If you did not request a password reset, please ignore this email or contact our support team if you have concerns about your account security.</p>
@@ -884,7 +883,8 @@ namespace FYPBidNetra.Controllers
             }
             else
             {
-                return Json("Failed");
+                ModelState.AddModelError("", "Invalid verification code");
+                return View(e);
             }
         }
 
