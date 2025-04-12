@@ -9,7 +9,7 @@ public partial class Payment
 
     public short? PayTenderId { get; set; }
 
-    public short PayCompanyId { get; set; }
+    public short? PayCompanyId { get; set; }
 
     public short? PayAuctionId { get; set; }
 

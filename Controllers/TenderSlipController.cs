@@ -2,7 +2,7 @@
 using FYPBidNetra.Security;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
-
+using System.Net.Http;
 public class TenderSlipController : Controller
 {
     private readonly FypContext _context;
@@ -31,11 +31,20 @@ public class TenderSlipController : Controller
                     TenderId = t.TenderId,
                     TenderTitle = t.Title,
                     PaymentAmount = t.BudgetEstimation,
+                    PaymentDate = DateTime.UtcNow.AddMinutes(345),
                     PayFromUser = new UserListEdit
                     {
                         UserId = (short)currentUserId,
                         FirstName = _context.UserLists
                             .Where(u => u.UserId == currentUserId)
+                            .Select(u => u.FirstName + " " + u.LastName)
+                            .FirstOrDefault()
+                    },
+                    PayToUser = new UserListEdit
+                    {
+                        UserId = t.AwardCompany.CompanyId,
+                        FirstName = _context.UserLists
+                            .Where(u => u.UserId == t.AwardCompany.CompanyId)
                             .Select(u => u.FirstName + " " + u.LastName)
                             .FirstOrDefault()
                     },
@@ -67,60 +76,60 @@ public class TenderSlipController : Controller
         }
     }
 
-    [HttpPost]
+   /* [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> TenderPayment(PaymentEdit model)
     {
-        //return Json(model);
-
         try
         {
-            if (model.SlipFile != null)
+            if (model.SlipFile == null)
             {
-                string fileName = "SlipImage" + Guid.NewGuid() + Path.GetExtension(model.SlipFile.FileName);
-                string filePath = Path.Combine(_env.WebRootPath, "SlipImage", fileName);
-
-                if (!Directory.Exists(Path.Combine(_env.WebRootPath, "SlipImage")))
-                {
-                    Directory.CreateDirectory(Path.Combine(_env.WebRootPath, "SlipImage"));
-                }
-                using (FileStream stream = new FileStream(filePath, FileMode.Create))
-                {
-                    model.SlipFile.CopyTo(stream);
-                }
-                model.SlipUpload = fileName;
+                ModelState.AddModelError("SlipFile", "Payment slip is required");
+                return View(model);
             }
 
-
-
-            // Create new payment record
-            var payment = new Payment
+            // Call Flask verification API
+            using (var httpClient = new HttpClient())
             {
-                PaymentId = (short)(_context.Payments.Any() ?
-                        _context.Payments.Max(p => p.PaymentId) + 1 : 1),
-                PayTenderId = model.TenderId,
-                PayCompanyId = model.PayToCompany.CompanyId,
-                PayToUser = (short)model.PayToCompany.UserbidId,
-                PayByUser = model.PayFromUser.UserId,
-                PaymentAmount = model.PaymentAmount,
-                PaymentDate = model.PaymentDate,
-                PaymentMethod = "Deposit",
-                SlipUpload = model.SlipUpload,
-                PaymentStatus = "Pending"
-            };
+                var form = new MultipartFormDataContent();
+                form.Add(new StringContent(model.PayTenderId.TenderId.ToString()), "pay_tender_id");
+                form.Add(new StringContent(model.PayToCompany.CompanyId.ToString()), "pay_company_id");
+                form.Add(new StringContent(model.PayFromUser.UserId.ToString()), "pay_by_user");
+                form.Add(new StringContent(model.PayToUser.UserId.ToString()), "pay_to_user");
+                form.Add(new StringContent(model.PaymentAmount.ToString()), "payment_amount");
+                form.Add(new StringContent("Deposit"), "payment_method");
 
-            return Json(payment);
+                using (var fileStream = model.SlipFile.OpenReadStream())
+                {
+                    form.Add(new StreamContent(fileStream), "file", model.SlipFile.FileName);
+                }
 
-            _context.Payments.Add(payment);
-            await _context.SaveChangesAsync();
+                var response = await httpClient.PostAsync("http://127.0.0.1:5000/verify-payment", form);
 
-            TempData["SuccessMessage"] = "Payment submitted successfully!";
-            return RedirectToAction("AwardedTender", "PublisherTender");
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    ModelState.AddModelError("", $"Payment verification failed: {errorContent}");
+                    return View(model);
+                }
+
+                var result = await response.Content.ReadFromJsonAsync<Dictionary<string, object>>();
+
+                if (result["payment_status"].ToString() != "Verified")
+                {
+                    ModelState.AddModelError("", "Payment verification failed. Please upload a valid payment slip.");
+                    return View(model);
+                }
+
+                // If verification succeeded, show success message
+                TempData["SuccessMessage"] = "Payment submitted and verified successfully!";
+                return RedirectToAction("AwardedTender", "PublisherTender");
+            }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            ModelState.AddModelError("", "An error occurred while processing the payment.");
+            ModelState.AddModelError("", $"An error occurred while processing the payment: {ex.Message}");
             return View(model);
         }
-    }
+    }*/
 }

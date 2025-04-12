@@ -9,6 +9,8 @@
         public string? SlipUpload { get; set; }
         public IFormFile? SlipFile { get; set; }
         public UserListEdit PayFromUser { get; set; }
+
+        public UserListEdit PayToUser { get; set; }
         public CompanyEdit PayToCompany { get; set; }
         public string EncryptedTenderId { get; set; }
 

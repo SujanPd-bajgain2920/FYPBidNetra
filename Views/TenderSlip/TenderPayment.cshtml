@@ -26,11 +26,12 @@
             </div>
         </div>
 
-        <form asp-action="TenderPayment" asp-controller="TenderSlip" method="post" enctype="multipart/form-data">
-            <input type="number" asp-for="PayTenderId.TenderId" />
-            <input type="text" asp-for="EncryptedTenderId" />
-            <input type="number" asp-for="PayFromUser.UserId" />
-            <input type="number" asp-for="PayToCompany.CompanyId" />
+        <form id="paymentForm" enctype="multipart/form-data">
+            <input type="hidden" id="PayTenderId_TenderId" value="@Model.TenderId" />
+            <input type="hidden" id="TenderId" value="@Model.TenderId" />
+            <input type="hidden" id="PayFromUser_UserId" value="@Model.PayFromUser.UserId" />
+            <input type="hidden" id="PayToUser_UserId" value="@Model.PayToUser?.UserId" />
+            <input type="hidden" id="PayToCompany_CompanyId" value="@Model.PayToCompany.CompanyId" />
 
             <div class="space-y-6">
                 <!-- Payment Amount -->
@@ -42,9 +43,9 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <span class="text-gray-500 sm:text-sm">Rs.</span>
                         </div>
-                        <input type="number" asp-for="PaymentAmount" readonly
+                        <input type="number" id="PaymentAmount" value="@Model.PaymentAmount"
                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-12 p-2.5"
-                               placeholder="0.00">
+                               placeholder="0.00" readonly>
                     </div>
                 </div>
 
@@ -57,10 +58,9 @@
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                             <i class="fas fa-calendar text-gray-500"></i>
                         </div>
-                        <input type="datetime-local" asp-for="PaymentDate"
+                        <input type="datetime-local" id="PaymentDate" value="@Model.PaymentDate.ToString("yyyy-MM-ddTHH:mm")"
                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5">
                     </div>
-                    <span asp-validation-for="PaymentDate" class="text-red-500 text-sm"></span>
                 </div>
 
                 <!-- Payment Slip Upload -->
@@ -69,7 +69,7 @@
                         <i class="fas fa-file-image me-2 text-blue-500"></i>Upload Payment Slip
                     </label>
                     <div class="mb-2">
-                        <input id="SlipFile" name="SlipFile" type="file" accept="image/*"
+                        <input id="SlipFile" type="file" accept="image/*"
                                class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none">
                         <p class="mt-1 text-sm text-gray-500">PNG or JPG only (max. 10MB)</p>
                     </div>
@@ -77,12 +77,11 @@
                         <p class="text-sm font-medium text-gray-700 mb-1">Preview:</p>
                         <img id="preview" src="#" alt="Preview" class="max-h-40 rounded border border-gray-300">
                     </div>
-                    <span asp-validation-for="SlipFile" class="text-red-500 text-sm"></span>
                 </div>
 
                 <!-- Submit Button -->
                 <div class="flex justify-end">
-                    <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none">
+                    <button type="button" id="submitBtn" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none">
                         <i class="fas fa-paper-plane me-2"></i>Submit Payment
                     </button>
                 </div>
@@ -124,6 +123,44 @@
             reader.readAsDataURL(file);
         } else {
             document.getElementById('imagePreview').classList.add('hidden');
+        }
+    });
+
+    // Form submission to Flask API
+    document.getElementById('submitBtn').addEventListener('click', async function () {
+        const formData = new FormData();
+        formData.append('pay_tender_id', document.getElementById('PayTenderId_TenderId').value);
+        formData.append('pay_company_id', document.getElementById('PayToCompany_CompanyId').value);
+        formData.append('pay_by_user', document.getElementById('PayFromUser_UserId').value);
+        formData.append('pay_to_user', document.getElementById('PayToUser_UserId').value);
+        formData.append('payment_amount', document.getElementById('PaymentAmount').value);
+        formData.append('payment_method', 'Deposit');
+        formData.append('payment_date', document.getElementById('PaymentDate').value);
+        formData.append('file', document.getElementById('SlipFile').files[0]);
+
+        try {
+            const response = await fetch('http://127.0.0.1:5000/verify-payment', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Payment verification failed');
+            }
+
+            if (result.payment_status !== 'Verified') {
+                throw new Error('Payment verification failed. Please upload a valid payment slip.');
+            }
+
+            alert('Payment submitted and verified successfully!');
+            // Redirect after success
+            window.location.href = '@Url.Action("TenderPage", "PublisherTender", new { activeTab = "AwardedTender" })';
+
+        } catch (error) {
+            alert(error.message);
+            console.error('Error:', error);
         }
     });
 </script>
