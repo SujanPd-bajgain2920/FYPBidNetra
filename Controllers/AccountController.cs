@@ -383,9 +383,96 @@ namespace FYPBidNetra.Controllers
                 {
                     From = new MailAddress("ghastlybarely2356@gmail.com"),
                     Subject = "Email Verification for Registration",
-                    Body = $@"<h2>Email Verification</h2>
-                     <p>Your verification code is: <strong>{otp}</strong></p>
-                     <p>Please use this code to complete your registration.</p>",
+                    Body = $@"
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Email Verification</title>
+    <style>
+        /* Base styles */
+        body, html {{
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }}
+        .container {{
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }}
+        .header {{
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }}
+        .content {{
+            padding: 40px 30px;
+            background-color: #ffffff;
+        }}
+        .footer {{
+            background-color: #f8f8f8;
+            padding: 15px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }}
+        .token-box {{
+            background-color: #f1f5f9;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            color: #1e40af;
+        }}
+        .security-note {{
+            background-color: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #64748b;
+        }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h1 style='margin:0;'>Email Verification</h1>
+        </div>
+        <div class='content'>
+            <h2 style='color:#0056b3;'>Welcome to BidNetra</h2>
+            <p>Thank you for registering with BidNetra. Please use the verification code below to complete your registration.</p>
+            
+            <div class='token-box'>
+                {otp}
+            </div>
+            
+            <div class='security-note'>
+                <strong>Security Tip:</strong> This code will expire after use. 
+                Do not share this code with anyone. BidNetra representatives will never ask for this code.
+            </div>
+            
+            <p>If you did not request this registration, please ignore this email or contact our support team.</p>
+        </div>
+        <div class='footer'>
+            <p>This is an automated message from BidNetra. Please do not reply to this email.</p>
+            <p>&copy; {DateTime.Now.Year} BidNetra. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>",
                     IsBodyHtml = true,
                 };
 

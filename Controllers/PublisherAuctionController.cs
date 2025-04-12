@@ -350,7 +350,7 @@ namespace FYPBidNetra.Controllers
              return PartialView("_AwardedAuction", auctions);
          }*/
 
-        public IActionResult AwardedAuction()
+        public async Task<IActionResult> AwardedAuction()
         {
             UpdateAuctionStatuses();
             int currentUserID = Convert.ToInt16(User.Identity!.Name);
@@ -434,7 +434,119 @@ namespace FYPBidNetra.Controllers
                                     };
 
                                     _context.Add(contract);
-                                    _context.SaveChanges();
+                                    await _context.SaveChangesAsync();
+                                    // Send email notification to winner
+                                    if (highestBid.Bidder?.EmailAddress != null)
+                                    {
+                                        string winnerEmailBody = $@"
+                                        <!DOCTYPE html>
+                                        <html>
+                                        <head>
+                                            <style>
+                                                body {{
+                                                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                                                    line-height: 1.6;
+                                                    color: #333;
+                                                    margin: 0;
+                                                    padding: 0;
+                                                    background-color: #f5f7fa;
+                                                }}
+                                                .email-container {{
+                                                    max-width: 600px;
+                                                    margin: 20px auto;
+                                                    background: white;
+                                                    border-radius: 8px;
+                                                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                                                    overflow: hidden;
+                                                }}
+                                                .email-header {{
+                                                    background: linear-gradient(135deg, #166534, #14532d);
+                                                    color: white;
+                                                    padding: 25px;
+                                                    text-align: center;
+                                                }}
+                                                .email-content {{
+                                                    padding: 30px;
+                                                }}
+                                                .info-table {{
+                                                    width: 100%;
+                                                    border-collapse: collapse;
+                                                    margin: 20px 0;
+                                                }}
+                                                .info-table td {{
+                                                    padding: 10px;
+                                                    border-bottom: 1px solid #e5e7eb;
+                                                }}
+                                                .info-table td:first-child {{
+                                                    font-weight: bold;
+                                                    color: #4b5563;
+                                                    width: 35%;
+                                                }}
+                                                .action-button {{
+                                                    display: inline-block;
+                                                    background: linear-gradient(135deg, #166534, #14532d);
+                                                    color: white !important;
+                                                    text-decoration: none;
+                                                    padding: 12px 24px;
+                                                    border-radius: 6px;
+                                                    margin: 20px 0;
+                                                }}
+                                                .email-footer {{
+                                                    background-color: #f9fafb;
+                                                    padding: 15px;
+                                                    text-align: center;
+                                                    font-size: 14px;
+                                                    color: #6b7280;
+                                                    border-top: 1px solid #e5e7eb;
+                                                }}
+                                            </style>
+                                        </head>
+                                        <body>
+                                            <div class='email-container'>
+                                                <div class='email-header'>
+                                                    <h2>Congratulations! You've Won the Auction</h2>
+                                                </div>
+                                                <div class='email-content'>
+                                                    <p>Dear {highestBid.Bidder.FirstName} {highestBid.Bidder.LastName},</p>
+                                                    <p>Your bid for the following auction has been accepted:</p>
+            
+                                                    <table class='info-table'>
+                                                        <tr>
+                                                            <td>Auction Title:</td>
+                                                            <td>{auctionToUpdate.Title}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Your Winning Bid:</td>
+                                                            <td>{highestBid.BidAmount:C}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Auction ID:</td>
+                                                            <td>{auctionToUpdate.AuctionId}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Award Date:</td>
+                                                            <td>{DateTime.Now.ToString("dd MMM yyyy")}</td>
+                                                        </tr>
+                                                    </table>
+            
+                                                    <p>A contract has been generated. Please login to your account to review and sign the contract.</p>
+            
+            
+                                                    <p>If you have any questions, please contact our support team.</p>
+                                                </div>
+                                                <div class='email-footer'>
+                                                    <p>This is an automated message from BidNetra. Please do not reply to this email.</p>
+                                                    <p>&copy; {DateTime.Now.Year} BidNetra. All rights reserved.</p>
+                                                </div>
+                                            </div>
+                                        </body>
+                                        </html>";
+
+                                        await _emailService.SendEmailAsync(
+                                            highestBid.Bidder.EmailAddress,
+                                            $"Congratulations! You've Won Auction: {auctionToUpdate.Title}",
+                                            winnerEmailBody);
+                                    }
                                 }
                             }
                         }

@@ -538,16 +538,123 @@ namespace FYPBidNetra.Controllers
                 {
                     // Send email to publisher
                     string emailBody = $@"
-                <h2>New Tender Proposal Received</h2>
-                <p>A new proposal has been submitted for your tender:</p>
-                <ul>
-                    <li><strong>Tender Title:</strong> {tender.Title}</li>
-                    <li><strong>Company Name:</strong> {company?.CompanyName}</li>
-                    <li><strong>Proposed Budget:</strong> {t.ProposedBudget:C}</li>
-                    <li><strong>Proposed Duration:</strong> {t.ProposedDuration}</li>
-                    <li><strong>Status:</strong> Pending Review</li>
-                </ul>
-                <p>Please login to your account to review the proposal.</p>";
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <style>
+                                body {{
+                                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                                    line-height: 1.6;
+                                    color: #333;
+                                    margin: 0;
+                                    padding: 0;
+                                    background-color: #f5f7fa;
+                                }}
+                                .email-container {{
+                                    max-width: 600px;
+                                    margin: 20px auto;
+                                    background: white;
+                                    border-radius: 8px;
+                                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                                    overflow: hidden;
+                                }}
+                                .email-header {{
+                                    background: linear-gradient(135deg, #1e40af, #1e3a8a);
+                                    color: white;
+                                    padding: 25px;
+                                    text-align: center;
+                                }}
+                                .email-content {{
+                                    padding: 30px;
+                                }}
+                                .info-table {{
+                                    width: 100%;
+                                    border-collapse: collapse;
+                                    margin: 20px 0;
+                                }}
+                                .info-table td {{
+                                    padding: 10px;
+                                    border-bottom: 1px solid #e5e7eb;
+                                }}
+                                .info-table td:first-child {{
+                                    font-weight: bold;
+                                    color: #4b5563;
+                                    width: 35%;
+                                }}
+                                .action-button {{
+                                    display: inline-block;
+                                    background: linear-gradient(135deg, #1e40af, #1e3a8a);
+                                    color: white !important;
+                                    text-decoration: none;
+                                    padding: 12px 24px;
+                                    border-radius: 6px;
+                                    margin: 20px 0;
+                                }}
+                                .status-badge {{
+                                    display: inline-block;
+                                    padding: 5px 10px;
+                                    border-radius: 20px;
+                                    font-weight: bold;
+                                    background-color: #fef3c7;
+                                    color: #92400e;
+                                }}
+                                .email-footer {{
+                                    background-color: #f9fafb;
+                                    padding: 15px;
+                                    text-align: center;
+                                    font-size: 14px;
+                                    color: #6b7280;
+                                    border-top: 1px solid #e5e7eb;
+                                }}
+                            </style>
+                        </head>
+                        <body>
+                            <div class='email-container'>
+                                <div class='email-header'>
+                                    <h2>New Tender Proposal Received</h2>
+                                </div>
+                                <div class='email-content'>
+                                    <p>Dear Publisher,</p>
+                                    <p>A new proposal has been submitted for your tender:</p>
+            
+                                    <table class='info-table'>
+                                        <tr>
+                                            <td>Tender Title:</td>
+                                            <td>{tender.Title}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Company Name:</td>
+                                            <td>{company?.CompanyName}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Proposed Budget:</td>
+                                            <td>{t.ProposedBudget:C}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Proposed Duration:</td>
+                                            <td>{t.ProposedDuration}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Submission Date:</td>
+                                            <td>{DateTime.Now.ToString("dd MMM yyyy")}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Status:</td>
+                                            <td><span class='status-badge'>Pending Review</span></td>
+                                        </tr>
+                                    </table>
+            
+                                    <p>Please review this proposal at your earliest convenience.</p>
+            
+                                    <p>You can accept or reject this proposal after reviewing all details.</p>
+                                </div>
+                                <div class='email-footer'>
+                                    <p>This is an automated message from BidNetra. Please do not reply to this email.</p>
+                                    <p>&copy; {DateTime.Now.Year} BidNetra. All rights reserved.</p>
+                                </div>
+                            </div>
+                        </body>
+                        </html>";
 
                     await _emailService.SendEmailAsync(
                         tender.PublishedByUser.EmailAddress,

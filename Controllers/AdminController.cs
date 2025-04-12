@@ -294,42 +294,243 @@ namespace BidNetra.Controllers
         private string GeneratePublisherEmailBody(TenderDetail tender)
         {
             return $@"
-        <h2>Tender Verification Update</h2>
-        <p>Your tender has been verified by the admin:</p>
-        <ul>
-            <li><strong>Tender ID:</strong> {tender.TenderId}</li>
-            <li><strong>Title:</strong> {tender.Title}</li>
-            <li><strong>Status:</strong> Verified</li>
-        </ul>
-        <p>Your tender is now visible to bidders.</p>";
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ 
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                    line-height: 1.6; 
+                    color: #333;
+                    margin: 0;
+                    padding: 0;
+                    background-color: #f5f7fa;
+                }}
+                .email-container {{
+                    max-width: 600px;
+                    margin: 20px auto;
+                    background: white;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                    overflow: hidden;
+                }}
+                .email-header {{
+                    background: linear-gradient(135deg, #1e40af, #1e3a8a);
+                    color: white;
+                    padding: 25px;
+                    text-align: center;
+                }}
+                .email-content {{
+                    padding: 30px;
+                }}
+                .status-badge {{
+                    display: inline-block;
+                    padding: 5px 10px;
+                    border-radius: 20px;
+                    font-weight: bold;
+                    margin-left: 10px;
+                }}
+                .verified {{
+                    background-color: #dcfce7;
+                    color: #166534;
+                }}
+                .rejected {{
+                    background-color: #fee2e2;
+                    color: #991b1b;
+                }}
+                .info-table {{
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 20px 0;
+                }}
+                .info-table td {{
+                    padding: 10px;
+                    border-bottom: 1px solid #e5e7eb;
+                }}
+                .info-table td:first-child {{
+                    font-weight: bold;
+                    color: #4b5563;
+                    width: 35%;
+                }}
+                .action-button {{
+                    display: inline-block;
+                    background: linear-gradient(135deg, #1e40af, #1e3a8a);
+                    color: white !important;
+                    text-decoration: none;
+                    padding: 12px 24px;
+                    border-radius: 6px;
+                    margin: 20px 0;
+                }}
+                .email-footer {{
+                    background-color: #f9fafb;
+                    padding: 15px;
+                    text-align: center;
+                    font-size: 14px;
+                    color: #6b7280;
+                    border-top: 1px solid #e5e7eb;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class='email-container'>
+                <div class='email-header'>
+                    <h2>Tender Verification Update</h2>
+                </div>
+                <div class='email-content'>
+                    <p>Dear Publisher,</p>
+                    <p>Your tender has been reviewed by the BidNetra admin team:</p>
+            
+                    <table class='info-table'>
+                        <tr>
+                            <td>Tender ID:</td>
+                            <td>{tender.TenderId}</td>
+                        </tr>
+                        <tr>
+                            <td>Title:</td>
+                            <td>{tender.Title}</td>
+                        </tr>
+                        <tr>
+                            <td>Status:</td>
+                            <td>
+                                <span class='status-badge verified'>Verified</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Verification Date:</td>
+                            <td>{DateTime.Now.ToString("dd MMM yyyy")}</td>
+                        </tr>
+                    </table>
+            
+                    <p>Your tender is now visible to all registered bidders on our platform.</p>
+            
+                   
+            
+                    <p>If you have any questions, please contact our support team.</p>
+                </div>
+                <div class='email-footer'>
+                    <p>This is an automated message from BidNetra. Please do not reply to this email.</p>
+                    <p>&copy; {DateTime.Now.Year} BidNetra. All rights reserved.</p>
+                </div>
+            </div>
+        </body>
+        </html>";
         }
 
         private string GenerateBidderEmailBody(TenderDetail tender)
         {
             return $@"
-        <h2>New Tender Published</h2>
-        <p>A new tender has been published:</p>
-        <ul>
-            <li><strong>Title:</strong> {tender.Title}</li>
-            <li><strong>Type:</strong> {tender.TenderType}</li>
-            <li><strong>Budget:</strong> {tender.BudgetEstimation:C}</li>
-            <li><strong>Opening Date:</strong> {tender.OpeningDate:d}</li>
-            <li><strong>Closing Date:</strong> {tender.ClosingDate:d}</li>
-        </ul>
-        <p>Login to your account to view more details and submit your bid.</p>";
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    /* Same styles as GeneratePublisherEmailBody */
+                </style>
+            </head>
+            <body>
+                <div class='email-container'>
+                    <div class='email-header'>
+                        <h2>New Tender Available</h2>
+                    </div>
+                    <div class='email-content'>
+                        <p>Dear Bidder,</p>
+                        <p>A new tender matching your profile has been published:</p>
+            
+                        <table class='info-table'>
+                            <tr>
+                                <td>Tender Title:</td>
+                                <td>{tender.Title}</td>
+                            </tr>
+                            <tr>
+                                <td>Tender Type:</td>
+                                <td>{tender.TenderType}</td>
+                            </tr>
+                            <tr>
+                                <td>Budget Estimate:</td>
+                                <td>{tender.BudgetEstimation:C}</td>
+                            </tr>
+                            <tr>
+                                <td>Opening Date:</td>
+                                <td>{tender.OpeningDate:d}</td>
+                            </tr>
+                            <tr>
+                                <td>Closing Date:</td>
+                                <td>{tender.ClosingDate:d}</td>
+                            </tr>
+                        </table>
+            
+                        <p>This tender is now open for bidding. Don't miss this opportunity!</p>
+            
+            
+            
+                        <p>Submit your bid before the closing date to be considered.</p>
+                    </div>
+                    <div class='email-footer'>
+                        <p>This is an automated message from BidNetra. Please do not reply to this email.</p>
+                        <p>&copy; {DateTime.Now.Year} BidNetra. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>";
         }
 
         private string GenerateRejectionEmailBody(TenderDetail tender)
         {
             return $@"
-        <h2>Tender Not Verified</h2>
-        <p>Your tender has not been verified by the admin:</p>
-        <ul>
-            <li><strong>Tender ID:</strong> {tender.TenderId}</li>
-            <li><strong>Title:</strong> {tender.Title}</li>
-            <li><strong>Status:</strong> Not Verified</li>
-        </ul>
-        <p>Please contact the admin for more information.</p>";
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    /* Same styles as GeneratePublisherEmailBody */
+                </style>
+            </head>
+            <body>
+                <div class='email-container'>
+                    <div class='email-header' style='background: linear-gradient(135deg, #dc2626, #b91c1c);'>
+                        <h2>Tender Verification Update</h2>
+                    </div>
+                    <div class='email-content'>
+                        <p>Dear Publisher,</p>
+                        <p>We regret to inform you that your tender could not be verified:</p>
+            
+                        <table class='info-table'>
+                            <tr>
+                                <td>Tender ID:</td>
+                                <td>{tender.TenderId}</td>
+                            </tr>
+                            <tr>
+                                <td>Title:</td>
+                                <td>{tender.Title}</td>
+                            </tr>
+                            <tr>
+                                <td>Status:</td>
+                                <td>
+                                    <span class='status-badge rejected'>Not Verified</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Review Date:</td>
+                                <td>{DateTime.Now.ToString("dd MMM yyyy")}</td>
+                            </tr>
+                        </table>
+            
+                        <p>Possible reasons for rejection:</p>
+                        <ul>
+                            <li>Incomplete documentation</li>
+                            <li>Non-compliance with our terms</li>
+                            <li>Missing required information</li>
+                        </ul>
+            
+                        <p>Please review your submission and contact our support team for assistance.</p>
+            
+                        
+                    </div>
+                    <div class='email-footer'>
+                        <p>This is an automated message from BidNetra. Please do not reply to this email.</p>
+                        <p>&copy; {DateTime.Now.Year} BidNetra. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>";
         }
 
 
@@ -561,44 +762,175 @@ namespace BidNetra.Controllers
         private string GenerateAuctionPublisherEmailBody(AuctionDetail auction)
         {
             return $@"
-        <h2>Auction Verification Update</h2>
-        <p>Your auction has been verified by the admin:</p>
-        <ul>
-            <li><strong>Auction ID:</strong> {auction.AuctionId}</li>
-            <li><strong>Title:</strong> {auction.Title}</li>
-            <li><strong>Status:</strong> Verified</li>
-        </ul>
-        <p>Your auction is now visible to bidders.</p>";
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    /* Same styles as GeneratePublisherEmailBody */
+                </style>
+            </head>
+            <body>
+                <div class='email-container'>
+                    <div class='email-header'>
+                        <h2>Auction Verification Update</h2>
+                    </div>
+                    <div class='email-content'>
+                        <p>Dear Publisher,</p>
+                        <p>Your auction has been reviewed by the BidNetra admin team:</p>
+            
+                        <table class='info-table'>
+                            <tr>
+                                <td>Auction ID:</td>
+                                <td>{auction.AuctionId}</td>
+                            </tr>
+                            <tr>
+                                <td>Title:</td>
+                                <td>{auction.Title}</td>
+                            </tr>
+                            <tr>
+                                <td>Status:</td>
+                                <td>
+                                    <span class='status-badge verified'>Verified</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Start Date/Time:</td>
+                                <td>{auction.StartDate:d} at {auction.StartTime:t}</td>
+                            </tr>
+                            <tr>
+                                <td>End Date/Time:</td>
+                                <td>{auction.EndDate:d} at {auction.EndTime:t}</td>
+                            </tr>
+                        </table>
+            
+                        <p>Your auction is now active and visible to all registered bidders.</p>
+            
+                        
+                    </div>
+                    <div class='email-footer'>
+                        <p>This is an automated message from BidNetra. Please do not reply to this email.</p>
+                        <p>&copy; {DateTime.Now.Year} BidNetra. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>";
         }
 
         private string GenerateAuctionBidderEmailBody(AuctionDetail auction)
         {
             return $@"
-        <h2>New Auction Available</h2>
-        <p>A new auction has been published:</p>
-        <ul>
-            <li><strong>Title:</strong> {auction.Title}</li>
-            <li><strong>Type:</strong> {auction.AuctionType}</li>
-            <li><strong>Starting Price:</strong> {auction.StartingPrice:C}</li>
-            <li><strong>Start Date:</strong> {auction.StartDate:d}</li>
-            <li><strong>Start Time:</strong> {auction.StartTime:t}</li>
-            <li><strong>End Date:</strong> {auction.EndDate:d}</li>
-            <li><strong>End Time:</strong> {auction.EndTime:t}</li>
-        </ul>
-        <p>Login to your account to view more details and participate in the auction.</p>";
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    /* Same styles as GeneratePublisherEmailBody */
+                </style>
+            </head>
+            <body>
+                <div class='email-container'>
+                    <div class='email-header'>
+                        <h2>New Auction Available</h2>
+                    </div>
+                    <div class='email-content'>
+                        <p>Dear Bidder,</p>
+                        <p>A new auction matching your profile has been published:</p>
+            
+                        <table class='info-table'>
+                            <tr>
+                                <td>Auction Title:</td>
+                                <td>{auction.Title}</td>
+                            </tr>
+                            <tr>
+                                <td>Auction Type:</td>
+                                <td>{auction.AuctionType}</td>
+                            </tr>
+                            <tr>
+                                <td>Starting Price:</td>
+                                <td>{auction.StartingPrice:C}</td>
+                            </tr>
+                            <tr>
+                                <td>Start Date/Time:</td>
+                                <td>{auction.StartDate:d} at {auction.StartTime:t}</td>
+                            </tr>
+                            <tr>
+                                <td>End Date/Time:</td>
+                                <td>{auction.EndDate:d} at {auction.EndTime:t}</td>
+                            </tr>
+                        </table>
+            
+                        <p>This auction will begin soon. Prepare your bids!</p>
+            
+                        
+            
+                        <p>Participate in the auction during the active period to place your bids.</p>
+                    </div>
+                    <div class='email-footer'>
+                        <p>This is an automated message from BidNetra. Please do not reply to this email.</p>
+                        <p>&copy; {DateTime.Now.Year} BidNetra. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>";
         }
 
         private string GenerateAuctionRejectionEmailBody(AuctionDetail auction)
         {
             return $@"
-        <h2>Auction Not Verified</h2>
-        <p>Your auction has not been verified by the admin:</p>
-        <ul>
-            <li><strong>Auction ID:</strong> {auction.AuctionId}</li>
-            <li><strong>Title:</strong> {auction.Title}</li>
-            <li><strong>Status:</strong> Not Verified</li>
-        </ul>
-        <p>Please contact the admin for more information.</p>";
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Same styles as GeneratePublisherEmailBody */
+    </style>
+</head>
+<body>
+    <div class='email-container'>
+        <div class='email-header' style='background: linear-gradient(135deg, #dc2626, #b91c1c);'>
+            <h2>Auction Verification Update</h2>
+        </div>
+        <div class='email-content'>
+            <p>Dear Publisher,</p>
+            <p>We regret to inform you that your auction could not be verified:</p>
+            
+            <table class='info-table'>
+                <tr>
+                                <td>Auction ID:</td>
+                                <td>{auction.AuctionId}</td>
+                            </tr>
+                            <tr>
+                                <td>Title:</td>
+                                <td>{auction.Title}</td>
+                            </tr>
+                            <tr>
+                                <td>Status:</td>
+                                <td>
+                                    <span class='status-badge rejected'>Not Verified</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Review Date:</td>
+                                <td>{DateTime.Now.ToString("dd MMM yyyy")}</td>
+                            </tr>
+                        </table>
+            
+                        <p>Possible reasons for rejection:</p>
+                        <ul>
+                            <li>Incomplete item information</li>
+                            <li>Non-compliance with our terms</li>
+                            <li>Invalid pricing or duration</li>
+                        </ul>
+            
+                        <p>Please review your submission and contact our support team for assistance.</p>
+            
+                        
+                    </div>
+                    <div class='email-footer'>
+                        <p>This is an automated message from BidNetra. Please do not reply to this email.</p>
+                        <p>&copy; {DateTime.Now.Year} BidNetra. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>";
         }
 
         public IActionResult AdminAuctionDetails(string id)
@@ -853,32 +1185,193 @@ namespace BidNetra.Controllers
             }
         }
 
-     
+
 
         private string GenerateKycApprovedEmailBody(Company company, UserList user)
         {
             return $@"
-            <h2>KYC Verification Approved</h2>
-            <p>Dear {user.FirstName} {user.LastName},</p>
-            <p>Your KYC has been successfully verified by the admin:</p>
-            <ul>
-                <li><strong>Company Name:</strong> {company.CompanyName}</li>
-                <li><strong>Registration Number:</strong> {company.RegistrationNumber}</li>
-            </ul>
-            <p>You can now participate in all tenders and auctions.</p>";
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        /* Same styles as GeneratePublisherEmailBody */
+                    </style>
+                </head>
+                <body>
+                    <div class='email-container'>
+                        <div class='email-header' style='background: linear-gradient(135deg, #166534, #14532d);'>
+                            <h2>KYC Verification Approved</h2>
+                        </div>
+                        <div class='email-content'>
+                            <p>Dear {user.FirstName} {user.LastName},</p>
+                            <p>We are pleased to inform you that your KYC verification has been successfully completed:</p>
+            
+                            <table class='info-table'>
+                                <tr>
+                                    <td>Company Name:</td>
+                                    <td>{company.CompanyName}</td>
+                                </tr>
+                                <tr>
+                                    <td>Registration Number:</td>
+                                    <td>{company.RegistrationNumber}</td>
+                                </tr>
+                                <tr>
+                                    <td>Status:</td>
+                                    <td>
+                                        <span class='status-badge verified'>Verified</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Verification Date:</td>
+                                    <td>{DateTime.Now.ToString("dd MMM yyyy")}</td>
+                                </tr>
+                            </table>
+            
+                            <p>Your account now has full access to all platform features including:</p>
+                            <ul>
+                                <li>Participating in tenders</li>
+                                <li>Bidding in auctions</li>
+                                <li>Accessing premium features</li>
+                            </ul>
+            
+                            
+                        </div>
+                        <div class='email-footer'>
+                            <p>This is an automated message from BidNetra. Please do not reply to this email.</p>
+                            <p>&copy; {DateTime.Now.Year} BidNetra. All rights reserved.</p>
+                        </div>
+                    </div>
+                </body>
+                </html>";
         }
 
         private string GenerateKycRejectedEmailBody(Company company, UserList user)
         {
             return $@"
-            <h2>KYC Verification Update</h2>
-            <p>Dear {user.FirstName} {user.LastName},</p>
-            <p>Your KYC verification status has been updated:</p>
-            <ul>
-                <li><strong>Company Name:</strong> {company.CompanyName}</li>
-                <li><strong>Status:</strong> Not Verified</li>
-            </ul>
-            <p>Please contact the admin for more information.</p>";
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body {{
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        line-height: 1.6;
+                        color: #333;
+                        margin: 0;
+                        padding: 0;
+                        background-color: #f5f7fa;
+                    }}
+                    .email-container {{
+                        max-width: 600px;
+                        margin: 20px auto;
+                        background: white;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                        overflow: hidden;
+                    }}
+                    .email-header {{
+                        background: linear-gradient(135deg, #dc2626, #b91c1c);
+                        color: white;
+                        padding: 25px;
+                        text-align: center;
+                    }}
+                    .email-content {{
+                        padding: 30px;
+                    }}
+                    .status-badge {{
+                        display: inline-block;
+                        padding: 5px 10px;
+                        border-radius: 20px;
+                        font-weight: bold;
+                        margin-left: 10px;
+                    }}
+                    .rejected {{
+                        background-color: #fee2e2;
+                        color: #991b1b;
+                    }}
+                    .info-table {{
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin: 20px 0;
+                    }}
+                    .info-table td {{
+                        padding: 10px;
+                        border-bottom: 1px solid #e5e7eb;
+                    }}
+                    .info-table td:first-child {{
+                        font-weight: bold;
+                        color: #4b5563;
+                        width: 35%;
+                    }}
+                    .action-button {{
+                        display: inline-block;
+                        background: linear-gradient(135deg, #dc2626, #b91c1c);
+                        color: white !important;
+                        text-decoration: none;
+                        padding: 12px 24px;
+                        border-radius: 6px;
+                        margin: 20px 0;
+                    }}
+                    .email-footer {{
+                        background-color: #f9fafb;
+                        padding: 15px;
+                        text-align: center;
+                        font-size: 14px;
+                        color: #6b7280;
+                        border-top: 1px solid #e5e7eb;
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class='email-container'>
+                    <div class='email-header'>
+                        <h2>KYC Verification Update</h2>
+                    </div>
+                    <div class='email-content'>
+                        <p>Dear {user.FirstName} {user.LastName},</p>
+                        <p>We regret to inform you that your KYC verification could not be completed:</p>
+            
+                        <table class='info-table'>
+                            <tr>
+                                <td>Company Name:</td>
+                                <td>{company.CompanyName}</td>
+                            </tr>
+                            <tr>
+                                <td>Registration Number:</td>
+                                <td>{company.RegistrationNumber}</td>
+                            </tr>
+                            <tr>
+                                <td>Status:</td>
+                                <td>
+                                    <span class='status-badge rejected'>Not Verified</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Review Date:</td>
+                                <td>{DateTime.Now.ToString("dd MMM yyyy")}</td>
+                            </tr>
+                        </table>
+            
+                        <p>Possible reasons for rejection:</p>
+                        <ul>
+                            <li>Document verification failed</li>
+                            <li>Information mismatch in submitted documents</li>
+                            <li>Incomplete documentation</li>
+                            <li>Expired documents</li>
+                        </ul>
+            
+                        <p>Please review your submission and contact our support team for assistance.</p>
+            
+                       
+            
+                        <p>You may resubmit your KYC documents after addressing the issues mentioned above.</p>
+                    </div>
+                    <div class='email-footer'>
+                        <p>This is an automated message from BidNetra. Please do not reply to this email.</p>
+                        <p>&copy; {DateTime.Now.Year} BidNetra. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>";
         }
     }
 }
