@@ -6,8 +6,12 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using payment_gateway_nepal;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Text;
+
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace FYPBidNetra.Controllers
@@ -443,14 +447,262 @@ namespace FYPBidNetra.Controllers
             return View(model); 
         }
 
+        /* [HttpPost]
+         [ValidateAntiForgeryToken]
+         public async Task<IActionResult> AppliedTender(TenderApplicationEdit t)
+         {
+
+             try
+             {
+
+                 // Generate the next ApplicationId
+                 short maxid = _context.TenderApplications.Any()
+                     ? Convert.ToInt16(_context.TenderApplications.Max(x => x.ApplicationId) + 1)
+                     : (short)1;
+
+                 t.ApplicationId = maxid;
+
+                 // Check if a TenderFile is uploaded and validate its extension
+                 if (t.TenderFile != null)
+                 {
+                     if (Path.GetExtension(t.TenderFile.FileName).ToLower() != ".pdf")
+                     {
+                         return Json(new { success = false, message = "Only PDF files are allowed." });
+                     }
+
+                     // Generate a unique filename for the uploaded file
+                     string fileName = "ProposalTender" + Guid.NewGuid() + Path.GetExtension(t.TenderFile.FileName);
+                     string filePath = Path.Combine(_env.WebRootPath, "ProposalTender", fileName);
+
+                     // Ensure the directory exists, create if it doesn't
+                     if (!Directory.Exists(Path.Combine(_env.WebRootPath, "ProposalTender")))
+                         Directory.CreateDirectory(Path.Combine(_env.WebRootPath, "ProposalTender"));
+
+                     // Save the file to the directory
+                     using (FileStream stream = new FileStream(filePath, FileMode.Create))
+                     {
+                         t.TenderFile.CopyTo(stream);
+                     }
+                     t.ApplicationDocument = fileName;
+                 }
+
+
+
+
+                 // Create a new TenderApplication object
+                 TenderApplication tenders = new()
+                 {
+                     ApplicationId = t.ApplicationId,
+                     TenderAppllyId = t.TenderAppllyId,
+                     CompanyApplyId = t.CompanyApplyId,
+                     ProposedBudget = t.ProposedBudget,
+                     ProposedDuration = t.ProposedDuration,
+                     ApplicationDocument = t.ApplicationDocument,
+                     ApplicationStatus = "Pending"
+                 };
+
+                 //return Json(tenders);
+
+
+                 _context.Add(tenders);
+
+                 //return Json(tenders);
+
+                 await _context.SaveChangesAsync();
+
+                 // Get tender and company details for the email
+                 var tender = await _context.TenderDetails
+                     .Include(t => t.PublishedByUser)
+                     .FirstOrDefaultAsync(t => t.TenderId == tenders.TenderAppllyId);
+
+                 var company = await _context.Companies
+                     .FirstOrDefaultAsync(c => c.CompanyId == t.CompanyApplyId);
+
+                 // Create payment record
+                 var payment = new Payment
+                 {
+                     PaymentId = (short)(_context.Payments.Any() ?
+                         _context.Payments.Max(p => p.PaymentId) + 1 : 1),
+                     PayTenderId = t.TenderAppllyId,
+                     PayCompanyId = t.CompanyApplyId,
+                     PayToUser = tender.PublishedByUserId,
+                     PayByUser = Convert.ToInt16(User.Identity.Name),
+                     PaymentAmount = 10,
+                     PaymentDate = DateTime.Now,
+                     PaymentMethod = "Esewa",
+                     PaymentStatus = "Pending"
+                 };
+
+                 _context.Payments.Add(payment);
+                 await _context.SaveChangesAsync();
+
+
+
+                 if (tender?.PublishedByUser?.EmailAddress != null)
+                 {
+                     // Send email to publisher
+                     string emailBody = $@"
+                         <!DOCTYPE html>
+                         <html>
+                         <head>
+                             <style>
+                                 body {{
+                                     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                                     line-height: 1.6;
+                                     color: #333;
+                                     margin: 0;
+                                     padding: 0;
+                                     background-color: #f5f7fa;
+                                 }}
+                                 .email-container {{
+                                     max-width: 600px;
+                                     margin: 20px auto;
+                                     background: white;
+                                     border-radius: 8px;
+                                     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                                     overflow: hidden;
+                                 }}
+                                 .email-header {{
+                                     background: linear-gradient(135deg, #1e40af, #1e3a8a);
+                                     color: white;
+                                     padding: 25px;
+                                     text-align: center;
+                                 }}
+                                 .email-content {{
+                                     padding: 30px;
+                                 }}
+                                 .info-table {{
+                                     width: 100%;
+                                     border-collapse: collapse;
+                                     margin: 20px 0;
+                                 }}
+                                 .info-table td {{
+                                     padding: 10px;
+                                     border-bottom: 1px solid #e5e7eb;
+                                 }}
+                                 .info-table td:first-child {{
+                                     font-weight: bold;
+                                     color: #4b5563;
+                                     width: 35%;
+                                 }}
+                                 .action-button {{
+                                     display: inline-block;
+                                     background: linear-gradient(135deg, #1e40af, #1e3a8a);
+                                     color: white !important;
+                                     text-decoration: none;
+                                     padding: 12px 24px;
+                                     border-radius: 6px;
+                                     margin: 20px 0;
+                                 }}
+                                 .status-badge {{
+                                     display: inline-block;
+                                     padding: 5px 10px;
+                                     border-radius: 20px;
+                                     font-weight: bold;
+                                     background-color: #fef3c7;
+                                     color: #92400e;
+                                 }}
+                                 .email-footer {{
+                                     background-color: #f9fafb;
+                                     padding: 15px;
+                                     text-align: center;
+                                     font-size: 14px;
+                                     color: #6b7280;
+                                     border-top: 1px solid #e5e7eb;
+                                 }}
+                             </style>
+                         </head>
+                         <body>
+                             <div class='email-container'>
+                                 <div class='email-header'>
+                                     <h2>New Tender Proposal Received</h2>
+                                 </div>
+                                 <div class='email-content'>
+                                     <p>Dear Publisher,</p>
+                                     <p>A new proposal has been submitted for your tender:</p>
+
+                                     <table class='info-table'>
+                                         <tr>
+                                             <td>Tender Title:</td>
+                                             <td>{tender.Title}</td>
+                                         </tr>
+                                         <tr>
+                                             <td>Company Name:</td>
+                                             <td>{company?.CompanyName}</td>
+                                         </tr>
+                                         <tr>
+                                             <td>Proposed Budget:</td>
+                                             <td>{t.ProposedBudget:C}</td>
+                                         </tr>
+                                         <tr>
+                                             <td>Proposed Duration:</td>
+                                             <td>{t.ProposedDuration}</td>
+                                         </tr>
+                                         <tr>
+                                             <td>Submission Date:</td>
+                                             <td>{DateTime.Now.ToString("dd MMM yyyy")}</td>
+                                         </tr>
+                                         <tr>
+                                             <td>Status:</td>
+                                             <td><span class='status-badge'>Pending Review</span></td>
+                                         </tr>
+                                     </table>
+
+                                     <p>Please review this proposal at your earliest convenience.</p>
+
+                                     <p>You can accept or reject this proposal after reviewing all details.</p>
+                                 </div>
+                                 <div class='email-footer'>
+                                     <p>This is an automated message from BidNetra. Please do not reply to this email.</p>
+                                     <p>&copy; {DateTime.Now.Year} BidNetra. All rights reserved.</p>
+                                 </div>
+                             </div>
+                         </body>
+                         </html>";
+
+                     await _emailService.SendEmailAsync(
+                         tender.PublishedByUser.EmailAddress,
+                         "New Tender Proposal Received",
+                         emailBody);
+                 }
+
+                 return RedirectToAction("Index", "Payment");
+                 //return View(t);
+
+             }
+             catch (Exception ex)
+             {
+
+                 // Return a generic error message to the user
+                 ModelState.AddModelError("", "An error occurred while submitting the proposal. Please try again.");
+                 return View("AppliedTender", t); // Return the view with the error message
+             }
+         }*/
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AppliedTender(TenderApplicationEdit t)
         {
-
             try
             {
-               
+                if (!ModelState.IsValid)
+                {
+                    return View(t);
+                }
+
+                // Save file to temp location
+                if (t.TenderFile != null)
+                {
+                    var tempPath = Path.Combine(Path.GetTempPath(), $"tender_{Guid.NewGuid()}");
+                    using (var stream = System.IO.File.Create(tempPath))
+                    {
+                        await t.TenderFile.CopyToAsync(stream);
+                    }
+                    HttpContext.Session.SetString("TenderTempPath", tempPath);
+                    HttpContext.Session.SetString("TenderFileName", t.TenderFile.FileName);
+                }
+
                 // Generate the next ApplicationId
                 short maxid = _context.TenderApplications.Any()
                     ? Convert.ToInt16(_context.TenderApplications.Max(x => x.ApplicationId) + 1)
@@ -458,223 +710,89 @@ namespace FYPBidNetra.Controllers
 
                 t.ApplicationId = maxid;
 
-                // Check if a TenderFile is uploaded and validate its extension
-                if (t.TenderFile != null)
+                // Store tender application data in session
+                var tenderData = new
                 {
-                    if (Path.GetExtension(t.TenderFile.FileName).ToLower() != ".pdf")
-                    {
-                        return Json(new { success = false, message = "Only PDF files are allowed." });
-                    }
-
-                    // Generate a unique filename for the uploaded file
-                    string fileName = "ProposalTender" + Guid.NewGuid() + Path.GetExtension(t.TenderFile.FileName);
-                    string filePath = Path.Combine(_env.WebRootPath, "ProposalTender", fileName);
-
-                    // Ensure the directory exists, create if it doesn't
-                    if (!Directory.Exists(Path.Combine(_env.WebRootPath, "ProposalTender")))
-                        Directory.CreateDirectory(Path.Combine(_env.WebRootPath, "ProposalTender"));
-
-                    // Save the file to the directory
-                    using (FileStream stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        t.TenderFile.CopyTo(stream);
-                    }
-                    t.ApplicationDocument = fileName;
-                }
-
-
-
-
-                // Create a new TenderApplication object
-                TenderApplication tenders = new()
-                {
-                    ApplicationId = t.ApplicationId,
-                    TenderAppllyId = t.TenderAppllyId,
-                    CompanyApplyId = t.CompanyApplyId,
-                    ProposedBudget = t.ProposedBudget,
-                    ProposedDuration = t.ProposedDuration,
-                    ApplicationDocument = t.ApplicationDocument,
-                    ApplicationStatus = "Pending"
+                    t.ApplicationId,
+                    t.TenderAppllyId,
+                    t.CompanyApplyId,
+                    t.ProposedBudget,
+                    t.ProposedDuration,
+                    t.ApplicationStatus
                 };
 
-                //return Json(tenders);
+                HttpContext.Session.SetString("TenderApplicationData", JsonConvert.SerializeObject(tenderData));
 
-
-                _context.Add(tenders);
-
-                //return Json(tenders);
-
-                await _context.SaveChangesAsync();
-
-                // Get tender and company details for the email
+                // Get tender and company details for payment
                 var tender = await _context.TenderDetails
-                    .Include(t => t.PublishedByUser)
-                    .FirstOrDefaultAsync(t => t.TenderId == tenders.TenderAppllyId);
+                    .Include(td => td.PublishedByUser)
+                    .FirstOrDefaultAsync(td => td.TenderId == t.TenderAppllyId);
 
                 var company = await _context.Companies
                     .FirstOrDefaultAsync(c => c.CompanyId == t.CompanyApplyId);
 
-                // Create payment record
-                var payment = new Payment
+                // Create payment details
+                var paymentDetails = new
                 {
-                    PaymentId = (short)(_context.Payments.Any() ?
-                        _context.Payments.Max(p => p.PaymentId) + 1 : 1),
-                    PayTenderId = t.TenderAppllyId,
-                    PayCompanyId = t.CompanyApplyId,
+                    TenderId = t.TenderAppllyId,
+                    CompanyId = t.CompanyApplyId,
                     PayToUser = tender.PublishedByUserId,
                     PayByUser = Convert.ToInt16(User.Identity.Name),
-                    PaymentAmount = 10,
-                    PaymentDate = DateTime.Now,
-                    PaymentMethod = "Esewa",
-                    PaymentStatus = "Pending"
+                    Amount = 10
                 };
 
-                _context.Payments.Add(payment);
-                await _context.SaveChangesAsync();
+                HttpContext.Session.SetString("PendingPayment", JsonConvert.SerializeObject(paymentDetails));
 
-                
+                // Initiate payment
+                PaymentManager paymentManager = new PaymentManager(
+                    PaymentMethod.eSewa,
+                    PaymentVersion.v2,
+                    PaymentMode.Sandbox,
+                    "8gBm/:&EnhH.1/q"
+                );
 
-                if (tender?.PublishedByUser?.EmailAddress != null)
+                string currentUrl = new Uri($"{Request.Scheme}://{Request.Host}").AbsoluteUri;
+                string referenceId = $"bid-{DateTime.Now.Ticks}";
+
+                dynamic request = new
                 {
-                    // Send email to publisher
-                    string emailBody = $@"
-                        <!DOCTYPE html>
-                        <html>
-                        <head>
-                            <style>
-                                body {{
-                                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                                    line-height: 1.6;
-                                    color: #333;
-                                    margin: 0;
-                                    padding: 0;
-                                    background-color: #f5f7fa;
-                                }}
-                                .email-container {{
-                                    max-width: 600px;
-                                    margin: 20px auto;
-                                    background: white;
-                                    border-radius: 8px;
-                                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                                    overflow: hidden;
-                                }}
-                                .email-header {{
-                                    background: linear-gradient(135deg, #1e40af, #1e3a8a);
-                                    color: white;
-                                    padding: 25px;
-                                    text-align: center;
-                                }}
-                                .email-content {{
-                                    padding: 30px;
-                                }}
-                                .info-table {{
-                                    width: 100%;
-                                    border-collapse: collapse;
-                                    margin: 20px 0;
-                                }}
-                                .info-table td {{
-                                    padding: 10px;
-                                    border-bottom: 1px solid #e5e7eb;
-                                }}
-                                .info-table td:first-child {{
-                                    font-weight: bold;
-                                    color: #4b5563;
-                                    width: 35%;
-                                }}
-                                .action-button {{
-                                    display: inline-block;
-                                    background: linear-gradient(135deg, #1e40af, #1e3a8a);
-                                    color: white !important;
-                                    text-decoration: none;
-                                    padding: 12px 24px;
-                                    border-radius: 6px;
-                                    margin: 20px 0;
-                                }}
-                                .status-badge {{
-                                    display: inline-block;
-                                    padding: 5px 10px;
-                                    border-radius: 20px;
-                                    font-weight: bold;
-                                    background-color: #fef3c7;
-                                    color: #92400e;
-                                }}
-                                .email-footer {{
-                                    background-color: #f9fafb;
-                                    padding: 15px;
-                                    text-align: center;
-                                    font-size: 14px;
-                                    color: #6b7280;
-                                    border-top: 1px solid #e5e7eb;
-                                }}
-                            </style>
-                        </head>
-                        <body>
-                            <div class='email-container'>
-                                <div class='email-header'>
-                                    <h2>New Tender Proposal Received</h2>
-                                </div>
-                                <div class='email-content'>
-                                    <p>Dear Publisher,</p>
-                                    <p>A new proposal has been submitted for your tender:</p>
-            
-                                    <table class='info-table'>
-                                        <tr>
-                                            <td>Tender Title:</td>
-                                            <td>{tender.Title}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Company Name:</td>
-                                            <td>{company?.CompanyName}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Proposed Budget:</td>
-                                            <td>{t.ProposedBudget:C}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Proposed Duration:</td>
-                                            <td>{t.ProposedDuration}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Submission Date:</td>
-                                            <td>{DateTime.Now.ToString("dd MMM yyyy")}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Status:</td>
-                                            <td><span class='status-badge'>Pending Review</span></td>
-                                        </tr>
-                                    </table>
-            
-                                    <p>Please review this proposal at your earliest convenience.</p>
-            
-                                    <p>You can accept or reject this proposal after reviewing all details.</p>
-                                </div>
-                                <div class='email-footer'>
-                                    <p>This is an automated message from BidNetra. Please do not reply to this email.</p>
-                                    <p>&copy; {DateTime.Now.Year} BidNetra. All rights reserved.</p>
-                                </div>
-                            </div>
-                        </body>
-                        </html>";
+                    Amount = 10,
+                    TaxAmount = 0,
+                    TotalAmount = 10,
+                    TransactionUuid = referenceId,
+                    ProductCode = "EPAYTEST",
+                    ProductServiceCharge = 0,
+                    ProductDeliveryCharge = 0,
+                    SuccessUrl = $"{currentUrl.TrimEnd('/')}/Payment/VerifyPayment",
+                    FailureUrl = $"{currentUrl.TrimEnd('/')}/Payment/PaymentFailure",
+                    SignedFieldNames = "total_amount,transaction_uuid,product_code"
+                };
 
-                    await _emailService.SendEmailAsync(
-                        tender.PublishedByUser.EmailAddress,
-                        "New Tender Proposal Received",
-                        emailBody);
-                }
+                var response = await paymentManager.InitiatePaymentAsync<ApiResponse>(request);
 
-                return RedirectToAction("Index", "Payment");
-                //return View(t);
-               
+                return Json(new
+                {
+                    success = true,
+                    redirectUrl = response.data
+                });
             }
             catch (Exception ex)
             {
-
-                // Return a generic error message to the user
+                CleanTempFiles();
                 ModelState.AddModelError("", "An error occurred while submitting the proposal. Please try again.");
-                return View("AppliedTender", t); // Return the view with the error message
+                return View(t);
             }
         }
 
+        private void CleanTempFiles()
+        {
+            if (HttpContext.Session.TryGetValue("TenderTempPath", out var pathBytes))
+            {
+                var path = Encoding.UTF8.GetString(pathBytes);
+                if (System.IO.File.Exists(path))
+                    System.IO.File.Delete(path);
+            }
+        }
 
         [HttpGet]
         public IActionResult EditApplyTender(string id)

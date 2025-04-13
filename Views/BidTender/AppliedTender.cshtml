@@ -560,6 +560,33 @@
         window.history.back();
     });
 
+        document.getElementById('proposalForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            showLoading();
+
+            // Submit form via AJAX
+            var formData = new FormData(this);
+
+            fetch('/BidTender/AppliedTender', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Redirect directly to eSewa
+                        window.location.href = data.redirectUrl;
+                    } else {
+                        hideLoading();
+                        alert(data.message || 'Submission failed');
+                    }
+                })
+                .catch(error => {
+                    hideLoading();
+                    alert('An error occurred');
+                });
+        });
         
     </script>
 </body>

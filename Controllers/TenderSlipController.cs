@@ -97,9 +97,9 @@ public class TenderSlipController : Controller
                 },
                 PayToUser = new UserListEdit
                 {
-                    UserId = t.AwardCompany.CompanyId,
+                    UserId = t.PublishedByUserId,
                     FirstName = _context.UserLists
-                        .Where(u => u.UserId == t.AwardCompany.CompanyId)
+                        .Where(u => u.UserId == t.PublishedByUserId)
                         .Select(u => u.FirstName + " " + u.LastName)
                         .FirstOrDefault()
                 },

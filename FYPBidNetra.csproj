@@ -21,6 +21,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\BlogImage\" />
     <Folder Include="wwwroot\SlipImage\" />
+    <Folder Include="wwwroot\TempFiles\" />
   </ItemGroup>
 
 </Project>

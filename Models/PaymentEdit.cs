@@ -15,6 +15,8 @@
 
         public UserListEdit PayToUser { get; set; }
         public CompanyEdit PayToCompany { get; set; }
+
+        public CompanyEdit PayFromCompany { get; set; }
         public string EncryptedTenderId { get; set; }
 
         public TenderEdit PayTenderId { get; set; }
