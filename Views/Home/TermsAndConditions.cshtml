@@ -1,0 +1,493 @@
+﻿@{
+    ViewData["Title"] = "Terms and Conditions";
+    Layout = null;
+}
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-8 text-center">
+            <h1 class="text-3xl font-bold text-white mb-2">Terms and Conditions</h1>
+            <p class="text-blue-100">Last Updated: April 13, 2023</p>
+        </div>
+
+        <div class="p-6 md:p-8">
+            <!-- Introduction -->
+            <div class="prose max-w-none mb-8">
+                <p class="text-gray-600">
+                    Welcome to BidNetra. These Terms and Conditions govern your use of the BidNetra platform and services.
+                    By accessing or using our platform, you agree to be bound by these Terms. Please read them carefully.
+                </p>
+            </div>
+
+            <!-- Table of Contents -->
+            <div class="bg-gray-50 rounded-xl p-6 mb-8 border border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-list-ul text-blue-600 mr-2"></i> Table of Contents
+                </h2>
+                <ul class="space-y-2 text-gray-700">
+                    <li class="flex items-center">
+                        <i class="fas fa-chevron-right text-blue-500 mr-2 text-sm"></i>
+                        <a href="#definitions" class="hover:text-blue-600 transition-colors">1. Definitions</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-chevron-right text-blue-500 mr-2 text-sm"></i>
+                        <a href="#account" class="hover:text-blue-600 transition-colors">2. Account Registration and User Responsibilities</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-chevron-right text-blue-500 mr-2 text-sm"></i>
+                        <a href="#services" class="hover:text-blue-600 transition-colors">3. Services and Platform Rules</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-chevron-right text-blue-500 mr-2 text-sm"></i>
+                        <a href="#payments" class="hover:text-blue-600 transition-colors">4. Payments and Fees</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-chevron-right text-blue-500 mr-2 text-sm"></i>
+                        <a href="#intellectual" class="hover:text-blue-600 transition-colors">5. Intellectual Property Rights</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-chevron-right text-blue-500 mr-2 text-sm"></i>
+                        <a href="#privacy" class="hover:text-blue-600 transition-colors">6. Privacy and Data Protection</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-chevron-right text-blue-500 mr-2 text-sm"></i>
+                        <a href="#liability" class="hover:text-blue-600 transition-colors">7. Limitation of Liability</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-chevron-right text-blue-500 mr-2 text-sm"></i>
+                        <a href="#disputes" class="hover:text-blue-600 transition-colors">8. Dispute Resolution</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-chevron-right text-blue-500 mr-2 text-sm"></i>
+                        <a href="#termination" class="hover:text-blue-600 transition-colors">9. Termination</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-chevron-right text-blue-500 mr-2 text-sm"></i>
+                        <a href="#governing" class="hover:text-blue-600 transition-colors">10. Governing Law</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-chevron-right text-blue-500 mr-2 text-sm"></i>
+                        <a href="#changes" class="hover:text-blue-600 transition-colors">11. Changes to Terms</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-chevron-right text-blue-500 mr-2 text-sm"></i>
+                        <a href="#contact" class="hover:text-blue-600 transition-colors">12. Contact Information</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Terms Sections -->
+            <div class="space-y-10">
+                <!-- 1. Definitions -->
+                <section id="definitions" class="scroll-mt-24">
+                    <div class="border-b border-gray-200 pb-2 mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-book text-blue-600 mr-3"></i> 1. Definitions
+                        </h2>
+                    </div>
+                    <div class="prose max-w-none text-gray-600 pl-8">
+                        <p>Throughout these Terms and Conditions, the following terms shall have the meanings as defined below:</p>
+                        <ul class="space-y-3 mt-4">
+                            <li>
+                                <strong class="text-gray-800">"BidNetra"</strong>: Refers to the online platform operated by BidNetra Inc., including the website, mobile applications, and all services provided therein.
+                            </li>
+                            <li>
+                                <strong class="text-gray-800">"User"</strong>: Any individual or entity that accesses or uses the BidNetra platform, whether as a guest or registered user.
+                            </li>
+                            <li>
+                                <strong class="text-gray-800">"Publisher"</strong>: A registered user who creates and publishes tenders or auctions on the platform.
+                            </li>
+                            <li>
+                                <strong class="text-gray-800">"Bidder"</strong>: A registered user who participates in tenders or auctions by submitting bids.
+                            </li>
+                            <li>
+                                <strong class="text-gray-800">"Tender"</strong>: A formal invitation to suppliers to submit competitive bids for specific goods or services.
+                            </li>
+                            <li>
+                                <strong class="text-gray-800">"Auction"</strong>: A public sale in which goods or services are sold to the highest bidder.
+                            </li>
+                            <li>
+                                <strong class="text-gray-800">"Content"</strong>: All information, data, text, software, music, sound, photographs, graphics, videos, messages, or other materials that users submit, upload, post, publish, or display on the platform.
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- 2. Account Registration and User Responsibilities -->
+                <section id="account" class="scroll-mt-24">
+                    <div class="border-b border-gray-200 pb-2 mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-user-circle text-blue-600 mr-3"></i> 2. Account Registration and User Responsibilities
+                        </h2>
+                    </div>
+                    <div class="prose max-w-none text-gray-600 pl-8">
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">2.1 Account Registration</h3>
+                        <p>
+                            To access certain features of the platform, you must register for an account. When you register, you agree to provide accurate, current, and complete information about yourself and your business (if applicable). You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.
+                        </p>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">2.2 KYC Verification</h3>
+                        <p>
+                            BidNetra requires all users to complete a Know Your Customer (KYC) verification process. This may include providing identification documents, business registration certificates, and other relevant information. Your account functionality may be limited until the KYC verification process is completed.
+                        </p>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">2.3 User Responsibilities</h3>
+                        <p>As a user of BidNetra, you agree to:</p>
+                        <ul class="space-y-2 mt-2">
+                            <li>Provide accurate and truthful information during registration and KYC verification.</li>
+                            <li>Maintain the security and confidentiality of your account credentials.</li>
+                            <li>Not allow any other person to use your account.</li>
+                            <li>Promptly notify BidNetra of any unauthorized use of your account or any other breach of security.</li>
+                            <li>Not use the platform for any illegal or unauthorized purpose.</li>
+                            <li>Comply with all applicable laws and regulations.</li>
+                        </ul>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">2.4 Prohibited Activities</h3>
+                        <p>Users are prohibited from:</p>
+                        <ul class="space-y-2 mt-2">
+                            <li>Creating multiple accounts for deceptive or fraudulent purposes.</li>
+                            <li>Impersonating any person or entity.</li>
+                            <li>Posting false, inaccurate, misleading, deceptive, defamatory, or libelous content.</li>
+                            <li>Engaging in any activity that could disable, overburden, or impair the proper functioning of the platform.</li>
+                            <li>Attempting to gain unauthorized access to the platform, other users' accounts, or computer systems.</li>
+                            <li>Using the platform to transmit any malware, viruses, or other malicious code.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- 3. Services and Platform Rules -->
+                <section id="services" class="scroll-mt-24">
+                    <div class="border-b border-gray-200 pb-2 mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-cogs text-blue-600 mr-3"></i> 3. Services and Platform Rules
+                        </h2>
+                    </div>
+                    <div class="prose max-w-none text-gray-600 pl-8">
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">3.1 Tender Services</h3>
+                        <p>
+                            BidNetra provides a platform for Publishers to create and publish tenders, and for Bidders to submit applications for these tenders. All users must adhere to the following rules:
+                        </p>
+                        <ul class="space-y-2 mt-2">
+                            <li>Publishers must provide accurate and complete information about their tenders.</li>
+                            <li>Bidders must submit genuine and valid applications.</li>
+                            <li>All tender documents must comply with applicable laws and regulations.</li>
+                            <li>BidNetra reserves the right to remove any tender that violates these Terms or applicable laws.</li>
+                        </ul>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">3.2 Auction Services</h3>
+                        <p>
+                            BidNetra provides a platform for Publishers to create and conduct auctions, and for Bidders to participate in these auctions. All users must adhere to the following rules:
+                        </p>
+                        <ul class="space-y-2 mt-2">
+                            <li>Publishers must provide accurate and complete information about the items or services being auctioned.</li>
+                            <li>Bidders must submit genuine bids and have the intention and ability to complete the transaction if they win.</li>
+                            <li>Shill bidding (artificially inflating prices through fake bids) is strictly prohibited.</li>
+                            <li>Winning bidders are obligated to complete the transaction as per the auction terms.</li>
+                            <li>BidNetra reserves the right to cancel any auction that violates these Terms or applicable laws.</li>
+                        </ul>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">3.3 Content Guidelines</h3>
+                        <p>
+                            All content posted on BidNetra must comply with the following guidelines:
+                        </p>
+                        <ul class="space-y-2 mt-2">
+                            <li>Content must be accurate, truthful, and not misleading.</li>
+                            <li>Content must not infringe on any intellectual property rights.</li>
+                            <li>Content must not be defamatory, obscene, or offensive.</li>
+                            <li>Content must not promote illegal activities or violate any applicable laws.</li>
+                            <li>BidNetra reserves the right to remove any content that violates these guidelines.</li>
+                        </ul>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">3.4 Communication Rules</h3>
+                        <p>
+                            BidNetra provides communication tools for users to interact with each other. When using these tools, users must:
+                        </p>
+                        <ul class="space-y-2 mt-2">
+                            <li>Communicate in a professional and respectful manner.</li>
+                            <li>Not send spam, unsolicited messages, or harassing communications.</li>
+                            <li>Not share personal contact information to circumvent the platform.</li>
+                            <li>Not use communication tools for any purpose that violates these Terms or applicable laws.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- 4. Payments and Fees -->
+                <section id="payments" class="scroll-mt-24">
+                    <div class="border-b border-gray-200 pb-2 mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-money-bill-wave text-blue-600 mr-3"></i> 4. Payments and Fees
+                        </h2>
+                    </div>
+                    <div class="prose max-w-none text-gray-600 pl-8">
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">4.1 Fee Structure</h3>
+                        <p>
+                            BidNetra charges fees for various services provided on the platform. The current fee structure is available on the Pricing page. BidNetra reserves the right to modify the fee structure at any time, with notice to users.
+                        </p>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">4.2 Payment Methods</h3>
+                        <p>
+                            BidNetra accepts payments through various methods, including bank deposits and electronic payment systems like Esewa. Users are responsible for any fees or charges imposed by their payment providers.
+                        </p>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">4.3 Payment Verification</h3>
+                        <p>
+                            All payments made on BidNetra are subject to verification. Users may be required to provide proof of payment, such as transaction receipts or bank statements. BidNetra reserves the right to suspend or terminate accounts with suspicious payment activities.
+                        </p>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">4.4 Refunds</h3>
+                        <p>
+                            Refund policies vary depending on the service. Generally, fees for services already rendered are non-refundable. Specific refund policies for different services are outlined in the respective service agreements.
+                        </p>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">4.5 Taxes</h3>
+                        <p>
+                            Users are responsible for paying all taxes, duties, and other governmental charges associated with their use of BidNetra. BidNetra may collect applicable taxes where required by law.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 5. Intellectual Property Rights -->
+                <section id="intellectual" class="scroll-mt-24">
+                    <div class="border-b border-gray-200 pb-2 mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-copyright text-blue-600 mr-3"></i> 5. Intellectual Property Rights
+                        </h2>
+                    </div>
+                    <div class="prose max-w-none text-gray-600 pl-8">
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">5.1 BidNetra Intellectual Property</h3>
+                        <p>
+                            The BidNetra platform, including its logo, design, text, graphics, interfaces, and the selection and arrangement thereof, is owned by BidNetra Inc. and is protected by copyright, trademark, and other intellectual property laws. Users may not reproduce, modify, create derivative works from, display, perform, distribute, or otherwise use BidNetra's intellectual property without prior written consent.
+                        </p>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">5.2 User Content</h3>
+                        <p>
+                            Users retain ownership of the content they submit to BidNetra. By submitting content, users grant BidNetra a worldwide, non-exclusive, royalty-free license to use, reproduce, modify, adapt, publish, translate, and distribute such content in connection with providing and promoting the platform.
+                        </p>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">5.3 Copyright Infringement</h3>
+                        <p>
+                            BidNetra respects the intellectual property rights of others. If you believe that your work has been copied in a way that constitutes copyright infringement, please provide BidNetra with the following information:
+                        </p>
+                        <ul class="space-y-2 mt-2">
+                            <li>A description of the copyrighted work that you claim has been infringed.</li>
+                            <li>A description of where the material that you claim is infringing is located on the platform.</li>
+                            <li>Your contact information, including address, telephone number, and email address.</li>
+                            <li>A statement by you that you have a good faith belief that the disputed use is not authorized by the copyright owner, its agent, or the law.</li>
+                            <li>A statement by you, made under penalty of perjury, that the above information in your notice is accurate and that you are the copyright owner or authorized to act on the copyright owner's behalf.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- 6. Privacy and Data Protection -->
+                <section id="privacy" class="scroll-mt-24">
+                    <div class="border-b border-gray-200 pb-2 mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-shield-alt text-blue-600 mr-3"></i> 6. Privacy and Data Protection
+                        </h2>
+                    </div>
+                    <div class="prose max-w-none text-gray-600 pl-8">
+                        <p>
+                            BidNetra collects and processes personal data in accordance with its Privacy Policy, which is incorporated by reference into these Terms. By using BidNetra, you consent to the collection, use, and sharing of your information as described in the Privacy Policy.
+                        </p>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">6.1 Data Security</h3>
+                        <p>
+                            BidNetra implements reasonable security measures to protect user data. However, no method of transmission over the Internet or electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your personal information, we cannot guarantee its absolute security.
+                        </p>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">6.2 Third-Party Links</h3>
+                        <p>
+                            The platform may contain links to third-party websites or services that are not owned or controlled by BidNetra. BidNetra has no control over, and assumes no responsibility for, the content, privacy policies, or practices of any third-party websites or services. Users access such websites or services at their own risk.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 7. Limitation of Liability -->
+                <section id="liability" class="scroll-mt-24">
+                    <div class="border-b border-gray-200 pb-2 mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-exclamation-triangle text-blue-600 mr-3"></i> 7. Limitation of Liability
+                        </h2>
+                    </div>
+                    <div class="prose max-w-none text-gray-600 pl-8">
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">7.1 Disclaimer of Warranties</h3>
+                        <p>
+                            THE BIDNETRA PLATFORM IS PROVIDED "AS IS" AND "AS AVAILABLE," WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. BIDNETRA DOES NOT WARRANT THAT THE PLATFORM WILL BE UNINTERRUPTED OR ERROR-FREE, THAT DEFECTS WILL BE CORRECTED, OR THAT THE PLATFORM OR THE SERVERS THAT MAKE IT AVAILABLE ARE FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS.
+                        </p>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">7.2 Limitation of Liability</h3>
+                        <p>
+                            TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, BIDNETRA SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES, WHETHER INCURRED DIRECTLY OR INDIRECTLY, OR ANY LOSS OF DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES, RESULTING FROM:
+                        </p>
+                        <ul class="space-y-2 mt-2">
+                            <li>YOUR ACCESS TO OR USE OF OR INABILITY TO ACCESS OR USE THE PLATFORM;</li>
+                            <li>ANY CONDUCT OR CONTENT OF ANY THIRD PARTY ON THE PLATFORM;</li>
+                            <li>ANY CONTENT OBTAINED FROM THE PLATFORM; OR</li>
+                            <li>UNAUTHORIZED ACCESS, USE, OR ALTERATION OF YOUR TRANSMISSIONS OR CONTENT.</li>
+                        </ul>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">7.3 Indemnification</h3>
+                        <p>
+                            You agree to defend, indemnify, and hold harmless BidNetra, its affiliates, and their respective officers, directors, employees, and agents from and against any claims, liabilities, damages, losses, and expenses, including, without limitation, reasonable legal and accounting fees, arising out of or in any way connected with your access to or use of the platform, your violation of these Terms, or your violation of any rights of another.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 8. Dispute Resolution -->
+                <section id="disputes" class="scroll-mt-24">
+                    <div class="border-b border-gray-200 pb-2 mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-gavel text-blue-600 mr-3"></i> 8. Dispute Resolution
+                        </h2>
+                    </div>
+                    <div class="prose max-w-none text-gray-600 pl-8">
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">8.1 Informal Resolution</h3>
+                        <p>
+                            Before filing a claim against BidNetra, you agree to try to resolve the dispute informally by contacting us. We'll try to resolve the dispute informally by contacting you via email. If a dispute is not resolved within 30 days of submission, you or BidNetra may proceed with formal dispute resolution.
+                        </p>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">8.2 Arbitration</h3>
+                        <p>
+                            Any dispute, controversy, or claim arising out of or relating to these Terms, including the validity, invalidity, breach, or termination thereof, shall be resolved by arbitration in accordance with the laws of Nepal. The arbitration shall take place in Kathmandu, Nepal, and the language of the arbitration shall be English.
+                        </p>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">8.3 Class Action Waiver</h3>
+                        <p>
+                            YOU AND BIDNETRA AGREE THAT EACH MAY BRING CLAIMS AGAINST THE OTHER ONLY IN YOUR OR ITS INDIVIDUAL CAPACITY AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PURPORTED CLASS OR REPRESENTATIVE PROCEEDING.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 9. Termination -->
+                <section id="termination" class="scroll-mt-24">
+                    <div class="border-b border-gray-200 pb-2 mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-door-open text-blue-600 mr-3"></i> 9. Termination
+                        </h2>
+                    </div>
+                    <div class="prose max-w-none text-gray-600 pl-8">
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">9.1 Termination by User</h3>
+                        <p>
+                            You may terminate your account at any time by following the instructions on the platform or by contacting us. Upon termination, your right to use the platform will immediately cease.
+                        </p>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">9.2 Termination by BidNetra</h3>
+                        <p>
+                            BidNetra may terminate or suspend your account and your access to the platform at any time, without prior notice or liability, for any reason whatsoever, including, without limitation, if you breach these Terms.
+                        </p>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">9.3 Effect of Termination</h3>
+                        <p>
+                            Upon termination, your right to use the platform will immediately cease. If your account is terminated, we may delete any content or information that you have provided. All provisions of these Terms which by their nature should survive termination shall survive termination, including, without limitation, ownership provisions, warranty disclaimers, indemnity, and limitations of liability.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 10. Governing Law -->
+                <section id="governing" class="scroll-mt-24">
+                    <div class="border-b border-gray-200 pb-2 mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-balance-scale text-blue-600 mr-3"></i> 10. Governing Law
+                        </h2>
+                    </div>
+                    <div class="prose max-w-none text-gray-600 pl-8">
+                        <p>
+                            These Terms shall be governed by and construed in accordance with the laws of Nepal, without regard to its conflict of law provisions. Your use of the platform may also be subject to other local, state, national, or international laws.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 11. Changes to Terms -->
+                <section id="changes" class="scroll-mt-24">
+                    <div class="border-b border-gray-200 pb-2 mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-sync-alt text-blue-600 mr-3"></i> 11. Changes to Terms
+                        </h2>
+                    </div>
+                    <div class="prose max-w-none text-gray-600 pl-8">
+                        <p>
+                            BidNetra reserves the right, at its sole discretion, to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.
+                        </p>
+                        <p class="mt-4">
+                            By continuing to access or use our platform after any revisions become effective, you agree to be bound by the revised terms. If you do not agree to the new terms, you are no longer authorized to use the platform.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 12. Contact Information -->
+                <section id="contact" class="scroll-mt-24">
+                    <div class="border-b border-gray-200 pb-2 mb-4 class="scroll-mt-24">
+                        <div class="border-b border-gray-200 pb-2 mb-4">
+                            <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-envelope text-blue-600 mr-3"></i> 12. Contact Information
+                            </h2>
+                        </div>
+                        <div class="prose max-w-none text-gray-600 pl-8">
+                            <p>
+                                If you have any questions about these Terms, please contact us at:
+                            </p>
+                            <div class="bg-gray-50 p-4 rounded-lg mt-4 border border-gray-200">
+                                <p class="mb-1"><strong>BidNetra Inc.</strong></p>
+                                <p class="mb-1">123 Business Avenue</p>
+                                <p class="mb-1">Kathmandu, Nepal</p>
+                                <p class="mb-1">Email: support@bidnetra.com</p>
+                                <p>Phone: +977 1 234 5678</p>
+                            </div>
+                        </div>
+                </section>
+            </div>
+
+            <!-- Acceptance Section -->
+            <div class="mt-12 bg-blue-50 rounded-xl p-6 border border-blue-200">
+                <h2 class="text-xl font-semibold text-blue-800 mb-4 flex items-center">
+                    <i class="fas fa-check-circle text-blue-600 mr-2"></i> Acceptance of Terms
+                </h2>
+                <p class="text-blue-700">
+                    By using the BidNetra platform, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions. If you do not agree to these Terms, please do not use the platform.
+                </p>
+            </div>
+
+            <!-- Print Button -->
+            <div class="mt-8 text-center">
+                <button onclick="window.print()" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg inline-flex items-center transition-colors duration-200">
+                    <i class="fas fa-print mr-2"></i> Print Terms and Conditions
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add FontAwesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<!-- Smooth Scroll Script -->
+<script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+</script>

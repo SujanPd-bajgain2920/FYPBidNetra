@@ -29,6 +29,10 @@ namespace FYPBidNetra.Controllers
             return View();
         }
 
+        public IActionResult TermsAndConditions()
+        {
+            return View();
+        }
 
         //partial view
         public IActionResult ProfileImage()
