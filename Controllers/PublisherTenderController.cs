@@ -402,6 +402,12 @@ namespace FYPBidNetra.Controllers
                     return View("_PublishTender", t);
                 }
 
+                if (t.TenderDescription == null)
+                {
+                    ModelState.AddModelError("TenderDescription", "Please enter the description.");
+                    return View("_PublishTender", t);
+                }
+
                 // Validate file upload
                 if (t.TenderFile == null)
                 {

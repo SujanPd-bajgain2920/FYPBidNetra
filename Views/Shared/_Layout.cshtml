@@ -140,22 +140,26 @@
                             @if (User.IsInRole("Admin"))
                             {
                                 <li>
-                                    <a asp-action="Index" asp-controller="Admin" class="nav-link-active block py-2 px-3 text-blue-600 font-medium md:p-0" aria-current="page">
+                                    <a asp-action="Index" asp-controller="Admin" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "Admin" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "text-blue-600 font-medium" : "text-gray-700 hover:text-blue-600") md:p-0 transition-colors duration-200">
                                         Home
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="TenderList" asp-controller="Admin" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
+                                    <a asp-action="TenderList" asp-controller="Admin" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "Admin" && ViewContext.RouteData.Values["Action"].ToString() == "TenderList" ? "text-blue-600 font-medium" : "text-gray-700 hover:text-blue-600") md:p-0 transition-colors duration-200">
                                         Tender
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="AuctionList" asp-controller="Admin" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
+                                    <a asp-action="AuctionList" asp-controller="Admin" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "Admin" && ViewContext.RouteData.Values["Action"].ToString() == "AuctionList" ? "text-blue-600 font-medium" : "text-gray-700 hover:text-blue-600") md:p-0 transition-colors duration-200">
                                         Auction
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
+                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "Blog" ? "text-blue-600 font-medium" : "text-gray-700 hover:text-blue-600") md:p-0 transition-colors duration-200">
                                         Blog
                                     </a>
                                 </li>
@@ -163,22 +167,26 @@
                             else if (User.IsInRole("Publisher"))
                             {
                                 <li>
-                                    <a asp-action="Index" asp-controller="PublisherTender" class="nav-link-active block py-2 px-3 text-blue-600 font-medium md:p-0" aria-current="page">
+                                    <a asp-action="Index" asp-controller="PublisherTender" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "PublisherTender" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "text-blue-600 font-medium" : "text-gray-700 hover:text-blue-600") md:p-0 transition-colors duration-200">
                                         Home
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="TenderPage" asp-controller="PublisherTender" asp-route-activeTab="TenderList" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
+                                    <a asp-action="TenderPage" asp-controller="PublisherTender" asp-route-activeTab="TenderList" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "PublisherTender" && ViewContext.RouteData.Values["Action"].ToString() == "TenderPage" ? "text-blue-600 font-medium" : "text-gray-700 hover:text-blue-600") md:p-0 transition-colors duration-200">
                                         Tender
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="AuctionPage" asp-controller="PublisherAuction" asp-route-activeTab="AuctionList" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
+                                    <a asp-action="AuctionPage" asp-controller="PublisherAuction" asp-route-activeTab="AuctionList" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "PublisherAuction" ? "text-blue-600 font-medium" : "text-gray-700 hover:text-blue-600") md:p-0 transition-colors duration-200">
                                         Auction
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
+                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "Blog" ? "text-blue-600 font-medium" : "text-gray-700 hover:text-blue-600") md:p-0 transition-colors duration-200">
                                         Blog
                                     </a>
                                 </li>
@@ -186,22 +194,26 @@
                             else
                             {
                                 <li>
-                                    <a asp-action="Index" asp-controller="BidTender" class="nav-link-active block py-2 px-3 text-blue-600 font-medium md:p-0" aria-current="page">
+                                    <a asp-action="Index" asp-controller="BidTender" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "BidTender" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "text-blue-600 font-medium" : "text-gray-700 hover:text-blue-600") md:p-0 transition-colors duration-200">
                                         Home
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="TenderBidTab" asp-controller="BidTender" asp-route-activeTab="UpcomingTender" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
+                                    <a asp-action="TenderBidTab" asp-controller="BidTender" asp-route-activeTab="UpcomingTender" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "BidTender" && ViewContext.RouteData.Values["Action"].ToString() != "Index" ? "text-blue-600 font-medium" : "text-gray-700 hover:text-blue-600") md:p-0 transition-colors duration-200">
                                         Tender
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="AuctionBidTab" asp-controller="BidAuction" asp-route-activeTab="UpcomingAuction" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
+                                    <a asp-action="AuctionBidTab" asp-controller="BidAuction" asp-route-activeTab="UpcomingAuction" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "BidAuction" ? "text-blue-600 font-medium" : "text-gray-700 hover:text-blue-600") md:p-0 transition-colors duration-200">
                                         Auction
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" class="block py-2 px-3 text-gray-700 hover:text-blue-600 md:p-0 transition-colors duration-200">
+                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "Blog" ? "text-blue-600 font-medium" : "text-gray-700 hover:text-blue-600") md:p-0 transition-colors duration-200">
                                         Blog
                                     </a>
                                 </li>
@@ -215,22 +227,26 @@
                             @if (User.IsInRole("Admin"))
                             {
                                 <li>
-                                    <a asp-action="Index" asp-controller="Admin" class="block py-2 px-3 text-blue-600 bg-blue-50 rounded-md font-medium" aria-current="page">
+                                    <a asp-action="Index" asp-controller="Admin" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "Admin" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50") rounded-md font-medium">
                                         Home
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="TenderList" asp-controller="Admin" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
+                                    <a asp-action="TenderList" asp-controller="Admin" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "Admin" && ViewContext.RouteData.Values["Action"].ToString() == "TenderList" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50") rounded-md">
                                         Tender
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="AuctionList" asp-controller="Admin" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
+                                    <a asp-action="AuctionList" asp-controller="Admin" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "Admin" && ViewContext.RouteData.Values["Action"].ToString() == "AuctionList" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50") rounded-md">
                                         Auction
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
+                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "Blog" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50") rounded-md">
                                         Blog
                                     </a>
                                 </li>
@@ -238,22 +254,26 @@
                             else if (User.IsInRole("Publisher"))
                             {
                                 <li>
-                                    <a asp-action="Index" asp-controller="PublisherTender" class="block py-2 px-3 text-blue-600 bg-blue-50 rounded-md font-medium" aria-current="page">
+                                    <a asp-action="Index" asp-controller="PublisherTender" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "PublisherTender" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50") rounded-md font-medium">
                                         Home
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="TenderPage" asp-controller="PublisherTender" asp-route-activeTab="TenderList" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
+                                    <a asp-action="TenderPage" asp-controller="PublisherTender" asp-route-activeTab="TenderList" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "PublisherTender" && ViewContext.RouteData.Values["Action"].ToString() == "TenderPage" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50") rounded-md">
                                         Tender
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="AuctionPage" asp-controller="PublisherAuction" asp-route-activeTab="AuctionList" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
+                                    <a asp-action="AuctionPage" asp-controller="PublisherAuction" asp-route-activeTab="AuctionList" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "PublisherAuction" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50") rounded-md">
                                         Auction
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
+                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "Blog" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50") rounded-md">
                                         Blog
                                     </a>
                                 </li>
@@ -261,22 +281,26 @@
                             else
                             {
                                 <li>
-                                    <a asp-action="Index" asp-controller="BidTender" class="block py-2 px-3 text-blue-600 bg-blue-50 rounded-md font-medium" aria-current="page">
+                                    <a asp-action="Index" asp-controller="BidTender" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "BidTender" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50") rounded-md font-medium">
                                         Home
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="TenderBidTab" asp-controller="BidTender" asp-route-activeTab="UpcomingTender" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
+                                    <a asp-action="TenderBidTab" asp-controller="BidTender" asp-route-activeTab="UpcomingTender" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "BidTender" && ViewContext.RouteData.Values["Action"].ToString() != "Index" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50") rounded-md">
                                         Tender
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="AuctionBidTab" asp-controller="BidAuction" asp-route-activeTab="UpcomingAuction" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
+                                    <a asp-action="AuctionBidTab" asp-controller="BidAuction" asp-route-activeTab="UpcomingAuction" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "BidAuction" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50") rounded-md">
                                         Auction
                                     </a>
                                 </li>
                                 <li>
-                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" class="block py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md">
+                                    <a asp-action="BlogPage" asp-controller="Blog" asp-route-activeTab="BlogList" 
+                                       class="block py-2 px-3 @(ViewContext.RouteData.Values["Controller"].ToString() == "Blog" ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50") rounded-md">
                                         Blog
                                     </a>
                                 </li>
