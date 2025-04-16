@@ -112,17 +112,122 @@ namespace FYPBidNetra.Controllers
                     // Send email notification to admin
                     var subject = "New Auction Verification Required";
                     var body = $@"
-                    <h2>New Auction Published</h2>
-                    <p>A new auction has been published and requires verification:</p>
-                    <ul>
-                        <li><strong>Auction ID:</strong> {a.AuctionId}</li>
-                        <li><strong>Title:</strong> {a.Title}</li>
-                        <li><strong>Type:</strong> {a.AuctionType}</li>
-                        <li><strong>Starting Price:</strong> {a.StartingPrice:C}</li>
-                        <li><strong>Start Date:</strong> {a.StartDate:d}</li>
-                        <li><strong>End Date:</strong> {a.EndDate:d}</li>
-                    </ul>
-                    <p>Please review and verify this auction.</p>";
+    <!DOCTYPE html>
+    <html lang='en'>
+    <head>
+        <meta charset='UTF-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <title>Auction Verification Required</title>
+        <style>
+            body {{
+                font-family: 'Segoe UI', Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                margin: 0;
+                padding: 0;
+            }}
+            .container {{
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+            }}
+            .header {{
+                background-color: #0056b3;
+                padding: 20px;
+                text-align: center;
+                color: white;
+                border-top-left-radius: 5px;
+                border-top-right-radius: 5px;
+            }}
+            .content {{
+                background-color: #ffffff;
+                padding: 20px;
+                border-left: 1px solid #ddd;
+                border-right: 1px solid #ddd;
+            }}
+            .footer {{
+                background-color: #f8f8f8;
+                padding: 15px;
+                text-align: center;
+                font-size: 12px;
+                color: #666;
+                border-bottom-left-radius: 5px;
+                border-bottom-right-radius: 5px;
+                border: 1px solid #ddd;
+            }}
+            .button {{
+                display: inline-block;
+                background-color: #0056b3;
+                color: white;
+                padding: 10px 20px;
+                text-decoration: none;
+                border-radius: 4px;
+                margin-top: 15px;
+            }}
+            .info-table {{
+                width: 100%;
+                border-collapse: collapse;
+                margin: 15px 0;
+            }}
+            .info-table td {{
+                padding: 8px;
+                border-bottom: 1px solid #eee;
+            }}
+            .info-table td:first-child {{
+                font-weight: bold;
+                width: 140px;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class='container'>
+            <div class='header'>
+                <h1 style='margin:0;'>Auction Verification</h1>
+            </div>
+            <div class='content'>
+                <h2 style='color:#0056b3;'>New Auction Requires Verification</h2>
+                <p>A new auction has been published in the system and requires your verification before it becomes publicly available.</p>
+
+                <table class='info-table'>
+                    <tr>
+                        <td>Auction ID:</td>
+                        <td>{a.AuctionId}</td>
+                    </tr>
+                    <tr>
+                        <td>Title:</td>
+                        <td>{a.Title}</td>
+                    </tr>
+                    <tr>
+                        <td>Type:</td>
+                        <td>{a.AuctionType}</td>
+                    </tr>
+                    <tr>
+                        <td>Starting Price:</td>
+                        <td>Rs.{a.StartingPrice}</td>
+                    </tr>
+                    <tr>
+                        <td>Start Date:</td>
+                        <td>{a.StartDate:d}</td>
+                    </tr>
+                    <tr>
+                        <td>End Date:</td>
+                        <td>{a.EndDate:d}</td>
+                    </tr>
+                </table>
+
+                <p>Please review this auction for accuracy and compliance with organizational guidelines.</p>
+
+                <div style='text-align: center;'>
+                </div>
+            </div>
+            <div class='footer'>
+                <p>This is an automated message from the BidNetra. Please do not reply to this email.</p>
+                <p>© 2025 BidNetra. All rights reserved.</p>
+            </div>
+        </div>
+    </body>
+    </html>";
+
 
                     await _emailService.SendEmailAsync(adminEmail, subject, body);
                     TempData["SuccessMessage"] = "Auction published successfully!";
@@ -350,276 +455,281 @@ namespace FYPBidNetra.Controllers
              return PartialView("_AwardedAuction", auctions);
          }*/
 
-        public async Task<IActionResult> AwardedAuction()
-        {
-            UpdateAuctionStatuses();
-            int currentUserID = Convert.ToInt16(User.Identity!.Name);
+        /* public async Task<IActionResult> AwardedAuction()
+         {
+             UpdateAuctionStatuses();
+             int currentUserID = Convert.ToInt16(User.Identity!.Name);
 
-            using var transaction = _context.Database.BeginTransaction();
-            try
-            {
-                // First, handle automatic awarding for completed auctions
-                var completedAuctions = _context.AuctionDetails
-                    .AsNoTracking()
-                    .Where(a => a.PublishedByUserId == currentUserID &&
-                                a.AuctionStatus == "Completed" &&
-                                a.AwardStatus != "Awarded" &&
-                                a.IsVerified == "Verified")
-                    .ToList();
+             using var transaction = _context.Database.BeginTransaction();
+             try
+             {
+                 // First, handle automatic awarding for completed auctions
+                 var completedAuctions = _context.AuctionDetails
+                     .AsNoTracking()
+                     .Where(a => a.PublishedByUserId == currentUserID &&
+                                 a.AuctionStatus == "Completed" &&
+                                 a.AwardStatus != "Awarded" &&
+                                 a.IsVerified == "Verified")
+                     .ToList();
 
-                foreach (var auction in completedAuctions)
-                {
-                    try
-                    {
-                        // Get the highest bid for this auction
-                        var highestBid = _context.AuctionBids
-                            .AsNoTracking()
-                            .Where(b => b.AuctionBidId == auction.AuctionId)
-                            .OrderByDescending(b => b.BidAmount)
-                            .FirstOrDefault();
+                 foreach (var auction in completedAuctions)
+                 {
+                     try
+                     {
+                         // Get the highest bid for this auction
+                         var highestBid = _context.AuctionBids
+                             .AsNoTracking()
+                             .Where(b => b.AuctionBidId == auction.AuctionId)
+                             .OrderByDescending(b => b.BidAmount)
+                             .FirstOrDefault();
 
-                        if (highestBid != null)
-                        {
-                            // Check if a contract already exists for this auction
-                            var existingContract = _context.ContractDetails
-                                .AsNoTracking()
-                                .FirstOrDefault(c => c.ConAuctionId == auction.AuctionId);
+                         if (highestBid != null)
+                         {
+                             // Check if a contract already exists for this auction
+                             var existingContract = _context.ContractDetails
+                                 .AsNoTracking()
+                                 .FirstOrDefault(c => c.ConAuctionId == auction.AuctionId);
 
-                            if (existingContract == null)
-                            {
-                                var auctionToUpdate = _context.AuctionDetails.Find(auction.AuctionId);
-                                if (auctionToUpdate != null)
-                                {
-                                    // Award the auction to the highest bidder
-                                    auctionToUpdate.BuyerId = highestBid.BidderId;
-                                    auctionToUpdate.WinningBidAmount = highestBid.BidAmount;
-                                    auctionToUpdate.AwardStatus = "Awarded";
+                             if (existingContract == null)
+                             {
+                                 var auctionToUpdate = _context.AuctionDetails.Find(auction.AuctionId);
+                                 if (auctionToUpdate != null)
+                                 {
+                                     // Award the auction to the highest bidder
+                                     auctionToUpdate.BuyerId = highestBid.BidderId;
+                                     auctionToUpdate.WinningBidAmount = highestBid.BidAmount;
+                                     auctionToUpdate.AwardStatus = "Awarded";
 
-                                    // Update the bid status
-                                    var bidToUpdate = _context.AuctionBids.Find(highestBid.BidId);
-                                    if (bidToUpdate != null)
-                                    {
-                                        bidToUpdate.BidStatus = "Accepted";
-                                    }
+                                     // Update the bid status
+                                     var bidToUpdate = _context.AuctionBids.Find(highestBid.BidId);
+                                     if (bidToUpdate != null)
+                                     {
+                                         bidToUpdate.BidStatus = "Accepted";
+                                     }
 
-                                    // Reject other bids in batch
-                                    var otherBids = _context.AuctionBids
-                                        .Where(b => b.AuctionBidId == auction.AuctionId && b.BidId != highestBid.BidId)
-                                        .ToList();
+                                     // Reject other bids in batch
+                                     var otherBids = _context.AuctionBids
+                                         .Where(b => b.AuctionBidId == auction.AuctionId && b.BidId != highestBid.BidId)
+                                         .ToList();
 
-                                    foreach (var bid in otherBids)
-                                    {
-                                        bid.BidStatus = "Rejected";
-                                    }
+                                     foreach (var bid in otherBids)
+                                     {
+                                         bid.BidStatus = "Rejected";
+                                     }
 
-                                    // Get the next available ContractId
-                                    short nextContractId = 1;
-                                    if (_context.ContractDetails.Any())
-                                    {
-                                        nextContractId = (short)(_context.ContractDetails
-                                            .AsNoTracking()
-                                            .Max(c => c.ContractId) + 1);
-                                    }
+                                     // Get the next available ContractId
+                                     short nextContractId = 1;
+                                     if (_context.ContractDetails.Any())
+                                     {
+                                         nextContractId = (short)(_context.ContractDetails
+                                             .AsNoTracking()
+                                             .Max(c => c.ContractId) + 1);
+                                     }
 
-                                    var contract = new ContractDetail
-                                    {
-                                        ContractId = nextContractId,
-                                        ConAuctionId = auction.AuctionId,
-                                        SellerId = auction.PublishedByUserId,
-                                        BuyerId = highestBid.BidderId,
-                                        ContractCreateDate = DateOnly.FromDateTime(DateTime.Now),
-                                        ContractStatus = "Pending",
-                                        SignedBySeller = false,
-                                        SignedByBuyer = false,
-                                    };
+                                     var contract = new ContractDetail
+                                     {
+                                         ContractId = nextContractId,
+                                         ConAuctionId = auction.AuctionId,
+                                         SellerId = auction.PublishedByUserId,
+                                         BuyerId = highestBid.BidderId,
+                                         ContractCreateDate = DateOnly.FromDateTime(DateTime.Now),
+                                         ContractStatus = "Pending",
+                                         SignedBySeller = false,
+                                         SignedByBuyer = false,
+                                     };
 
-                                    _context.Add(contract);
-                                    await _context.SaveChangesAsync();
-                                    // Send email notification to winner
-                                    if (highestBid.Bidder?.EmailAddress != null)
-                                    {
-                                        string winnerEmailBody = $@"
-                                        <!DOCTYPE html>
-                                        <html>
-                                        <head>
-                                            <style>
-                                                body {{
-                                                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                                                    line-height: 1.6;
-                                                    color: #333;
-                                                    margin: 0;
-                                                    padding: 0;
-                                                    background-color: #f5f7fa;
-                                                }}
-                                                .email-container {{
-                                                    max-width: 600px;
-                                                    margin: 20px auto;
-                                                    background: white;
-                                                    border-radius: 8px;
-                                                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                                                    overflow: hidden;
-                                                }}
-                                                .email-header {{
-                                                    background: linear-gradient(135deg, #166534, #14532d);
-                                                    color: white;
-                                                    padding: 25px;
-                                                    text-align: center;
-                                                }}
-                                                .email-content {{
-                                                    padding: 30px;
-                                                }}
-                                                .info-table {{
-                                                    width: 100%;
-                                                    border-collapse: collapse;
-                                                    margin: 20px 0;
-                                                }}
-                                                .info-table td {{
-                                                    padding: 10px;
-                                                    border-bottom: 1px solid #e5e7eb;
-                                                }}
-                                                .info-table td:first-child {{
-                                                    font-weight: bold;
-                                                    color: #4b5563;
-                                                    width: 35%;
-                                                }}
-                                                .action-button {{
-                                                    display: inline-block;
-                                                    background: linear-gradient(135deg, #166534, #14532d);
-                                                    color: white !important;
-                                                    text-decoration: none;
-                                                    padding: 12px 24px;
-                                                    border-radius: 6px;
-                                                    margin: 20px 0;
-                                                }}
-                                                .email-footer {{
-                                                    background-color: #f9fafb;
-                                                    padding: 15px;
-                                                    text-align: center;
-                                                    font-size: 14px;
-                                                    color: #6b7280;
-                                                    border-top: 1px solid #e5e7eb;
-                                                }}
-                                            </style>
-                                        </head>
-                                        <body>
-                                            <div class='email-container'>
-                                                <div class='email-header'>
-                                                    <h2>Congratulations! You've Won the Auction</h2>
-                                                </div>
-                                                <div class='email-content'>
-                                                    <p>Dear {highestBid.Bidder.FirstName} {highestBid.Bidder.LastName},</p>
-                                                    <p>Your bid for the following auction has been accepted:</p>
-            
-                                                    <table class='info-table'>
-                                                        <tr>
-                                                            <td>Auction Title:</td>
-                                                            <td>{auctionToUpdate.Title}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Your Winning Bid:</td>
-                                                            <td>{highestBid.BidAmount:C}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Auction ID:</td>
-                                                            <td>{auctionToUpdate.AuctionId}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Award Date:</td>
-                                                            <td>{DateTime.Now.ToString("dd MMM yyyy")}</td>
-                                                        </tr>
-                                                    </table>
-            
-                                                    <p>A contract has been generated. Please login to your account to review and sign the contract.</p>
-            
-            
-                                                    <p>If you have any questions, please contact our support team.</p>
-                                                </div>
-                                                <div class='email-footer'>
-                                                    <p>This is an automated message from BidNetra. Please do not reply to this email.</p>
-                                                    <p>&copy; {DateTime.Now.Year} BidNetra. All rights reserved.</p>
-                                                </div>
-                                            </div>
-                                        </body>
-                                        </html>";
+                                     _context.Add(contract);
+                                     await _context.SaveChangesAsync();
+                                     if (auction.BuyerId != null)
+                                     {
+                                         var winner = await _context.UserLists
+                                             .FirstOrDefaultAsync(u => u.UserId == auction.BuyerId);
 
-                                        await _emailService.SendEmailAsync(
-                                            highestBid.Bidder.EmailAddress,
-                                            $"Congratulations! You've Won Auction: {auctionToUpdate.Title}",
-                                            winnerEmailBody);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        // Log the error for this specific auction but continue processing others
-                        Console.WriteLine($"Error processing auction {auction.AuctionId}: {ex.Message}");
-                        continue;
-                    }
-                }
+                                         if (winner?.EmailAddress != null)
+                                         {
+                                             string winnerEmailBody = $@"
+                                                 <!DOCTYPE html>
+                                                 <html>
+                                                 <head>
+                                                     <style>
+                                                         body {{
+                                                             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                                                             line-height: 1.6;
+                                                             color: #333;
+                                                             margin: 0;
+                                                             padding: 0;
+                                                             background-color: #f5f7fa;
+                                                         }}
+                                                         .email-container {{
+                                                             max-width: 600px;
+                                                             margin: 20px auto;
+                                                             background: white;
+                                                             border-radius: 8px;
+                                                             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                                                             overflow: hidden;
+                                                         }}
+                                                         .email-header {{
+                                                             background: linear-gradient(135deg, #166534, #14532d);
+                                                             color: white;
+                                                             padding: 25px;
+                                                             text-align: center;
+                                                         }}
+                                                         .email-content {{
+                                                             padding: 30px;
+                                                         }}
+                                                         .info-table {{
+                                                             width: 100%;
+                                                             border-collapse: collapse;
+                                                             margin: 20px 0;
+                                                         }}
+                                                         .info-table td {{
+                                                             padding: 10px;
+                                                             border-bottom: 1px solid #e5e7eb;
+                                                         }}
+                                                         .info-table td:first-child {{
+                                                             font-weight: bold;
+                                                             color: #4b5563;
+                                                             width: 35%;
+                                                         }}
+                                                         .action-button {{
+                                                             display: inline-block;
+                                                             background: linear-gradient(135deg, #166534, #14532d);
+                                                             color: white !important;
+                                                             text-decoration: none;
+                                                             padding: 12px 24px;
+                                                             border-radius: 6px;
+                                                             margin: 20px 0;
+                                                         }}
+                                                         .email-footer {{
+                                                             background-color: #f9fafb;
+                                                             padding: 15px;
+                                                             text-align: center;
+                                                             font-size: 14px;
+                                                             color: #6b7280;
+                                                             border-top: 1px solid #e5e7eb;
+                                                         }}
+                                                     </style>
+                                                 </head>
+                                                 <body>
+                                                     <div class='email-container'>
+                                                         <div class='email-header'>
+                                                             <h2>Congratulations! You've Won the Auction</h2>
+                                                         </div>
+                                                         <div class='email-content'>
+                                                             <p>Dear {highestBid.Bidder.FirstName} {highestBid.Bidder.LastName},</p>
+                                                             <p>Your bid for the following auction has been accepted:</p>
 
-                transaction.Commit();
+                                                             <table class='info-table'>
+                                                                 <tr>
+                                                                     <td>Auction Title:</td>
+                                                                     <td>{auctionToUpdate.Title}</td>
+                                                                 </tr>
+                                                                 <tr>
+                                                                     <td>Your Winning Bid:</td>
+                                                                     <td>{highestBid.BidAmount:C}</td>
+                                                                 </tr>
+                                                                 <tr>
+                                                                     <td>Auction ID:</td>
+                                                                     <td>{auctionToUpdate.AuctionId}</td>
+                                                                 </tr>
+                                                                 <tr>
+                                                                     <td>Award Date:</td>
+                                                                     <td>{DateTime.Now.ToString("dd MMM yyyy")}</td>
+                                                                 </tr>
+                                                             </table>
 
-                // Fetch awarded auctions
-                var auctions = _context.AuctionDetails
-                    .AsNoTracking()
-                    .Where(t => t.PublishedByUserId == currentUserID &&
-                                t.AuctionStatus == "Completed" &&
-                                t.IsVerified == "Verified")
-                    .Select(t => new AuctionEdit
-                    {
-                        AuctionId = t.AuctionId,
-                        Title = t.Title,
-                        AuctionType = t.AuctionType,
-                        StartingPrice = t.StartingPrice,
-                        AuctionStatus = t.AuctionStatus,
-                        EndDate = t.EndDate,
-                        IsVerified = t.IsVerified,
-                        EncId = _protector.Protect(t.AuctionId.ToString()),
-                        WinnerDetails = t.BuyerId != null ? new UserListEdit
-                        {
-                            UserId = (short)t.BuyerId,
-                            FirstName = _context.UserLists
-                             .Where(u => u.UserId == t.BuyerId)
-                             .Select(u => u.FirstName)
-                             .FirstOrDefault(),
-                            MiddleName = _context.UserLists
-                        .Where(u => u.UserId == t.BuyerId)
-                             .Select(u => u.MiddleName)
-                             .FirstOrDefault(),
-                            LastName = _context.UserLists
-                        .Where(u => u.UserId == t.BuyerId)
-                             .Select(u => u.LastName)
-                             .FirstOrDefault(),
-                        } : null,
-                        // Add payment status
-                        PaymentStatus = _context.Payments
-                         .Where(p => p.PayAuctionId == t.AuctionId &&
-                                    p.PayByUser == currentUserID &&
-                                    p.PaymentMethod == "Deposit")
-                         .OrderByDescending(p => p.PaymentDate)
-                         .Select(p => p.PaymentStatus)
-                         .FirstOrDefault() ?? "Not Paid",
-                        PaymentId = _context.Payments
-                         .Where(p => p.PayAuctionId == t.AuctionId &&
-                                    p.PayByUser == currentUserID &&
-                                    p.PaymentMethod == "Deposit")
-                         .Select(p => p.PaymentId)
-                         .FirstOrDefault()
-                    })
-                       .ToList();
-                //return Json(tenders);
-                return PartialView("_AwardedAuction", auctions);
-            }
-            catch (Exception ex)
-            {
-                transaction.Rollback();
-                // Log the error
-                Console.WriteLine($"Error in AwardedAuction: {ex.Message}");
-                return StatusCode(500, "An error occurred while processing auctions.");
-            }
-        }
+                                                             <p>A contract has been generated. Please login to your account to review and sign the contract.</p>
+
+
+                                                             <p>If you have any questions, please contact our support team.</p>
+                                                         </div>
+                                                         <div class='email-footer'>
+                                                             <p>This is an automated message from BidNetra. Please do not reply to this email.</p>
+                                                             <p>&copy; {DateTime.Now.Year} BidNetra. All rights reserved.</p>
+                                                         </div>
+                                                     </div>
+                                                 </body>
+                                                 </html>";
+
+                                                 await _emailService.SendEmailAsync(
+                                                 highestBid.Bidder.EmailAddress,
+                                                 $"Congratulations! You've Won Auction: {auctionToUpdate.Title}",
+                                                 winnerEmailBody);
+                                         }
+                                     }
+                                 }
+                             }
+                         }
+                     }
+                     catch (Exception ex)
+                     {
+                         // Log the error for this specific auction but continue processing others
+                         Console.WriteLine($"Error processing auction {auction.AuctionId}: {ex.Message}");
+                         continue;
+                     }
+                 }
+
+                 transaction.Commit();
+
+                 // Fetch awarded auctions
+                 var auctions = _context.AuctionDetails
+                     .AsNoTracking()
+                     .Where(t => t.PublishedByUserId == currentUserID &&
+                                 t.AuctionStatus == "Completed" &&
+                                 t.IsVerified == "Verified")
+                     .Select(t => new AuctionEdit
+                     {
+                         AuctionId = t.AuctionId,
+                         Title = t.Title,
+                         AuctionType = t.AuctionType,
+                         StartingPrice = t.StartingPrice,
+                         AuctionStatus = t.AuctionStatus,
+                         EndDate = t.EndDate,
+                         IsVerified = t.IsVerified,
+                         EncId = _protector.Protect(t.AuctionId.ToString()),
+                         WinnerDetails = t.BuyerId != null ? new UserListEdit
+                         {
+                             UserId = (short)t.BuyerId,
+                             FirstName = _context.UserLists
+                              .Where(u => u.UserId == t.BuyerId)
+                              .Select(u => u.FirstName)
+                              .FirstOrDefault(),
+                             MiddleName = _context.UserLists
+                         .Where(u => u.UserId == t.BuyerId)
+                              .Select(u => u.MiddleName)
+                              .FirstOrDefault(),
+                             LastName = _context.UserLists
+                         .Where(u => u.UserId == t.BuyerId)
+                              .Select(u => u.LastName)
+                              .FirstOrDefault(),
+                         } : null,
+                         // Add payment status
+                         PaymentStatus = _context.Payments
+                          .Where(p => p.PayAuctionId == t.AuctionId &&
+                                     p.PayByUser == currentUserID &&
+                                     p.PaymentMethod == "Deposit")
+                          .OrderByDescending(p => p.PaymentDate)
+                          .Select(p => p.PaymentStatus)
+                          .FirstOrDefault() ?? "Not Paid",
+                         PaymentId = _context.Payments
+                          .Where(p => p.PayAuctionId == t.AuctionId &&
+                                     p.PayByUser == currentUserID &&
+                                     p.PaymentMethod == "Deposit")
+                          .Select(p => p.PaymentId)
+                          .FirstOrDefault()
+                     })
+                        .ToList();
+                 //return Json(tenders);
+                 return PartialView("_AwardedAuction", auctions);
+             }
+             catch (Exception ex)
+             {
+                 transaction.Rollback();
+                 // Log the error
+                 Console.WriteLine($"Error in AwardedAuction: {ex.Message}");
+                 return StatusCode(500, "An error occurred while processing auctions.");
+             }
+         }*/
 
         /*public IActionResult AwardedAuction()
         {
@@ -753,6 +863,282 @@ namespace FYPBidNetra.Controllers
 
             return PartialView("_AwardedAuction", auctions);
         }*/
+
+
+
+        public async Task<IActionResult> AwardedAuction()
+        {
+            UpdateAuctionStatuses();
+            int currentUserID = Convert.ToInt16(User.Identity!.Name);
+
+            using var transaction = _context.Database.BeginTransaction();
+            try
+            {
+                // First, handle automatic awarding for completed auctions
+                var completedAuctions = _context.AuctionDetails
+                    .AsNoTracking()
+                    .Where(a => a.PublishedByUserId == currentUserID &&
+                                a.AuctionStatus == "Completed" &&
+                                a.AwardStatus != "Awarded" &&
+                                a.IsVerified == "Verified")
+                    .ToList();
+
+                foreach (var auction in completedAuctions)
+                {
+                    try
+                    {
+                        // Get the highest bid for this auction with bidder information
+                        var highestBid = _context.AuctionBids
+                            .AsNoTracking()
+                            .Include(b => b.Bidder) // Include bidder information
+                            .Where(b => b.AuctionBidId == auction.AuctionId)
+                            .OrderByDescending(b => b.BidAmount)
+                            .FirstOrDefault();
+
+                        if (highestBid != null)
+                        {
+                            // Check if a contract already exists for this auction
+                            var existingContract = _context.ContractDetails
+                                .AsNoTracking()
+                                .FirstOrDefault(c => c.ConAuctionId == auction.AuctionId);
+
+                            if (existingContract == null)
+                            {
+                                var auctionToUpdate = _context.AuctionDetails.Find(auction.AuctionId);
+                                if (auctionToUpdate != null)
+                                {
+                                    // Award the auction to the highest bidder
+                                    auctionToUpdate.BuyerId = highestBid.BidderId;
+                                    auctionToUpdate.WinningBidAmount = highestBid.BidAmount;
+                                    auctionToUpdate.AwardStatus = "Awarded";
+
+                                    // Update the bid status
+                                    var bidToUpdate = _context.AuctionBids.Find(highestBid.BidId);
+                                    if (bidToUpdate != null)
+                                    {
+                                        bidToUpdate.BidStatus = "Accepted";
+                                    }
+
+                                    // Reject other bids in batch
+                                    var otherBids = _context.AuctionBids
+                                        .Where(b => b.AuctionBidId == auction.AuctionId && b.BidId != highestBid.BidId)
+                                        .ToList();
+
+                                    foreach (var bid in otherBids)
+                                    {
+                                        bid.BidStatus = "Rejected";
+                                    }
+
+                                    // Get the next available ContractId
+                                    short nextContractId = 1;
+                                    if (_context.ContractDetails.Any())
+                                    {
+                                        nextContractId = (short)(_context.ContractDetails
+                                            .AsNoTracking()
+                                            .Max(c => c.ContractId) + 1);
+                                    }
+
+                                    var contract = new ContractDetail
+                                    {
+                                        ContractId = nextContractId,
+                                        ConAuctionId = auction.AuctionId,
+                                        SellerId = auction.PublishedByUserId,
+                                        BuyerId = highestBid.BidderId,
+                                        ContractCreateDate = DateOnly.FromDateTime(DateTime.Now),
+                                        ContractStatus = "Pending",
+                                        SignedBySeller = false,
+                                        SignedByBuyer = false,
+                                    };
+
+                                    _context.Add(contract);
+                                    await _context.SaveChangesAsync();
+
+                                    // Check if buyer ID is set and then send email
+                                    // Using auctionToUpdate instead of auction for BuyerId
+                                    if (auctionToUpdate.BuyerId != null && highestBid.Bidder != null)
+                                    {
+                                        string winnerEmailBody = $@"
+                                    <!DOCTYPE html>
+                                    <html>
+                                    <head>
+                                        <style>
+                                            body {{
+                                                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                                                line-height: 1.6;
+                                                color: #333;
+                                                margin: 0;
+                                                padding: 0;
+                                                background-color: #f5f7fa;
+                                            }}
+                                            .email-container {{
+                                                max-width: 600px;
+                                                margin: 20px auto;
+                                                background: white;
+                                                border-radius: 8px;
+                                                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                                                overflow: hidden;
+                                            }}
+                                            .email-header {{
+                                                background: linear-gradient(135deg, #166534, #14532d);
+                                                color: white;
+                                                padding: 25px;
+                                                text-align: center;
+                                            }}
+                                            .email-content {{
+                                                padding: 30px;
+                                            }}
+                                            .info-table {{
+                                                width: 100%;
+                                                border-collapse: collapse;
+                                                margin: 20px 0;
+                                            }}
+                                            .info-table td {{
+                                                padding: 10px;
+                                                border-bottom: 1px solid #e5e7eb;
+                                            }}
+                                            .info-table td:first-child {{
+                                                font-weight: bold;
+                                                color: #4b5563;
+                                                width: 35%;
+                                            }}
+                                            .action-button {{
+                                                display: inline-block;
+                                                background: linear-gradient(135deg, #166534, #14532d);
+                                                color: white !important;
+                                                text-decoration: none;
+                                                padding: 12px 24px;
+                                                border-radius: 6px;
+                                                margin: 20px 0;
+                                            }}
+                                            .email-footer {{
+                                                background-color: #f9fafb;
+                                                padding: 15px;
+                                                text-align: center;
+                                                font-size: 14px;
+                                                color: #6b7280;
+                                                border-top: 1px solid #e5e7eb;
+                                            }}
+                                        </style>
+                                    </head>
+                                    <body>
+                                        <div class='email-container'>
+                                            <div class='email-header'>
+                                                <h2>Congratulations! You've Won the Auction</h2>
+                                            </div>
+                                            <div class='email-content'>
+                                                <p>Dear {highestBid.Bidder.FirstName} {highestBid.Bidder.LastName},</p>
+                                                <p>Your bid for the following auction has been accepted:</p>
+
+                                                <table class='info-table'>
+                                                    <tr>
+                                                        <td>Auction Title:</td>
+                                                        <td>{auctionToUpdate.Title}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Your Winning Bid:</td>
+                                                        <td>Rs.{highestBid.BidAmount}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Auction ID:</td>
+                                                        <td>{auctionToUpdate.AuctionId}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Award Date:</td>
+                                                        <td>{DateTime.Now.ToString("dd MMM yyyy")}</td>
+                                                    </tr>
+                                                </table>
+
+                                                <p>A contract has been generated. Please login to your account to review and sign the contract.</p>
+
+
+                                                <p>If you have any questions, please contact our support team.</p>
+                                            </div>
+                                            <div class='email-footer'>
+                                                <p>This is an automated message from BidNetra. Please do not reply to this email.</p>
+                                                <p>&copy; {DateTime.Now.Year} BidNetra. All rights reserved.</p>
+                                            </div>
+                                        </div>
+                                    </body>
+                                    </html>";
+
+                                        await _emailService.SendEmailAsync(
+                                            highestBid.Bidder.EmailAddress,
+                                            $"Congratulations! You've Won Auction: {auctionToUpdate.Title}",
+                                            winnerEmailBody);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log the error for this specific auction but continue processing others
+                        Console.WriteLine($"Error processing auction {auction.AuctionId}: {ex.Message}");
+                        continue;
+                    }
+                }
+
+                transaction.Commit();
+
+                // Fetch awarded auctions
+                var auctions = _context.AuctionDetails
+                    .AsNoTracking()
+                    .Where(t => t.PublishedByUserId == currentUserID &&
+                                t.AuctionStatus == "Completed" &&
+                                t.IsVerified == "Verified")
+                    .Select(t => new AuctionEdit
+                    {
+                        AuctionId = t.AuctionId,
+                        Title = t.Title,
+                        AuctionType = t.AuctionType,
+                        StartingPrice = t.StartingPrice,
+                        AuctionStatus = t.AuctionStatus,
+                        EndDate = t.EndDate,
+                        IsVerified = t.IsVerified,
+                        EncId = _protector.Protect(t.AuctionId.ToString()),
+                        WinnerDetails = t.BuyerId != null ? new UserListEdit
+                        {
+                            UserId = (short)t.BuyerId,
+                            FirstName = _context.UserLists
+                             .Where(u => u.UserId == t.BuyerId)
+                             .Select(u => u.FirstName)
+                             .FirstOrDefault(),
+                            MiddleName = _context.UserLists
+                        .Where(u => u.UserId == t.BuyerId)
+                             .Select(u => u.MiddleName)
+                             .FirstOrDefault(),
+                            LastName = _context.UserLists
+                        .Where(u => u.UserId == t.BuyerId)
+                             .Select(u => u.LastName)
+                             .FirstOrDefault(),
+                        } : null,
+                        // Add payment status
+                        PaymentStatus = _context.Payments
+                         .Where(p => p.PayAuctionId == t.AuctionId &&
+                                    p.PayByUser == currentUserID &&
+                                    p.PaymentMethod == "Deposit")
+                         .OrderByDescending(p => p.PaymentDate)
+                         .Select(p => p.PaymentStatus)
+                         .FirstOrDefault() ?? "Not Paid",
+                        PaymentId = _context.Payments
+                         .Where(p => p.PayAuctionId == t.AuctionId &&
+                                    p.PayByUser == currentUserID &&
+                                    p.PaymentMethod == "Deposit")
+                         .Select(p => p.PaymentId)
+                         .FirstOrDefault()
+                    })
+                       .ToList();
+                //return Json(tenders);
+                return PartialView("_AwardedAuction", auctions);
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                // Log the error
+                Console.WriteLine($"Error in AwardedAuction: {ex.Message}");
+                return StatusCode(500, "An error occurred while processing auctions.");
+            }
+        }
 
 
         public IActionResult MonitorAuction(string id)
@@ -1352,6 +1738,7 @@ namespace FYPBidNetra.Controllers
                 }
                 // return Json(auction);
                 // Updating existing auction details
+
 
                 auction.AuctionId = a.AuctionId;
                 auction.Title = a.Title;

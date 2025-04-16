@@ -1242,11 +1242,14 @@ namespace FYPBidNetra.Controllers
                 {
                     return NotFound("Tender not found.");
                 }
-               // return Json(tender);
+
+                var currentTime = DateTime.UtcNow.AddMinutes(345);
+                var currentDate = DateOnly.FromDateTime(currentTime);
+                // return Json(tender);
                 // Updating existing tender details
                 tender.Title = t.Title;
                 tender.IssuedBy = t.IssuedBy;
-                tender.IssuedDate = t.IssuedDate;
+                tender.IssuedDate = currentDate;
                 tender.TenderType = t.TenderType;
                 tender.TenderStatus = t.TenderStatus;
                 tender.OpeningDate = t.OpeningDate;
