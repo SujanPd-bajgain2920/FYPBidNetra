@@ -224,12 +224,14 @@ namespace FYPBidNetra.Controllers
                 }
                 // return Json(blog);
                 // Updating existing blog details
-               
+
+                var currentTime = DateTime.UtcNow.AddMinutes(345);
+                var currentDate = DateOnly.FromDateTime(currentTime);
 
                 blog.SectionHeading = b.SectionHeading;
                 blog.SectionDescription = b.SectionDescription;
                 blog.SectionImage = b.SectionImage;
-                blog.Postdate = b.Postdate;
+                blog.Postdate = currentDate;
                 blog.UploadUserId = Convert.ToInt16(User.Identity!.Name);
          
                 //return Json(blog);

@@ -167,20 +167,7 @@
                                            class="text-blue-600 hover:text-blue-800" title="View Details">
                                             <i class="fas fa-eye text-xl"></i>
                                         </a>
-                                        @if (tender.PaymentStatus == "Not Paid")
-                                        {
-                                            <a asp-action="AuctionPayment" asp-controller="TenderSlip" asp-route-tenderId="@tender.EncId"
-                                               class="text-green-600 hover:text-green-800" title="Make Payment">
-                                                <i class="fas fa-money-bill-wave text-xl"></i>
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <a asp-action="PaymentDetails" asp-controller="Payment" asp-route-id="@tender.PaymentId"
-                                               class="text-green-600 hover:text-green-800" title="View Payment Details">
-                                                <i class="fas fa-receipt text-xl"></i>
-                                            </a>
-                                        }
+                                        
                                     </div>
                                 </td>
                             </tr>

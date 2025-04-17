@@ -168,6 +168,36 @@
         color: #92400e;
     }
 
+    .payment-status {
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .payment-pending {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+
+    .payment-verified {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+
+    .payment-failed {
+        background-color: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .payment-notpaid {
+        background-color: #e4e4e7;
+        color: #52525b;
+    }
+
     .bid-info {
         display: flex;
         justify-content: space-between;
@@ -187,9 +217,9 @@
 
 <body>
     <div class="container">
-       
+
         <div class="flex justify-between items-center mb-8">
-            <a asp-action="Index" asp-controller="BidTender" class="text-blue-600 hover:text-blue-800 transition-colors duration-300 text-2xl" >
+            <a asp-action="Index" asp-controller="BidTender" class="text-blue-600 hover:text-blue-800 transition-colors duration-300 text-2xl">
                 <i class="fas fa-arrow-left mr-2"></i>
                 <span class="text-lg">Back</span>
             </a>
@@ -203,7 +233,7 @@
                 <div class="tender-card">
                     <div class="card-content">
                         <h5 class="card-title">Auction #@auction.AuctionId - @auction.Title</h5>
-                        
+
                         @if (auction.Bid != null)
                         {
                             <div class="bid-status @(auction.Bid.BidStatus == "Accepted" ? "bid-accepted" :
@@ -211,13 +241,27 @@
                                 <i class="fas @(auction.Bid.BidStatus == "Accepted" ? "fa-check-circle" :
                                         auction.Bid.BidStatus == "Rejected" ? "fa-times-circle" : "fa-clock")"></i>
                                 Status: @auction.Bid.BidStatus
-                                @if (auction.Bid.BidStatus == "Accepted" && auction.PaymentStatus == "Not Paid")
-                                {
-                                    <a asp-action="AuctionPayment" asp-controller="AuctionSlip" asp-route-auctionId="@auction.EncId" class="ml-2 text-green-600 hover:text-green-800" title="Make Payment">
-                                        <i class="fas fa-money-bill-wave"></i>
-                                    </a>
-                                }
                             </div>
+
+                            <!-- Payment Status Display -->
+                            @if (auction.Bid.BidStatus == "Accepted")
+                            {
+                                <div class="payment-status @(auction.PaymentStatus == "Not Paid" ? "payment-notpaid" :
+                                                auction.PaymentStatus == "Pending" ? "payment-pending" :
+                                                auction.PaymentStatus == "Verified" ? "payment-verified" : "payment-failed")">
+                                    <i class="fas @(auction.PaymentStatus == "Not Paid" ? "fa-exclamation-circle" :
+                                            auction.PaymentStatus == "Pending" ? "fa-hourglass-half" :
+                                            auction.PaymentStatus == "Verified" ? "fa-check-double" : "fa-times-circle")"></i>
+                                    Payment: @auction.PaymentStatus
+
+                                    @if (auction.PaymentStatus == "Not Paid" || auction.PaymentStatus == "Failed")
+                                    {
+                                        <a asp-action="AuctionPayment" asp-controller="AuctionSlip" asp-route-auctionId="@auction.EncId" class="ml-2 text-green-600 hover:text-green-800" title="Make Payment">
+                                            <i class="fas fa-money-bill-wave"></i> Pay Now
+                                        </a>
+                                    }
+                                </div>
+                            }
 
                             <div class="bid-info">
                                 <p><i class="fas fa-money-bill-wave"></i> <strong>Your Bid: Rs.@auction.Bid.BidAmount.ToString("N2")</strong></p>
