@@ -355,7 +355,7 @@ namespace FYPBidNetra.Controllers
                     contract.BuyerSignature = fileName;
                     contract.SignedByBuyer = true;
                 }
-
+                contract.ContractStatus = "Active";
                 _context.ContractDetails.Update(contract);
                 await _context.SaveChangesAsync();
 
