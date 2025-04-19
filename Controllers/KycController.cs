@@ -280,7 +280,7 @@ namespace FYPBidNetra.Controllers
 
         
         [Authorize(Roles = "Bidder")]
-        public IActionResult KycDetails()
+        /*public IActionResult KycDetails()
         {
             int currentUserId = Convert.ToInt16(User.Identity!.Name);
 
@@ -327,6 +327,58 @@ namespace FYPBidNetra.Controllers
             if (kycDetails == null)
             {
                 return RedirectToAction("Index");
+            }
+
+            return View(kycDetails);
+        }*/
+
+        public IActionResult KycDetails()
+        {
+            int currentUserId = Convert.ToInt16(User.Identity!.Name);
+
+            var kycDetails = _context.UserLists
+                .Where(u => u.UserId == currentUserId)
+                .Select(u => new UserListEdit
+                {
+                    // User details
+                    UserId = u.UserId,
+                    FirstName = u.FirstName,
+                    MiddleName = u.MiddleName,
+                    LastName = u.LastName,
+                    Province = u.Province,
+                    District = u.District,
+                    City = u.City,
+                    Gender = u.Gender,
+                    Phone = u.Phone,
+                    EmailAddress = u.EmailAddress,
+                    UserPhoto = u.UserPhoto,
+                    UserRole = u.UserRole,
+
+                    // Company details
+                    CompanyName = u.Companies.FirstOrDefault() != null ? u.Companies.FirstOrDefault().CompanyName : null,
+                    FullAddress = u.Companies.FirstOrDefault() != null ? u.Companies.FirstOrDefault().FullAddress : null,
+                    OfficeEmail = u.Companies.FirstOrDefault() != null ? u.Companies.FirstOrDefault().OfficeEmail : null,
+                    CompanyWebsiteUrl = u.Companies.FirstOrDefault() != null ? u.Companies.FirstOrDefault().CompanyWebsiteUrl : null,
+                    RegistrationNumber = u.Companies.FirstOrDefault() != null ? u.Companies.FirstOrDefault().RegistrationNumber : null,
+                    RegistrationDocument = u.Companies.FirstOrDefault() != null ? u.Companies.FirstOrDefault().RegistrationDocument : null,
+                    PanNumber = u.Companies.FirstOrDefault() != null ? u.Companies.FirstOrDefault().PanNumber : null,
+                    PanDocument = u.Companies.FirstOrDefault() != null ? u.Companies.FirstOrDefault().PanDocument : null,
+                    CompanyType = u.Companies.FirstOrDefault() != null ? u.Companies.FirstOrDefault().CompanyType : null,
+                    Position = u.Companies.FirstOrDefault() != null ? u.Companies.FirstOrDefault().Position : null,
+                    Rating = u.Companies.FirstOrDefault() != null ? u.Companies.FirstOrDefault().Rating : null,
+                    IsVerified = u.Companies.FirstOrDefault() != null ? u.Companies.FirstOrDefault().IsVerified : false,
+
+                    // Bank details
+                    BankName = u.Banks.FirstOrDefault() != null ? u.Banks.FirstOrDefault().BankName : null,
+                    AccountNumber = u.Banks.FirstOrDefault() != null ? u.Banks.FirstOrDefault().AccountNumber : null,
+                    AccountType = u.Banks.FirstOrDefault() != null ? u.Banks.FirstOrDefault().AccountType : null,
+                    AccountHolderName = u.Banks.FirstOrDefault() != null ? u.Banks.FirstOrDefault().AccountHolderName : null
+                })
+                .FirstOrDefault();
+
+            if (kycDetails == null || kycDetails.CompanyName == null || kycDetails.BankName == null)
+            {
+                return RedirectToAction("RegisterCompany");
             }
 
             return View(kycDetails);
