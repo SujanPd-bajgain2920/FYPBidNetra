@@ -303,12 +303,11 @@
             </div>
             <h2 class="card-title">Company Information</h2>
             <div class="ml-auto">
-                @if(!Model.IsVerified)
-                {
+               
                     <a asp-action="UpdateKyc" asp-controller="Kyc" class="document-button">
                         Update Kyc
                     </a>
-                }
+                
 
                 @if (Model.IsVerified)
                 {

@@ -111,9 +111,7 @@
                             <th class="px-6 py-4 text-center font-semibold">
                                 <i class="fas fa-building mr-2"></i>Bidder Name
                             </th>
-                            <th class="px-6 py-4 text-center font-semibold">
-                                <i class="fas fa-money-bill mr-2"></i>Payment Status
-                            </th>
+                            
                             <th class="px-6 py-4 text-center font-semibold">
                                 <i class="fas fa-cogs mr-2"></i>Actions
                             </th>
@@ -154,13 +152,7 @@
                                         </span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-center">
-                                    <span class="@(tender.PaymentStatus == "Verified" ? "text-green-600" :
-                                  tender.PaymentStatus == "Pending" ? "text-yellow-600" :
-                                  tender.PaymentStatus == "Failed" ? "text-red-600" : "text-gray-600")">
-                                        @tender.PaymentStatus
-                                    </span>
-                                </td>
+                                
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex items-center justify-center space-x-2">
                                         <a asp-action="AuctionDetails" asp-controller="PublisherAuction" asp-route-id="@tender.EncId"

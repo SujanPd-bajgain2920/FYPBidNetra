@@ -1546,8 +1546,78 @@ namespace BidNetra.Controllers
                 <html>
                 <head>
                     <style>
-                        /* Same styles as GeneratePublisherEmailBody */
-                    </style>
+                body {{ 
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                    line-height: 1.6; 
+                    color: #333;
+                    margin: 0;
+                    padding: 0;
+                    background-color: #f5f7fa;
+                }}
+                .email-container {{
+                    max-width: 600px;
+                    margin: 20px auto;
+                    background: white;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                    overflow: hidden;
+                }}
+                .email-header {{
+                    background: linear-gradient(135deg, #1e40af, #1e3a8a);
+                    color: white;
+                    padding: 25px;
+                    text-align: center;
+                }}
+                .email-content {{
+                    padding: 30px;
+                }}
+                .status-badge {{
+                    display: inline-block;
+                    padding: 5px 10px;
+                    border-radius: 20px;
+                    font-weight: bold;
+                    margin-left: 10px;
+                }}
+                .verified {{
+                    background-color: #dcfce7;
+                    color: #166534;
+                }}
+                .rejected {{
+                    background-color: #fee2e2;
+                    color: #991b1b;
+                }}
+                .info-table {{
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 20px 0;
+                }}
+                .info-table td {{
+                    padding: 10px;
+                    border-bottom: 1px solid #e5e7eb;
+                }}
+                .info-table td:first-child {{
+                    font-weight: bold;
+                    color: #4b5563;
+                    width: 35%;
+                }}
+                .action-button {{
+                    display: inline-block;
+                    background: linear-gradient(135deg, #1e40af, #1e3a8a);
+                    color: white !important;
+                    text-decoration: none;
+                    padding: 12px 24px;
+                    border-radius: 6px;
+                    margin: 20px 0;
+                }}
+                .email-footer {{
+                    background-color: #f9fafb;
+                    padding: 15px;
+                    text-align: center;
+                    font-size: 14px;
+                    color: #6b7280;
+                    border-top: 1px solid #e5e7eb;
+                }}
+            </style>
                 </head>
                 <body>
                     <div class='email-container'>

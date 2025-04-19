@@ -268,10 +268,10 @@
 
 <div class="page-container">
     <div class="flex items-center justify-between mb-6">
-        <button onclick="history.back()" class="back-button">
+        <a asp-action ="AuctionPage" asp-controller="PublisherAuction" asp-route-activeTab="AuctionList" class="back-button">
             <i class="fas fa-arrow-left text-xl"></i>
             <span class="hidden sm:inline ml-2">Back</span>
-        </button>
+        </a>
         <div class="flex gap-4">
             <span class="status-badge status-@Model.AuctionStatus.ToLower()">
                 <i class="fas @(Model.AuctionStatus.ToLower() == "active" ? "fa-door-open" :

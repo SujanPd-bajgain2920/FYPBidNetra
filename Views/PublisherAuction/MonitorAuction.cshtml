@@ -158,10 +158,10 @@
     <div class="container mx-auto px-4 py-8 max-w-7xl">
         <!-- Back Button -->
         <div class="mb-6">
-            <button onclick="history.back()" class="text-gray-600 hover:text-gray-800 transition-all duration-300 flex items-center gap-2 hover:translate-x-[-5px]">
+            <a asp-action="AuctionDetails" asp-controller="PublisherAuction" asp-route-id="@Model.Auction.EncId" class="text-gray-600 hover:text-gray-800 transition-all duration-300 flex items-center gap-2 hover:translate-x-[-5px]">
                 <i class="fas fa-arrow-left text-xl"></i>
                 <span class="font-medium">Back</span>
-            </button>
+            </a>
         </div>
 
         <!-- Auction Header -->
