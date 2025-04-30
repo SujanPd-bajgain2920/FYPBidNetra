@@ -204,9 +204,9 @@ namespace FYPBidNetra.Controllers
                     EncId = _protector.Protect(c.ContractId.ToString())
                 })
                 .FirstOrDefault();
-            // Fetch TenderApplication details based on ConTenderId from Contract
+            // Fetch AuctionBid details based on ConAuctionId from Contract
             var application = _context.AuctionBids
-                .Where(a => a.AuctionBidId == contract.ConAuctionId) // Link using TenderAppllyId
+                .Where(a => a.AuctionBidId == contract.ConAuctionId) 
                 .Select(a => new AuctionBidEdit
                 {
                     BidId = a.BidId,
@@ -249,7 +249,7 @@ namespace FYPBidNetra.Controllers
                 return View();
             }
 
-            // Fetch the application ID associated with the contract
+          
 
 
             // Fetch the contract to ensure it exists

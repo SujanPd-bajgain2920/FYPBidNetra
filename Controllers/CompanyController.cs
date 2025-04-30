@@ -92,47 +92,7 @@ namespace FYPBidNetra.Controllers
 
 
 
-        /*[HttpGet]
-        public IActionResult ViewReview(string id)
-        {
-            try
-            {
-                int companyId = Convert.ToInt32(_protector.Unprotect(id));
-                var company = _context.Companies.FirstOrDefault(c => c.CompanyId == companyId);
 
-                if (company == null)
-                {
-                    return NotFound("Company not found.");
-                }
-
-                var model = new CompanyReviewViewModel
-                {
-                    CompanyId = id,
-                    CompanyName = company.CompanyName,
-                    CompanyRating = company.Rating,
-
-                    NewRating = new RatingEdit(),
-                    Reviews = _context.Ratings
-                        .Include(r => r.RatingByNavigation)
-                        .Where(r => r.RatingFor == companyId)
-                        .Select(r => new RatingEdit
-                        {
-                            RatingId = r.RatingId,
-                            Rate = (decimal)r.Rate,
-                            RatingDescription = r.RatingDescription,
-                            ReviewerName = $"{r.RatingByNavigation.FirstName} {r.RatingByNavigation.LastName}",
-                            ReviewerPhoto = r.RatingByNavigation.UserPhoto
-                        })
-                        .ToList()
-                };
-
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                return NotFound("Invalid company ID or reviews not found.");
-            }
-        }*/
 
 
         public IActionResult ViewReview(string id, string tenderId)

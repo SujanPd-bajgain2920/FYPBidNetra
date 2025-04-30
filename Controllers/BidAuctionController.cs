@@ -575,12 +575,6 @@ namespace FYPBidNetra.Controllers
         }
 
 
-
-
-
-
-
-
         [HttpPost]
         public async Task<IActionResult> PlaceBid(int auctionId, decimal bidAmount)
         {

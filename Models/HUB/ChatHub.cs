@@ -23,7 +23,7 @@ public class ChatHub : Hub
         {
             // Convert user ID to Int16
             var userId = Convert.ToInt16(userIdClaim);
-            _connections[Context.ConnectionId] = userId.ToString(); // Assuming _connections is a dictionary mapping connection IDs to user IDs
+            _connections[Context.ConnectionId] = userId.ToString(); 
 
             Console.WriteLine($"User connected: {userId} with Connection ID: {Context.ConnectionId}");
         }

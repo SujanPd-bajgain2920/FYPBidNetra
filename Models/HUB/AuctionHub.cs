@@ -1,18 +1,4 @@
-﻿/*using Microsoft.AspNetCore.SignalR;
-
-namespace BidNetra.Models
-{
-    public class AuctionHub : Hub
-    {
-        // Method to send the new bid details to clients
-        public async Task SendBidUpdate(int auctionId, int userId, decimal bidAmount, DateTime bidTime)
-        {
-            await Clients.All.SendAsync("ReceiveBid", auctionId, userId, bidAmount, bidTime);
-        }
-    }
-}
-*/
-
+﻿
 using FYPBidNetra.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -20,11 +6,7 @@ using System.Threading.Tasks;
 
 public class AuctionHub : Hub
 {
-    /* public async Task SendBid(int auctionId, int userId, decimal bidAmount, DateTime bidTime)
-     {
-         await Clients.All.SendAsync("ReceiveBid", auctionId, userId, bidAmount, bidTime);
-     }*/
-
+   
     private readonly FypContext _context;
 
     public AuctionHub(FypContext context)

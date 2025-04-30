@@ -807,23 +807,6 @@ namespace BidNetra.Controllers
         }
 
 
-        /*[HttpPost]
-        public IActionResult UpdateAVerifiedStatus(long AuctionId, string IsVerified)
-        {
-            var auction = _context.AuctionDetails.FirstOrDefault(d => d.AuctionId == AuctionId);
-            if (auction != null)
-            {
-                auction.IsVerified = IsVerified;
-                _context.SaveChanges();
-
-                // Return a JSON response indicating success
-                return Json(new { success = true });
-            }
-
-            return Json(new { success = false });
-        }*/
-
-
         [HttpPost]
         public async Task<IActionResult> UpdateAVerifiedStatus(long AuctionId, string IsVerified)
         {
@@ -900,7 +883,7 @@ namespace BidNetra.Controllers
             }
         }
 
-        // Add these helper methods for email templates
+        // helper methods for email
         private string GenerateAuctionPublisherEmailBody(AuctionDetail auction)
         {
             return $@"

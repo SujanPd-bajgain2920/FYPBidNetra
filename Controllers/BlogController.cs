@@ -34,7 +34,7 @@ namespace FYPBidNetra.Controllers
         [Route("blogpage/{activeTab?}")]
         public IActionResult BlogPage(string activeTab = "BlogList")
         {
-            ViewBag.ActiveTab = activeTab; // Set the active tab in ViewBag
+            ViewBag.ActiveTab = activeTab; 
             return PartialView("_BlogPage");
         }
 

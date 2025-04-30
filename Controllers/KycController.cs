@@ -280,57 +280,6 @@ namespace FYPBidNetra.Controllers
 
         
         [Authorize(Roles = "Bidder")]
-        /*public IActionResult KycDetails()
-        {
-            int currentUserId = Convert.ToInt16(User.Identity!.Name);
-
-            var kycDetails = _context.UserLists
-                .Where(u => u.UserId == currentUserId)
-                .Select(u => new UserListEdit
-                {
-                    // User details
-                    UserId = u.UserId,
-                    FirstName = u.FirstName,
-                    MiddleName = u.MiddleName,
-                    LastName = u.LastName,
-                    Province = u.Province,
-                    District = u.District,
-                    City = u.City,
-                    Gender = u.Gender,
-                    Phone = u.Phone,
-                    EmailAddress = u.EmailAddress,
-                    UserPhoto = u.UserPhoto,
-                    UserRole = u.UserRole,
-
-                    // Company details
-                    CompanyName = u.Companies.FirstOrDefault().CompanyName,
-                    FullAddress = u.Companies.FirstOrDefault().FullAddress,
-                    OfficeEmail = u.Companies.FirstOrDefault().OfficeEmail,
-                    CompanyWebsiteUrl = u.Companies.FirstOrDefault().CompanyWebsiteUrl,
-                    RegistrationNumber = u.Companies.FirstOrDefault().RegistrationNumber,
-                    RegistrationDocument = u.Companies.FirstOrDefault().RegistrationDocument,
-                    PanNumber = u.Companies.FirstOrDefault().PanNumber,
-                    PanDocument = u.Companies.FirstOrDefault().PanDocument,
-                    CompanyType = u.Companies.FirstOrDefault().CompanyType,
-                    Position = u.Companies.FirstOrDefault().Position,
-                    Rating = u.Companies.FirstOrDefault().Rating,
-                    IsVerified = u.Companies.FirstOrDefault().IsVerified,
-
-                    // Bank details
-                    BankName = u.Banks.FirstOrDefault().BankName,
-                    AccountNumber = u.Banks.FirstOrDefault().AccountNumber,
-                    AccountType = u.Banks.FirstOrDefault().AccountType,
-                    AccountHolderName = u.Banks.FirstOrDefault().AccountHolderName
-                })
-                .FirstOrDefault();
-
-            if (kycDetails == null)
-            {
-                return RedirectToAction("Index");
-            }
-
-            return View(kycDetails);
-        }*/
 
         public IActionResult KycDetails()
         {

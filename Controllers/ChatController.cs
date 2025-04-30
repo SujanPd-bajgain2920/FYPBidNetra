@@ -27,7 +27,7 @@ namespace FYPBidNetra.Controllers
         [HttpGet]
         public async Task<IActionResult> UserMessage(short receiverId)
         {
-            var currentUserId = Convert.ToInt16(User.Identity!.Name); // Assuming UserId is stored in Identity
+            var currentUserId = Convert.ToInt16(User.Identity!.Name); 
 
             // Fetch messages between the current user and the receiver
             var messages = await _context.Chats
@@ -36,13 +36,7 @@ namespace FYPBidNetra.Controllers
                 .OrderBy(m => m.CreatedDate)
                 .ToListAsync();
 
-            // Fetch the receiver's details
-            /* var receiver = await _context.UserLists
-                 .Where(u => u.UserId == receiverId)
-                 .Select(u => new { u.FirstName, u.MiddleName, u.LastName })
-                 .FirstOrDefaultAsync();
-
-             ViewBag.ReceiverName = receiver?.FirstName;*/
+   
 
             var receiver = await _context.UserLists
                 .Where(u => u.UserId == receiverId)
@@ -55,8 +49,8 @@ namespace FYPBidNetra.Controllers
 
             ViewBag.ReceiverName = receiver?.FullName;
             ViewBag.ProfilePic = receiver?.UserPhoto;
-            ViewBag.CurrentUserId = currentUserId; // Pass current user ID for comparison
-            ViewBag.ReceiverId = receiverId; // Pass receiver ID to the view
+            ViewBag.CurrentUserId = currentUserId; 
+            ViewBag.ReceiverId = receiverId; 
 
             // Return the messages to the view
             return View(messages);
