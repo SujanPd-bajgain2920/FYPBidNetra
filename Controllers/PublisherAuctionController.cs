@@ -11,7 +11,7 @@ using System.Security.Cryptography;
 
 namespace FYPBidNetra.Controllers
 {
-
+    [Authorize(Roles = "Publisher")]
     public class PublisherAuctionController : Controller
     {
 

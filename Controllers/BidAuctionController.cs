@@ -10,7 +10,7 @@ using System.Security.Cryptography;
 
 namespace FYPBidNetra.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Bidder")]
     public class BidAuctionController : Controller
     {
 

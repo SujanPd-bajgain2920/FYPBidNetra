@@ -459,7 +459,10 @@
                     <span class="info-value">
                         @if (!string.IsNullOrEmpty(Model.AccountNumber))
                         {
-                            <span>@(new string('*', Model.AccountNumber.Length - 4) + Model.AccountNumber.Substring(Model.AccountNumber.Length - 4))</span>
+                           
+                            
+                                <span>@Model.AccountNumber</span>
+                           
                         }
                         else
                         {

@@ -516,7 +516,7 @@
                     <span class="info-value">
                         @if (!string.IsNullOrEmpty(Model.Bank.AccountNumber))
                         {
-                            <span>@(new string('*', Model.Bank.AccountNumber.Length - 4) + Model.Bank.AccountNumber.Substring(Model.Bank.AccountNumber.Length - 4))</span>
+                            <span>@Model.Bank.AccountNumber</span>
                         }
                         else
                         {

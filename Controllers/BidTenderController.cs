@@ -16,7 +16,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace FYPBidNetra.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Bidder")]
     public class BidTenderController : Controller
     {
 

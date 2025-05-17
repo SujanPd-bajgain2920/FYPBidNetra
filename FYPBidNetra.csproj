@@ -19,9 +19,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\AuctionImage\" />
     <Folder Include="wwwroot\BlogImage\" />
+    <Folder Include="wwwroot\PanImage\" />
+    <Folder Include="wwwroot\PaymentSlips\" />
+    <Folder Include="wwwroot\ProposalTender\" />
+    <Folder Include="wwwroot\RegisterImage\" />
     <Folder Include="wwwroot\SlipImage\" />
     <Folder Include="wwwroot\TempFiles\" />
+    <Folder Include="wwwroot\TenderDocument\" />
+    <Folder Include="wwwroot\uploads\signatures\" />
+    <Folder Include="wwwroot\UserImage\" />
   </ItemGroup>
 
 </Project>
